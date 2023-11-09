@@ -4,6 +4,7 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from config import settings
+import http.client
 import models
 
 
@@ -38,3 +39,19 @@ db_dependency = Annotated[Session, Depends(get_db)]
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+@app.get("/tripadvisor")
+async def root():
+    conn = http.client.HTTPSConnection("tripadvisor16.p.rapidapi.com")
+
+    headers = {
+        'X-RapidAPI-Key': "c03b5ad73emshc52e3dd1b991859p11657fjsnc403e46201bc",
+        'X-RapidAPI-Host': "tripadvisor16.p.rapidapi.com"
+    }
+
+    conn.request("GET", "/api/v1/flights/searchAirport?query=london", headers=headers)
+
+    res = conn.getresponse()
+    data = res.read()
+    return {"data": data}
+
