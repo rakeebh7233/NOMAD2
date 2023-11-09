@@ -6,7 +6,7 @@ class User(Base):
 
     email_address = Column(String(100), unique=True, primary_key=True, nullable=False)
     firstName = Column(String(100), nullable=False)
-    lastName = Column(VARCHAR(100), nullable=False)
+    lastName = Column(String(100), nullable=False)
     hashed_password = Column(VARCHAR(100))
 
     def __repr__(self):

@@ -6,6 +6,26 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 function Home() {
+
+  const [location, setLocation] = useState("");
+
+  const handleSubmit = async(e) => {
+    e.PreventDefault();
+
+    console.log("here");
+    const options = {
+      method: 'GET',
+      url: 'http://127.0.0.1:8000/tripadvisor',
+    };
+
+    try {
+      const response = await axios.request(options);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <section>
       <div className='home-container' >
@@ -14,10 +34,10 @@ function Home() {
             <h1>YOUR NEXT JOURNEY AWAITS</h1>
             <p>We've Been Waiting for you Fellow Nomad</p>
 
-            <form className='search'>
+            <form className='search' onSubmit={e => { handleSubmit(e) }}>
               <div className='search-container'>
                 <label >Where are you  off to Next?</label>
-                <input id='location' type='text' placeholder='Search your location' />
+                <input id='location' type='text' placeholder='Search your location' onChange={e => setLocation(e.target.value)}/>
               </div>
               <div className='row-container'>
 
@@ -35,7 +55,6 @@ function Home() {
                 <button
                   className='search-btn'
                   type='submit'
-                //onClick={}
                 >
                   Explore
                 </button>

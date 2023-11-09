@@ -4,6 +4,7 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from config import settings
+import http.client
 import models
 import http.client
 
@@ -45,7 +46,6 @@ async def root():
     conn = http.client.HTTPSConnection("tripadvisor16.p.rapidapi.com")
 
     headers = {
-
     }
 
     conn.request("GET", "/api/v1/flights/searchAirport?query=london", headers=headers)
@@ -54,3 +54,4 @@ async def root():
     data = res.read()
 
     return {"data": data}
+
