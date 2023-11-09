@@ -45,8 +45,6 @@ async def root():
     conn = http.client.HTTPSConnection("tripadvisor16.p.rapidapi.com")
 
     headers = {
-        'X-RapidAPI-Key': "c03b5ad73emshc52e3dd1b991859p11657fjsnc403e46201bc",
-        'X-RapidAPI-Host': "tripadvisor16.p.rapidapi.com"
     }
 
     conn.request("GET", "/api/v1/flights/searchAirport?query=london", headers=headers)
