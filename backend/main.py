@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from config import settings
 import models
+import http.client
 
 
 def create_tables():         
@@ -38,3 +39,18 @@ db_dependency = Annotated[Session, Depends(get_db)]
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+@app.get("/tripadvisor")
+async def root():
+    conn = http.client.HTTPSConnection("tripadvisor16.p.rapidapi.com")
+
+    headers = {
+
+    }
+
+    conn.request("GET", "/api/v1/flights/searchAirport?query=london", headers=headers)
+
+    res = conn.getresponse()
+    data = res.read()
+
+    return {"data": data}
