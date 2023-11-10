@@ -3,7 +3,6 @@ import Select from 'react-select';
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Login from "../models/Login";
 
 function NavBar({ handleLoginClick }) {
     return (

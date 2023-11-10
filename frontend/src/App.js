@@ -1,13 +1,13 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useState } from 'react';
-import BeginItinerary from './models/BeginItinerary';
-import Home from './models/Home';
+import BeginItinerary from './pages/BeginItinerary';
+import Home from './pages/Home';
 import NavBar from './shared/NavBar';
-import UserProfile from './models/UserProfile'
-import CustomerItinerary from './models/CustomerItinerary';
-import Login from './models/Login';
-import Register from './models/Register';
+import UserProfile from './pages/UserProfile'
+import CustomerItinerary from './pages/CustomerItinerary';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
   const [isLoginVisible, setIsLoginVisible] = useState(false);

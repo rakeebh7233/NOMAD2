@@ -1,8 +1,15 @@
 import React from 'react';
+import { useEffect, useState } from "react";
 import CloseButton from 'react-bootstrap/CloseButton';
 
 
 const LoginForm = ({ isLoginVisible, closeLogin }) => {
+
+    const [loginForm, setLoginForm] = useState({
+        email: "",
+        password: "",
+    });
+    
     return (
         <section className={`${isLoginVisible ? "active" : ""} loginShow`} class="vh-100 loginShow">
             <div class="container py-5 h-100">
@@ -32,7 +39,7 @@ const LoginForm = ({ isLoginVisible, closeLogin }) => {
                                 </div>
 
                                 <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
-                                <button onClick={console.log("hello")} class="btn btn-info btn-lg btn-block" type="button">
+                                <button class="btn btn-info btn-lg btn-block" type="button">
                                     <a class="nav-link text-light" href="/register">Register</a>
                                 </button>
                                 
