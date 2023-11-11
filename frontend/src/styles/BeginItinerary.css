@@ -1,84 +1,51 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-  }
-  
-  #beginItinPage .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  #beginItinPage form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  #beginItinPage label {
-    margin-top: 10px;
-    font-weight: bold;
-  }
-  
-  input[type="text"],
-  input[type="date"] {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-  }
-  
-  input[type="text"]:focus,
-  input[type="date"]:focus {
-    outline: none;
-    border: 1px solid #007BFF;
-    background-color: #fff;
-  }
-  
-  input[type="text"]::placeholder,
-  input[type="date"]::placeholder {
-    color: #999;
-  }
-  
-  input[type="text"][name="emailList"] {
-    font-style: italic;
-  }
-  
-  #beginItinPageselect {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-  }
-  
-  #beginButton {
-    background-color: #007BFF;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    margin-top: 15px;
-    cursor: pointer;
-  }
-  
-  #beginButton:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Adjustments for better spacing */
-  #beginItinPage br {
-    display: none;
-    margin: 10px 0;
-  }
+.itinerary-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.itinerary-container input {
+  margin: 5px;
+  width: 200px;
+  height: 40px;
+  padding-left: 5px;
+  font-size: 20px;
+}
+
+.form-container1 {
+  width: 500px;
+  height: 550px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container1 .body {
+  flex: 60%;
+}
+
+.form-container1 .footer {
+  flex: 20%;
+  display: flex;
+  justify-content: center;
+}
+
+.form-container1 .footer button {
+  border-radius: 7px;
+  width: 100px;
+  height: 40px;
+  background-color: #819f87;
+  font-weight: bold;
+  color: white;
+  border: 0 none;
+  border-radius: 1px;
+  cursor: pointer;
+  padding: 10px 5px;
+  margin: 10px 5px;
+  margin: 5px;
+}

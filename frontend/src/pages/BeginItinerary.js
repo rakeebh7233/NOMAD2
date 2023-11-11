@@ -6,22 +6,20 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 function BeginItinerary({addCustomItinerary}) {
-    const[itineraryName, setItineraryName] = useState("");
-    const[emailList, setEmailList] = useState([]);
-    const[destination, setDestination] = useState("");
-    const[departure, setDeparture] = useState("");
-    const[departureDate, setDepartureDate] = useState("");
-    const[returnDate, setReturnDate] = useState("");
-    const[travelReason, setTravelReason] = useState([]);
-    const[leisureActivites, setLeisureActivities] = useState([]);
-    const[budget, setBudget] = useState("");
-    const[date, setDate] = useState("");
 
-
+    const [formData, setFormData] = useState({itineraryNameName: "", 
+                                                emailList: "", 
+                                                destination: "", 
+                                                departure: "", 
+                                                departureDate: "", 
+                                                returnDate: "", 
+                                                travelReason: [], 
+                                                leisureActivites: ""})
 
     const handleSubmit = (e) => {
-        e.PreventDefault();
-        addCustomItinerary(itineraryName, emailList, destination, departure, departureDate, returnDate, travelReason, leisureActivites, budget);
+        //e.PreventDefault();
+        console.log(formData)
+        //addCustomItinerary(formData.itineraryName, formData.emailList, formData.destination, formData.departure, formData.departureDate, formData.returnDate, formData.travelReason, formData.leisureActivites, formData.budget);
     };
 
     const searchCustomComponents = (e) =>{
@@ -29,113 +27,136 @@ function BeginItinerary({addCustomItinerary}) {
     }
 
     return (
-        <section id="beginItinPage">
-            <form class="flex-form" onSubmit={e => { handleSubmit(e) }}>
-            <label>Itinerary Name:</label>
-            <br />
-            <input 
-            name='itineraryName'
-            type='text'
-            value={itineraryName}
-            onChange={e => setItineraryName(e.target.value)}
-            />
-            <br/>
-            <label>Email(s): (seperate by comma)</label>
-            <br />
-            <input 
-            name='emailList'
-            type='text' 
-            placeholder="email1, email2, email3"
-            value={emailList}
-            onChange={e => setEmailList(e.target.value)}
-            />
-            <br />
-            <label>Destination:</label>
-            <br />
-            <input
-            name='destination' 
-            type='text'
-            placeholder= "City, Country"
-            value={date}
-            onChange={e => setDestination(e.target.value)}
-            />
-            <br />
-            <label>Departing From:</label>
-            <br />
-            <input 
-            name= 'departure'
-            type='text'
-            value={departure}
-            onChange={e => setDeparture(e.target.value)}
-            />
-            <br />
-            <label>Departure Date:</label>
-            <br />
-            <input
-            name= 'departureDate'
-            type='date'
-            placeholder="YYYY-MM-DD"
-            value={departureDate}
-            onChange={e => setDepartureDate(e.target.value)}
-            />
-            <br />
-            <label>Return Date:</label>
-            <br />
-            <input
-            name= 'returnDate'
-            type='date'
-            placeholder="YYYY-MM-DD"
-            value={returnDate}
-            onChange={e => setReturnDate(e.target.value)}
-            />
-            <br />
-            <label>Reason For Travel:</label>
-            <br />
-            <Select
-                name='travelReason'
-                placeholder="Select All that Apply"
-                value={travelReason}
-                options={[
-                    { value: 'Leisure', label: 'Leisure' },
-                    { value: 'Business', label: 'Business' },
-                    { value: 'Family', label: 'Family' },
-                    { value: 'Friends', label: 'Friends' },
-                    { value: 'Other', label: 'Other' },
-                ]}
-                onChange={
-                    e => setTravelReason(e.target.value)
-                }
-                isMulti
-            />
-            <br />
-            <label>Favorite Leisure Activites:</label>
-            <br />
-            <Select
-                name='leisureActivities'
-                placeholder="Select All that Apply"
-                value={leisureActivites}
-                options={[
-                    { value: 'Resturants and Local Cuisine', label: 'Resturants and Local Cuisine' },
-                    { value: 'Museums', label: 'Museums' },
-                    { value: 'Historical Sites', label: 'Historical Sites' },
-                    { value: 'Shopping', label: 'Shopping' },
-                    { value: 'Amusement Parks', label: 'Amusement Parks' },
-                    { value: 'Nightlife', label: 'Nightlife' },
-                    { value: 'Other', label: 'Other' },
-                ]}
-                onChange={
-                    e => setTravelReason(e.target.value)
-                }
-                isMulti
-            />
-            <br/>
-            <button id="beginButton" onClick={searchCustomComponents}> TO YOUR NEXT ADVENTURE </button>
-      </form>
-        </section>
+        <div className = "form">
+            <div className="header">
+                <h1>Your Next Adventure Awaits...</h1>
+            </div>
+            <div className="form-container1">
+                <div className="body">
+                    <div className="itinerary-container">
+                        <label>
+                            Itinerary Name: <input
+                            type="text"
+                            placeholder="Name..."
+                            value={formData.itineraryName}
+                            onChange={(event) =>
+                            setFormData({ ...formData, itineraryName: event.target.value })
+                            }
+                        />
+                        </label>
+
+                        <label>
+                            Email List: <input
+                            type="text"
+                            placeholder="email1,email2,email3..."
+                            value={formData.emailList}
+                            onChange={(event) =>
+                            setFormData({ ...formData, emailList: event.target.value })
+                            }
+                        />
+                        </label>
+
+                        <label>
+                            Destination: <input
+                            type="text"
+                            placeholder="Destination..."
+                            value={formData.destination}
+                            onChange={(event) =>
+                            setFormData({ ...formData, destination: event.target.value })
+                            }
+                        />
+                        </label>
+
+                        <label>
+                            Departing From: <input
+                            type="text"
+                            placeholder="Departing from..."
+                            value={formData.departure}
+                            onChange={(event) =>
+                            setFormData({ ...formData, departure: event.target.value })
+                            }
+                        />
+                        </label>
+
+                        <label>
+                            Departure Date: <input
+                            type="date"
+                            placeholder="MM/DD/YYY"
+                            value={formData.departureDate}
+                            onChange={(event) =>
+                            setFormData({ ...formData, departureDate: event.target.value })
+                            }
+                        />
+                        </label>
+
+                        <label>
+                            Return Date: <input
+                            type="date"
+                            placeholder="MM/DD/YYYY"
+                            value={formData.returnDate}
+                            onChange={(event) =>
+                            setFormData({ ...formData, returnDate: event.target.value })
+                            }
+                        />
+                        </label>
+
+                        <label>
+                            Reason for Travel: <Select
+                            placeholder="Select All that Apply"
+                            options={[
+                                { value: 'Leisure', label: 'Leisure' },
+                                { value: 'Business', label: 'Business' },
+                                { value: 'Family', label: 'Family' },
+                                { value: 'Friends', label: 'Friends' },
+                                { value: 'Other', label: 'Other' },
+                            ]}
+                            defaultValue={""}
+                            onChange={(event) => {
+                                    let list = [];
+                                    for(let i=0; i<event.length; i++){
+                                        list.push(event[i].value)
+                                    }
+                                    setFormData({ ...formData, travelReason: list})
+                                }
+                            }
+                            isMulti
+                        />
+                        </label>
+
+                        <label>
+                            Favorite Activites: <Select
+                            placeholder="Select All that Apply"
+                            options={[
+                                { value: 'Resturants and Local Cuisine', label: 'Resturants and Local Cuisine' },
+                                { value: 'Museums', label: 'Museums' },
+                                { value: 'Historical Sites', label: 'Historical Sites' },
+                                { value: 'Shopping', label: 'Shopping' },
+                                { value: 'Amusement Parks', label: 'Amusement Parks' },
+                                { value: 'Nightlife', label: 'Nightlife' },
+                                { value: 'Other', label: 'Other' },
+                            ]}
+                            onChange={(event) => {
+                                    let list = [];
+                                    for(let i=0; i<event.length; i++){
+                                        list.push(event[i].value)
+                                    }
+                                    setFormData({ ...formData, leisureActivites: list})
+                                }
+                            }   
+                            isMulti
+                        />
+                        </label>
+
+                    </div>
+                </div>
+                <div className="footer">
+                    <button onClick= {handleSubmit} >Submit</button>
+                </div>
+            </div>
+        </div>
         
     );
 
 }
 
 export default BeginItinerary
-

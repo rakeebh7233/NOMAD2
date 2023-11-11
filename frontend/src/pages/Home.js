@@ -10,7 +10,6 @@ function Home() {
   const [location, setLocation] = useState("");
 
   const handleSubmit = async(e) => {
-    e.PreventDefault();
 
     console.log("here");
     const options = {
@@ -20,7 +19,7 @@ function Home() {
 
     try {
       const response = await axios.request(options);
-      console.log(response.data);
+      console.log(response);
     } catch (error) {
       console.error(error);
     }
@@ -34,7 +33,7 @@ function Home() {
             <h1>YOUR NEXT JOURNEY AWAITS</h1>
             <p>We've Been Waiting for you Fellow Nomad</p>
 
-            <form className='search' onSubmit={e => { handleSubmit(e) }}>
+  
               <div className='search-container'>
                 <label >Where are you  off to Next?</label>
                 <input id='location' type='text' placeholder='Search your location' onChange={e => setLocation(e.target.value)}/>
@@ -53,13 +52,13 @@ function Home() {
               </div>
               <div className='search-container'>
                 <button
-                  className='search-btn'
-                  type='submit'
+
+                  onClick = {handleSubmit}
                 >
                   Explore
                 </button>
               </div>
-            </form>
+
           </div>
           <div class="col-lg-6 vh-100" id="homeBackground"></div>
         </div>
