@@ -11,15 +11,15 @@ function Home() {
 
   const handleSubmit = async(e) => {
 
-    console.log("here");
     const options = {
       method: 'GET',
-      url: 'http://127.0.0.1:8000/tripadvisor',
+      url: 'http://127.0.0.1:8000/tripadvisorFlights',
     };
 
     try {
       const response = await axios.request(options);
-      console.log(response);
+      const info = JSON.parse(response.data.data);
+      console.log(info.data)
     } catch (error) {
       console.error(error);
     }
