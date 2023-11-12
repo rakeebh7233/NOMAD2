@@ -28,6 +28,25 @@ function CustomerItinerary(){
         //setThingsAsNeeded
     }
 
+    const getHotels = async() => {
+        const options = {
+            method: 'GET',
+            url: 'http://127.0.0.1:8000/tripadvisorHotels',
+        };
+
+        try {
+            const response = await axios.request(options);
+            const info = JSON.parse(response.data.data);
+            console.log(info.data)
+          } catch (error) {
+            console.error(error);
+          }
+    }
+
+    const getRestaurants = async() =>{
+        
+    }
+
 
 
 
