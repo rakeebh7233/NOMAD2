@@ -36,6 +36,10 @@ class FlightModel(FlightBase):
     id: int
     class Config:
         orm_mode = True
+    
+class FlightUpdate(FlightModel):
+    class Config:
+        orm_mode = True
 
 # Hotel Schema
 
@@ -53,7 +57,11 @@ class HotelModel(HotelBase):
     class Config:
         orm_mode = True
 
-# Itinerary Schemas
+class HotelUpdate(HotelModel):
+    class Config:
+        orm_mode = True
+
+# Itinerary Schema
 
 class ItineraryBase(BaseModel):
     flight_id: int
@@ -69,15 +77,25 @@ class ItineraryModel(ItineraryBase):
     class Config:
         orm_mode = True
 
-class ItineraryOwner(BaseModel):
-    itinerary_id: int
-    user_id: int
-
-class ItineraryOwnerCreate(ItineraryOwner):
+class ItineraryUpdate(ItineraryModel):
     class Config:
         orm_mode = True
 
-class ItineraryOwnerModel(ItineraryOwner):
+# Itinerary Owner Schema
+
+class ItineraryOwnerBase(BaseModel):
+    itinerary_id: int
+    user_id: int
+
+class ItineraryOwnerCreate(ItineraryOwnerBase):
+    class Config:
+        orm_mode = True
+
+class ItineraryOwnerModel(ItineraryOwnerBase):
+    class Config:
+        orm_mode = True
+
+class ItineraryOwnerUpdate(ItineraryOwnerModel):
     class Config:
         orm_mode = True
 
@@ -97,6 +115,10 @@ class FlightBookingModel(FlightBookingBase):
     class Config:
         orm_mode = True
 
+class FlightBookingUpdate(FlightBookingModel):
+    class Config:
+        orm_mode = True
+
 class HotelBookingBase(BaseModel):
     hotel_id: int
     user_id: int
@@ -110,6 +132,10 @@ class HotelBookingCreate(HotelBookingBase):
         orm_mode = True
 
 class HotelBookingModel(HotelBookingBase):
+    class Config:
+        orm_mode = True
+
+class HotelBookingUpdate(HotelBookingModel):
     class Config:
         orm_mode = True
 
