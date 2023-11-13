@@ -1,18 +1,26 @@
+from fastapi import Depends, HTTPException, security
 from sqlalchemy import Column, Sequence, ForeignKey, String, Integer, Float, Date
+from sqlalchemy.orm import Session
+from config import settings
 from database import Base
 import passlib.hash
 import schema
+import jwt
+
+oauth2_scheme = security.OAuth2PasswordBearer(tokenUrl="/token")
 
 class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
-    email_address = Column(String, unique=True, primary_key=True, nullable=False)
+    email_address = Column(String, unique=True,
+                           primary_key=True, nullable=False)
     firstName = Column(String, nullable=False)
     lastName = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
 
     def verify_password(self, password):
+        """Verify that the provided password matches the user's password."""
         return passlib.hash.bcrypt.verify(password, self.hashed_password)
 
     def __repr__(self):
@@ -20,13 +28,19 @@ class User(Base):
             repr(self.firstName + ' ' + self.lastName),
             repr(self.email_address),
         )
+    
+    def to_dict(model_instance):
+        """Convert a SQLAlchemy model instance into a dictionary."""
+        data = model_instance.__dict__.copy()
+        data.pop('_sa_instance_state', None)
+        return data
 
     @classmethod
     def create_user(cls, user: schema.UserCreate, db_session):
         """Create a new user."""
         user_obj = cls(
             email_address=user.email_address,
-            firstName=user.firstName, 
+            firstName=user.firstName,
             lastName=user.lastName,
             hashed_password=passlib.hash.bcrypt.hash(user.hashed_password)
         )
@@ -39,10 +53,32 @@ class User(Base):
         """Return the user object whose email address is ``email``."""
         return db_session.query(cls).filter_by(email_address=email).first()
 
+    @classmethod
+    def authenticate_user(cls, email, password, db_session):
+        """Verify that the user exists and that the password is correct."""
+        user = cls.get_user_by_email(email, db_session)
+        if not user:
+            return False
+        if not user.verify_password(password):
+            return False
+        return user
+
+    def create_token(user):
+        """Create a new token."""
+        user_dict = User.to_dict(user)  # Assuming `to_dict` is a static method in the `User` class
+        token = jwt.encode(user_dict, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+        return dict(access_token=token, token_type="bearer")
+    
     # @classmethod
-    # def by_user_name(cls, username):
-    #     """Return the user object whose user name is ``username``."""
-    #     return SessionLocal.query(cls).filter_by(user_name=username).first()
+    # def get_current_user(cls, db_session, token: str = Depends(oauth2_scheme)):
+    #     """Get the current user from the token."""
+    #     try:
+    #         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+    #         user = db_session.query(cls).get(payload.get('id'))
+    #     except:
+    #         raise HTTPException(status_code=401, detail="Invalid email or password")
+    #     return schema.UserModel.model_validate(user)
+
 
 class Flight(Base):
     __tablename__ = 'flight'
@@ -63,7 +99,7 @@ class Flight(Base):
             repr(self.arrivalTime),
             repr(self.cabinClass),
             repr(self.carrier),
-    )
+        )
 
     @classmethod
     def create_flight(cls, flight: schema.FlightCreate, db_session):
@@ -79,22 +115,22 @@ class Flight(Base):
         db_session.add(flight_obj)
         db_session.commit()
         return flight_obj
-    
+
     @classmethod
     def get_all_flights(cls, db_session):
         return db_session.query(cls).all()
-    
+
     @classmethod
     def get_flight_by_id(cls, flight_id, db_session):
         return db_session.query(cls).filter_by(id=flight_id).first()
-    
+
     @classmethod
     def get_flight_by_airports(cls, departureAirport, arrivalAirport, db_session):
         return db_session.query(cls).filter_by(
-            departureAirport=departureAirport, 
+            departureAirport=departureAirport,
             arrivalAirport=arrivalAirport,
-            )
-    
+        )
+
     @classmethod
     def update_flight(cls, flight_id, flight: schema.FlightUpdate, db_session):
         """Update an existing flight."""
@@ -110,18 +146,20 @@ class Flight(Base):
             return flight_obj
         else:
             return None
-        
+
+
 class FlightBooking(Base):
     __tablename__ = 'flight_booking'
 
     flight_id = Column(Integer, ForeignKey('flight.id'), primary_key=True)
-    itinerary_id = Column(Integer, ForeignKey('itinerary.id'), primary_key=True)
+    itinerary_id = Column(Integer, ForeignKey(
+        'itinerary.id'), primary_key=True)
     cabinClass = Column(String, nullable=False)
     totalPrice = Column(Float, nullable=False)
 
     def __repr__(self):
         return f'<FlightBooking {self.flight_id} {self.itinerary_id}>'
-    
+
     @classmethod
     def create_flight_booking(cls, flight_booking: schema.FlightBookingCreate, db_session):
         """Create a new flight booking."""
@@ -134,21 +172,22 @@ class FlightBooking(Base):
         db_session.add(flight_booking_obj)
         db_session.commit()
         return flight_booking_obj
-    
+
     @classmethod
     def get_flight_booking(cls, flight_id, itinerary_id, db_session):
         """Get a flight booking by flight_id and user_id."""
         return db_session.query(cls).filter_by(flight_id=flight_id, itinerary_id=itinerary_id).first()
-    
+
     @classmethod
     def get_all_flight_bookings(cls, db_session):
         """Get all flight bookings."""
         return db_session.query(cls).all()
-    
+
     @classmethod
     def update_flight_booking(cls, flight_id, itinerary_id, flight_booking: schema.FlightBookingUpdate, db_session):
         """Update an existing flight booking."""
-        flight_booking_obj = db_session.query(cls).filter_by(flight_id=flight_id, itinerary_id=itinerary_id).first()
+        flight_booking_obj = db_session.query(cls).filter_by(
+            flight_id=flight_id, itinerary_id=itinerary_id).first()
         if flight_booking_obj:
             flight_booking_obj.cabinClass = flight_booking.cabinClass
             flight_booking_obj.totalPrice = flight_booking.totalPrice
@@ -156,18 +195,20 @@ class FlightBooking(Base):
             return flight_booking_obj
         else:
             return None
-        
+
     @classmethod
     def delete_flight_booking(cls, flight_id, itinerary_id, db_session):
         """Delete an existing flight booking."""
-        flight_booking_obj = db_session.query(cls).filter_by(flight_id=flight_id, itinerary_id=itinerary_id).first()
+        flight_booking_obj = db_session.query(cls).filter_by(
+            flight_id=flight_id, itinerary_id=itinerary_id).first()
         if flight_booking_obj:
             db_session.delete(flight_booking_obj)
             db_session.commit()
             return flight_booking_obj
         else:
             return None
-        
+
+
 class Hotel(Base):
     __tablename__ = 'hotel'
 
@@ -178,7 +219,7 @@ class Hotel(Base):
 
     def __repr__(self):
         return f'<Hotel {self.name}>'
-    
+
     @classmethod
     def create_hotel(cls, hotel: schema.HotelCreate, db_session):
         """Create a new hotel."""
@@ -190,15 +231,15 @@ class Hotel(Base):
         db_session.add(hotel_obj)
         db_session.commit()
         return hotel_obj
-    
+
     @classmethod
     def get_all_hotels(cls, db_session):
         return db_session.query(cls).all()
-    
+
     @classmethod
     def get_hotel_by_id(cls, hotel_id, db_session):
         return db_session.query(cls).filter_by(id=hotel_id).first()
-    
+
     @classmethod
     def get_hotel_by_name(cls, name, db_session):
         return db_session.query(cls).filter_by(name=name)
@@ -214,12 +255,14 @@ class Hotel(Base):
             return hotel_obj
         else:
             return None
-        
+
+
 class HotelBooking(Base):
     __tablename__ = 'hotel_booking'
 
     hotel_id = Column(Integer, ForeignKey('hotel.id'), primary_key=True)
-    itinerary_id = Column(Integer, ForeignKey('itinerary.id'), primary_key=True)
+    itinerary_id = Column(Integer, ForeignKey(
+        'itinerary.id'), primary_key=True)
     checkInDate = Column(Date, nullable=False)
     checkOutDate = Column(Date, nullable=False)
     guests = Column(Integer, nullable=False)
@@ -228,7 +271,7 @@ class HotelBooking(Base):
 
     def __repr__(self):
         return f'<HotelBooking {self.hotel_id} {self.itinerary_id_id}>'
-    
+
     @classmethod
     def create_hotel_booking(cls, hotel_booking: schema.HotelBookingCreate, db_session):
         """Create a new hotel booking."""
@@ -244,26 +287,27 @@ class HotelBooking(Base):
         db_session.add(hotel_booking_obj)
         db_session.commit()
         return hotel_booking_obj
-    
+
     @classmethod
     def get_hotel_booking(cls, hotel_id, itinerary_id, db_session):
         """Get a hotel booking by hotel_id and user_id."""
         return db_session.query(cls).filter_by(hotel_id=hotel_id, itinerary_id_id=itinerary_id).first()
-    
+
     @classmethod
     def get_all_hotel_bookings(cls, db_session):
         """Get all hotel bookings."""
         return db_session.query(cls).all()
-    
+
     @classmethod
     def get_hotel_booking_by_itinerary_id(cls, itinerary_id, db_session):
         """Get all hotel bookings by user_id."""
         return db_session.query(cls).filter_by(itinerary_id=itinerary_id).all()
-    
+
     @classmethod
     def update_hotel_booking(cls, hotel_id, itinerary_id, hotel_booking: schema.HotelBookingUpdate, db_session):
         """Update an existing hotel booking."""
-        hotel_booking_obj = db_session.query(cls).filter_by(hotel_id=hotel_id, itinerary_id=itinerary_id).first()
+        hotel_booking_obj = db_session.query(cls).filter_by(
+            hotel_id=hotel_id, itinerary_id=itinerary_id).first()
         if hotel_booking_obj:
             hotel_booking_obj.checkInDate = hotel_booking.checkInDate
             hotel_booking_obj.checkOutDate = hotel_booking.checkOutDate
@@ -274,18 +318,20 @@ class HotelBooking(Base):
             return hotel_booking_obj
         else:
             return None
-    
+
     @classmethod
     def delete_hotel_booking(cls, hotel_id, itinerary_id, db_session):
         """Delete an existing hotel booking."""
-        hotel_booking_obj = db_session.query(cls).filter_by(hotel_id=hotel_id, itinerary_id=itinerary_id).first()
+        hotel_booking_obj = db_session.query(cls).filter_by(
+            hotel_id=hotel_id, itinerary_id=itinerary_id).first()
         if hotel_booking_obj:
             db_session.delete(hotel_booking_obj)
             db_session.commit()
             return hotel_booking_obj
         else:
             return None
-        
+
+
 class Itinerary(Base):
     __tablename__ = 'itinerary'
 
@@ -296,7 +342,7 @@ class Itinerary(Base):
 
     def __repr__(self):
         return f'<Itinerary {self.id}>'
-    
+
     @classmethod
     def create_itinerary(cls, itinerary: schema.ItineraryCreate, db_session):
         """Create a new itinerary."""
@@ -308,19 +354,20 @@ class Itinerary(Base):
         db_session.add(itinerary_obj)
         db_session.commit()
         return itinerary_obj
-    
-    @classmethod    
+
+    @classmethod
     def get_all_itineraries(cls, db_session):
         return db_session.query(cls).all()
-    
+
     @classmethod
     def get_itinerary_by_id(cls, itinerary_id, db_session):
         return db_session.query(cls).filter_by(id=itinerary_id).first()
-    
+
     @classmethod
     def update_itinerary(cls, itinerary_id, itinerary: schema.ItineraryUpdate, db_session):
         """Update an existing itinerary."""
-        itinerary_obj = db_session.query(cls).filter_by(id=itinerary_id).first()
+        itinerary_obj = db_session.query(
+            cls).filter_by(id=itinerary_id).first()
         if itinerary_obj:
             itinerary_obj.flight_id = itinerary.flight_id
             itinerary_obj.hotel_id = itinerary.hotel_id
@@ -329,7 +376,7 @@ class Itinerary(Base):
             return itinerary_obj
         else:
             return None
-        
+
 # class ItineraryOwner(Base):
 #     __tablename__ = 'itinerary_owner'
 
@@ -338,7 +385,7 @@ class Itinerary(Base):
 
 #     def __repr__(self):
 #         return f'<ItineraryOwner {self.itinerary_id} {self.user_id}>'
-    
+
 #     @classmethod
 #     def create_itinerary_owner(cls, itinerary_owner: schema.ItineraryOwnerCreate, db_session):
 #         """Create a new itinerary owner."""
@@ -349,22 +396,22 @@ class Itinerary(Base):
 #         db_session.add(itinerary_owner_obj)
 #         db_session.commit()
 #         return itinerary_owner_obj
-    
+
 #     @classmethod
 #     def get_itinerary_owner(cls, itinerary_id, user_id, db_session):
 #         """Get an itinerary owner by itinerary_id and user_id."""
 #         return db_session.query(cls).filter_by(itinerary_id=itinerary_id, user_id=user_id).first()
-    
+
 #     @classmethod
 #     def get_all_itinerary_owners(cls, db_session):
 #         """Get all itinerary owners."""
 #         return db_session.query(cls).all()
-    
+
 #     @classmethod
 #     def get_itinerary_by_user_id(cls, user_id, db_session):
 #         """Get all itineraries by user_id."""
 #         return db_session.query(cls).filter_by(user_id=user_id).all()
-    
+
 #     @classmethod
 #     def update_itinerary_owner(cls, itinerary_id, user_id, itinerary_owner: schema.ItineraryOwnerUpdate, db_session):
 #         """Update an existing itinerary owner."""
@@ -376,7 +423,7 @@ class Itinerary(Base):
 #             return itinerary_owner_obj
 #         else:
 #             return None
-        
+
 #     @classmethod
 #     def delete_itinerary_owner(cls, itinerary_id, user_id, db_session):
 #         """Delete an existing itinerary owner."""
@@ -387,5 +434,3 @@ class Itinerary(Base):
 #             return itinerary_owner_obj
 #         else:
 #             return None
-        
-    
