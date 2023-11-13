@@ -63,11 +63,11 @@ class User(Base):
             return False
         return user
 
-    def create_token(user):
-        """Create a new token."""
-        user_dict = User.to_dict(user)  # Assuming `to_dict` is a static method in the `User` class
-        token = jwt.encode(user_dict, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-        return dict(access_token=token, token_type="bearer")
+    # def create_token(user):
+    #     """Create a new token."""
+    #     user_dict = User.to_dict(user)  # Assuming `to_dict` is a static method in the `User` class
+    #     token = jwt.encode(user_dict, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    #     return dict(access_token=token, token_type="bearer")
     
     # @classmethod
     # def get_current_user(cls, db_session, token: str = Depends(oauth2_scheme)):
