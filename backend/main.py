@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine
 from config import settings
+from routers import flight, hotel, flight_booking  
 from routers import tripAdvisor
 from routers import user
 import models
