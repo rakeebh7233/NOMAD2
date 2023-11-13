@@ -4,6 +4,7 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from config import settings
+from routers import flight, hotel, flight_booking  
 import http.client
 import models
 import http.client
@@ -39,6 +40,10 @@ def get_db():
         db.close()
 
 db_dependency = Annotated[Session, Depends(get_db)]
+
+app.include_router(flight.router)
+app.include_router(hotel.router)
+app.include_router(flight_booking.router)
 
 @app.get("/")
 async def root():

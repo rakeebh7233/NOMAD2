@@ -89,10 +89,13 @@ class Flight(Base):
         return db_session.query(cls).filter_by(id=flight_id).first()
     
     @classmethod
-    def get_flight_by_airports(cls, departureAirport, arrivalAirport, db_session):
+    def get_flight_by_request(cls, departureAirport, arrivalAirport, departureTime, arrivalTime, cabinClass, db_session):
         return db_session.query(cls).filter_by(
             departureAirport=departureAirport, 
             arrivalAirport=arrivalAirport,
+            departureTime=departureTime,
+            arrivalTime=arrivalTime,
+            cabinClass=cabinClass,
             )
     
     @classmethod
@@ -202,6 +205,10 @@ class Hotel(Base):
     @classmethod
     def get_hotel_by_name(cls, name, db_session):
         return db_session.query(cls).filter_by(name=name)
+    
+    @classmethod
+    def get_hotel_by_location(cls, location, db_session):
+        return db_session.query(cls).filter_by(location=location)
 
     @classmethod
     def update_hotel(cls, hotel_id, hotel: schema.HotelUpdate, db_session):
