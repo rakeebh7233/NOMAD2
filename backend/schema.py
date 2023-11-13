@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 # This file uses pydantic to validate the incoming data from the frontend
@@ -37,7 +38,7 @@ class FlightModel(FlightBase):
     class Config:
         orm_mode = True
     
-class FlightUpdate(FlightModel):
+class FlightUpdate(FlightBase):
     class Config:
         orm_mode = True
 
@@ -105,7 +106,7 @@ class FlightBookingBase(BaseModel):
     flight_id: int
     itinerary_id: int
     cabinClass: str
-    price: float
+    totalPrice: float
 
 class FlightBookingCreate(FlightBookingBase):
     class Config:
@@ -119,6 +120,8 @@ class FlightBookingUpdate(FlightBookingModel):
     class Config:
         orm_mode = True
 
+
+
 class HotelBookingBase(BaseModel):
     hotel_id: int
     user_id: int
@@ -126,6 +129,7 @@ class HotelBookingBase(BaseModel):
     checkOutDate: str
     guests: int
     rooms: int
+    totalPrice: float
 
 class HotelBookingCreate(HotelBookingBase):
     class Config:
@@ -138,6 +142,15 @@ class HotelBookingModel(HotelBookingBase):
 class HotelBookingUpdate(HotelBookingModel):
     class Config:
         orm_mode = True
+
+# Tokens for Login and Security 
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email_address: Optional[str] = None
 
 
 
