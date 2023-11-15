@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from pydantic import BaseModel
 
 # This file uses pydantic to validate the incoming data from the frontend
@@ -18,6 +18,14 @@ class UserModel(UserBase):
     id: int
     class Config:
         orm_mode = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Union[str, None] = None
 
 # Flight Schema
 
@@ -143,14 +151,6 @@ class HotelBookingUpdate(HotelBookingModel):
     class Config:
         orm_mode = True
 
-# Tokens for Login and Security 
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    email_address: Optional[str] = None
 
 
 

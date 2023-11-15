@@ -1,8 +1,11 @@
-from fastapi import Depends, HTTPException, security
+from datetime import datetime, timedelta
+from fastapi import Depends, HTTPException, security, status
+from jose import JWTError
 from sqlalchemy import Column, Sequence, ForeignKey, String, Integer, Float, Date
 from sqlalchemy.orm import Session
 from config import settings
-from database import Base
+from database import Base, db_dependency, get_db
+from typing import Annotated, Union
 import passlib.hash
 import schema
 import jwt
@@ -28,12 +31,6 @@ class User(Base):
             repr(self.firstName + ' ' + self.lastName),
             repr(self.email_address),
         )
-    
-    def to_dict(model_instance):
-        """Convert a SQLAlchemy model instance into a dictionary."""
-        data = model_instance.__dict__.copy()
-        data.pop('_sa_instance_state', None)
-        return data
 
     @classmethod
     def create_user(cls, user: schema.UserCreate, db_session):
@@ -63,21 +60,38 @@ class User(Base):
             return False
         return user
 
-    # def create_token(user):
-    #     """Create a new token."""
-    #     user_dict = User.to_dict(user)  # Assuming `to_dict` is a static method in the `User` class
-    #     token = jwt.encode(user_dict, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-    #     return dict(access_token=token, token_type="bearer")
+    @classmethod
+    def create_access_token(cls, data: dict, expires_delta: Union[timedelta, None] = None):
+        to_encode = data.copy()
+        if expires_delta:
+            expire = datetime.utcnow() + expires_delta
+        else:
+            expire = datetime.utcnow() + timedelta(minutes=15)
+        to_encode.update({"exp": expire})
+        encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+        return encoded_jwt
     
-    # @classmethod
-    # def get_current_user(cls, db_session, token: str = Depends(oauth2_scheme)):
-    #     """Get the current user from the token."""
-    #     try:
-    #         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-    #         user = db_session.query(cls).get(payload.get('id'))
-    #     except:
-    #         raise HTTPException(status_code=401, detail="Invalid email or password")
-    #     return schema.UserModel.model_validate(user)
+    @classmethod
+    def get_current_user(cls, token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        try:
+            payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+            username: str = payload.get("sub")
+            if username is None:
+                raise credentials_exception
+            token_data = schema.TokenData(username=username)
+        except JWTError:
+            raise credentials_exception
+        user = cls.get_user_by_email(token_data.username, db)
+        if user is None:
+            raise credentials_exception
+        user2 = schema.UserModel(id=user.id, email_address=user.email_address, firstName=user.firstName, lastName=user.lastName)
+        return user2
+        # return schema.UserModel.model_validate(user)
 
 
 class Flight(Base):
