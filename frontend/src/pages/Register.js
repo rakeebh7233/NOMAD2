@@ -1,14 +1,48 @@
 import "../styles/Register.css";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "../AuthContext";
+import ErrorMessage from "../shared/ErrorMessage";
+import { useHistory } from "react-router-dom";
 
-function Register() {
+const Register = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userName, setUserName] = useState("")
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmationPassword, setConfirmationPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [, setToken] = useContext(AuthContext);
 
-  const [registerForm, setRegisterForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-  });
+  const history = useHistory();
+
+  const submitRegistration = async () => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ "username": userName, "firstName": firstName, "lastName": lastName, "email_address": email, "hashed_password": password }),
+    };
+
+    const response = await fetch("http://localhost:8000/register", requestOptions);
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.log(data.detail);
+      setErrorMessage(data.detail);
+    } else {
+      setToken(data.access_token);
+      history.push("/");
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (password === confirmationPassword && password.length >= 5) {
+      submitRegistration();
+    } else {
+      setErrorMessage("Passwords do not match or are too short (min 5 characters)");
+    }
+  };
 
   return (
     <section class="text-center text-lg-start">
@@ -18,38 +52,77 @@ function Register() {
             <div class="card cascading-right" >
               <div class="card-body p-5 shadow-5 text-center">
                 <h2 class="fw-bold mb-5">Sign up now</h2>
-                <form>
-                  {/* <!-- 2 column grid layout with text inputs for the first and last names --> */}
+                <form onSubmit={handleSubmit}>
                   <div class="row">
                     <div class="col-md-6 mb-4">
                       <div class="form-outline">
-                        <input type="text" id="form3Example1" class="form-control" />
+                        <input
+                          type="text"
+                          id="form3Example1"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          class="form-control" />
                         <label class="form-label" for="form3Example1">First name</label>
                       </div>
                     </div>
                     <div class="col-md-6 mb-4">
                       <div class="form-outline">
-                        <input type="text" id="form3Example2" class="form-control" />
+                        <input
+                          type="text"
+                          id="form3Example2"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          class="form-control" />
                         <label class="form-label" for="form3Example2">Last name</label>
                       </div>
                     </div>
                   </div>
 
                   <div class="form-outline mb-4">
-                    <input type="email" id="form3Example3" class="form-control" />
+                    <input
+                      type="text"
+                      id="userNameForm"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      class="form-control" />
+                    <label class="form-label" for="form3Example3">Username</label>
+                  </div>
+
+                  <div class="form-outline mb-4">
+                    <input 
+                    type="email" 
+                    id="form3Example3" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    class="form-control" />
                     <label class="form-label" for="form3Example3">Email address</label>
                   </div>
 
                   <div class="form-outline mb-4">
-                    <input type="password" id="form3Example4" class="form-control" />
+                    <input 
+                      type="password" 
+                      id="form3Example4"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      class="form-control" />
                     <label class="form-label" for="form3Example4">Password</label>
                   </div>
 
+                  <div class="form-outline mb-4">
+                    <input 
+                      type="password" 
+                      id="form3Example5" 
+                      value={confirmationPassword}
+                      onChange={(e) => setConfirmationPassword(e.target.value)}
+                      class="form-control" />
+                    <label class="form-label" for="form3Example4">Confirm Password</label>
+                  </div>
+                  {errorMessage && <ErrorMessage message={errorMessage} />}
                   <button type="submit" class="btn btn-primary btn-block mb-4">
                     Sign up
                   </button>
 
-                  <div class="text-center">
+                  {/* <div class="text-center">
                     <p>or sign up with:</p>
                     <button type="button" class="btn btn-link btn-floating mx-1">
                       <i class="fab fa-facebook-f"></i>
@@ -66,7 +139,7 @@ function Register() {
                     <button type="button" class="btn btn-link btn-floating mx-1">
                       <i class="fab fa-github"></i>
                     </button>
-                  </div>
+                  </div> */}
                 </form>
               </div>
             </div>

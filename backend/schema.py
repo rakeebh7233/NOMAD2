@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 # User Schema
 class UserBase(BaseModel):
+    username: str
     email_address: str
     firstName: str
     lastName: str
@@ -19,13 +20,14 @@ class UserModel(UserBase):
     class Config:
         orm_mode = True
 
+# Token Schema
+
 class Token(BaseModel):
     access_token: str
     token_type: str
 
-
 class TokenData(BaseModel):
-    username: Union[str, None] = None
+    email: Union[str, None] = None
 
 # Flight Schema
 
@@ -127,8 +129,6 @@ class FlightBookingModel(FlightBookingBase):
 class FlightBookingUpdate(FlightBookingModel):
     class Config:
         orm_mode = True
-
-
 
 class HotelBookingBase(BaseModel):
     hotel_id: int

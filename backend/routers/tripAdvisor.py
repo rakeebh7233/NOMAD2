@@ -10,7 +10,7 @@ def get_flights():
     conn = http.client.HTTPSConnection("tripadvisor16.p.rapidapi.com")
 
     headers = {
-
+        
     }
 
     conn.request("GET", "/api/v1/flights/searchFlights?sourceAirportCode=BOM&destinationAirportCode=DEL&date=%3CREQUIRED%3E&itineraryType=%3CREQUIRED%3E&sortOrder=%3CREQUIRED%3E&numAdults=1&numSeniors=0&classOfService=%3CREQUIRED%3E&pageNumber=1&currencyCode=USD", headers=headers)
@@ -27,7 +27,7 @@ def get_hotels():
     conn = http.client.HTTPSConnection("tripadvisor16.p.rapidapi.com")
 
     headers = {
-
+        
     }
 
     conn.request(
@@ -46,7 +46,9 @@ def get_hotels():
     data = res.read().decode('utf-8')
     json_obj = json.loads(data)
 
+    # return {"data": json_obj["data"]["data"]}
     return {"data": json_obj["data"]["data"]}
+
 
 
 @router.get("/tripadvisorRestaurants")

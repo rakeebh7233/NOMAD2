@@ -18,7 +18,6 @@ get_db = database.get_db
 @router.get('/', response_model=List[schema.FlightBookingModel])
 def all(db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     return FlightModel.FlightBooking.get_all_flight_bookings(db)
-
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def create(request: schema.FlightBookingModel, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     return FlightModel.FlightBooking.create_flight_booking(request, db)

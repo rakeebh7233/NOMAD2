@@ -13,7 +13,7 @@ function Home() {
 
     const options = {
       method: 'GET',
-      url: 'http://127.0.0.1:8000/tripadvisorFlights',
+      url: 'http://127.0.0.1:8000/tripadvisorFlights', 
     };
 
     try {

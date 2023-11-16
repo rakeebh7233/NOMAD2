@@ -18,6 +18,7 @@ class User(Base):
     id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
     email_address = Column(String, unique=True,
                            primary_key=True, nullable=False)
+    username = Column(String, unique=True, nullable=False)
     firstName = Column(String, nullable=False)
     lastName = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
@@ -27,8 +28,8 @@ class User(Base):
         return passlib.hash.bcrypt.verify(password, self.hashed_password)
 
     def __repr__(self):
-        return '<User: name=%s, email=%s>' % (
-            repr(self.firstName + ' ' + self.lastName),
+        return '<User: username=%s, email=%s>' % (
+            repr(self.username),
             repr(self.email_address),
         )
 
@@ -36,6 +37,7 @@ class User(Base):
     def create_user(cls, user: schema.UserCreate, db_session):
         """Create a new user."""
         user_obj = cls(
+            username=user.username,
             email_address=user.email_address,
             firstName=user.firstName,
             lastName=user.lastName,
@@ -80,15 +82,22 @@ class User(Base):
         )
         try:
             payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-            username: str = payload.get("sub")
-            if username is None:
+            email: str = payload.get("sub")
+            if email is None:
                 raise credentials_exception
-            token_data = schema.TokenData(username=username)
+            token_data = schema.TokenData(email=email)
         except JWTError:
             raise credentials_exception
-        user = cls.get_user_by_email(token_data.username, db)
+        user = cls.get_user_by_email(token_data.email, db)
         if user is None:
             raise credentials_exception
-        user2 = schema.UserModel(id=user.id, email_address=user.email_address, firstName=user.firstName, lastName=user.lastName)
-        return user2
+        
+        userSchema = schema.UserModel(
+            id=user.id, 
+            email_address=user.email_address, 
+            username=user.username, 
+            firstName=user.firstName, 
+            lastName=user.lastName)
+        
+        return userSchema
         # return schema.UserModel.model_validate(user)

@@ -5,11 +5,11 @@ from config import settings
 from routers import flight, hotel, flight_booking  
 from routers import tripAdvisor
 from routers import user
-import models
+from database import Base
 
 
 def create_tables():         
-	models.Base.metadata.create_all(bind=engine)
+	Base.metadata.create_all(bind=engine)
         
 def start_application():
     app = FastAPI(title=settings.PROJECT_NAME,version=settings.PROJECT_VERSION)
