@@ -1,11 +1,14 @@
 from sqlalchemy import Column, Sequence, ForeignKey, String, Integer
 from database import Base
 import schema
+# from .FlightModel import Flight
+# from .HotelModel import Hotel
+
 
 class Itinerary(Base):
     __tablename__ = 'itinerary'
 
-    id = Column(Integer, Sequence('itinerary_id_seq'), primary_key=True)
+    id = Column(Integer, Sequence('itinerary_id_seq'), primary_key=True, autoincrement=True)
     flight_id = Column(Integer, ForeignKey('flight.id'), nullable=False)
     hotel_id = Column(Integer, ForeignKey('hotel.id'), nullable=False)
     destination = Column(String, nullable=False)

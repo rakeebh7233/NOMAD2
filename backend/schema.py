@@ -38,6 +38,7 @@ class FlightBase(BaseModel):
     arrivalTime: str #switch to date
     cabinClass: str
     carrier: str
+    totalPrice: float
 
 class FlightCreate(FlightBase):
     class Config:
@@ -57,7 +58,12 @@ class FlightUpdate(FlightBase):
 class HotelBase(BaseModel):
     name: str
     location: str
+    checkInDate: str
+    checkOutDate: str
+    guests: int
+    rooms: int
     reviewScore: float
+    totalPrice: float
 
 class HotelCreate(HotelBase):
     class Config:
@@ -69,6 +75,20 @@ class HotelModel(HotelBase):
         orm_mode = True
 
 class HotelUpdate(HotelModel):
+    class Config:
+        orm_mode = True
+
+# Location Schema
+
+class LocationBase(BaseModel):
+    name: str
+    geoId: int
+
+class LocationCreate(LocationBase):
+    class Config:
+        orm_mode = True
+
+class LocationModel(LocationBase):
     class Config:
         orm_mode = True
 
@@ -155,11 +175,7 @@ class FlightBookingUpdate(FlightBookingModel):
 
 class HotelBookingBase(BaseModel):
     hotel_id: int
-    user_id: int
-    checkInDate: str
-    checkOutDate: str
-    guests: int
-    rooms: int
+    itinerary_id: int
     totalPrice: float
 
 class HotelBookingCreate(HotelBookingBase):
