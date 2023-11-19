@@ -60,7 +60,7 @@ def get_hotels():
     return {"data": json_obj["data"]["data"]} """
 
 
-@router.get('/tripadvisorSearch/{locationId}', status_code=status.HTTP_200_OK)
+@router.get('/tripadvisorSearch/{locId}', status_code=status.HTTP_200_OK)
 def search_restaurants_external(locId: str, db: Session = Depends(get_db)):
 
     url = "https://tripadvisor16.p.rapidapi.com/api/v1/restaurant/searchRestaurants"
@@ -76,7 +76,7 @@ def search_restaurants_external(locId: str, db: Session = Depends(get_db)):
 
     response = requests.request("GET", url, headers=headers, params=querystring)
     if response.status_code != 200:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Restaurants with locationId {locationId} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Restaurants with locationId {locId} not found")
     theResponse = response.json()
     for rest in theResponse["data"]["data"]:
         restaurantList.append({"locationId": locId, "name": rest["name"], "averageRating": rest["averageRating"], "userReviewCount": rest["userReviewCount"], "priceTag": rest["priceTag"], "menuUrl": rest["menuUrl"]})

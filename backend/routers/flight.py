@@ -17,12 +17,15 @@ get_db = database.get_db
 
 API_KEY = "1a662e0bdemsh110faa611833139p1cdab6jsn13e9ab23c24f"
 
+# Add this back into function parameters after testing the API calls 
+# current_user: schema.UserModel = Depends(oauth2.get_current_user)
+
 @router.get('/', response_model=List[schema.FlightModel])
 def all(db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     return db.query(FlightModel.Flight).all()
 
 @router.post('/new_flight/', status_code=status.HTTP_201_CREATED)
-def create(request: schema.FlightCreate, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+def create(request: schema.FlightCreate, db: Session = Depends(get_db)):
     new_flight = FlightModel.Flight.create_flight(db, request)
     db.add(new_flight)
     db.commit()
@@ -68,7 +71,7 @@ def search_flights_ext(departureAirport: str, arrivalAirport: str, departureTime
                    "cabinClass":cabinClass,
                    "currency_code":"USD"}
     headers = {
-        "X-RapidAPI-Key": "1a662e0bdemsh110faa611833139p1cdab6jsn13e9ab23c24f",
+        "X-RapidAPI-Key": API_KEY,
         "X-RapidAPI-Host": "booking-com15.p.rapidapi.com"
     }
     response = requests.get(url, headers=headers, params=querystring)
@@ -84,10 +87,10 @@ def search_flights_ext(departureAirport: str, arrivalAirport: str, departureTime
         flight_model = schema.FlightCreate(
             departureAirport=flight['segments'][0]['departureAirport']['code'],
             arrivalAirport=flight['segments'][0]['arrivalAirport']['code'],
-            departureTime=flight['segments'][0]['departureTime'][0:11],
-            arrivalTime=flight['segments'][0]['arrivalTime'][0:11],
+            departureTime=flight['segments'][0]['departureTime'][0:10],
+            arrivalTime=flight['segments'][0]['arrivalTime'][0:10],
             cabinClass=flight['segments'][0]['legs'][0]['cabinClass'],
-            carrier=flight['segments'][0]['legs'][0]['carriers'][0],
+            carrier=flight['segments'][0]['legs'][0]['carriersData'][0]['name'],
             totalPrice=flight['priceBreakdown']['total']['units']
         )
         flights_list.append(flight_model)
@@ -98,7 +101,7 @@ def search_flights_ext(departureAirport: str, arrivalAirport: str, departureTime
 
 def cache_flights(flights: List[schema.FlightCreate], db: Session = Depends(get_db)):
     for flight in flights:
-        new_flight = FlightModel.Flight.create_flight(db, flight)
+        new_flight = FlightModel.Flight.create_flight(flight, db)
         db.add(new_flight)
         db.commit()
         db.refresh(new_flight)

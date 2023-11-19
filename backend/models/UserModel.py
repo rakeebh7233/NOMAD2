@@ -15,7 +15,7 @@ oauth2_scheme = security.OAuth2PasswordBearer(tokenUrl="/token")
 class User(Base):
     __tablename__ = 'user'
 
-    id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
+    id = Column(Integer, Sequence('user_id_seq'), primary_key=True, autoincrement=True)
     email_address = Column(String, unique=True,
                            primary_key=True, nullable=False)
     username = Column(String, unique=True, nullable=False)

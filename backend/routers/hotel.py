@@ -73,7 +73,7 @@ def search_locations_external(location: str, db: Session = Depends(get_db)):
     url = "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchDestination"
     querystring = {"query":location}
     headers = {
-        "X-RapidAPI-Key": "1a662e0bdemsh110faa611833139p1cdab6jsn13e9ab23c24f",
+        "X-RapidAPI-Key": API_KEY,
         "X-RapidAPI-Host": "booking-com15.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers, params=querystring)
@@ -82,12 +82,9 @@ def search_locations_external(location: str, db: Session = Depends(get_db)):
     
     locations = response.json()['data']
     locations_list = []
-    locations_list.append(schema.LocationModel(
-        name=locations[0]['city_name'], 
-        geoId=locations[0]['dest_id']
-    ))
+    print(locations[0])
     # Cache locations in database
-    cache_locations(locations_list, db) 
+    #cache_locations(locations_list, db) 
 
     return response.json()
 
@@ -99,7 +96,7 @@ def search_hotels_internal(locationID: str, checkInDate: str, checkOutDate: str,
     return hotels
 
 @router.get('/hotel_external/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
-def search_hotels_external(locationID: str, checkInDate: str, checkOutDate: str, guests: int, rooms: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+def search_hotels_external(locationID: str, checkInDate: str, checkOutDate: str, guests: int, rooms: int, db: Session = Depends(get_db)):
     url = "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchHotels"
     querystring = {
         "dest_id":locationID,
@@ -128,7 +125,7 @@ def search_hotels_external(locationID: str, checkInDate: str, checkOutDate: str,
             checkOutDate=checkOutDate,
             guests=guests,
             rooms=rooms,
-            rating=hotel['property']['reviewScore'],
+            reviewScore=hotel['property']['reviewScore'],
             totalPrice=hotel['property']['priceBreakdown']['grossPrice']['value']
         ))
     # Cache hotels in database
@@ -155,8 +152,12 @@ def cache_hotels(hotels: List[schema.HotelCreate], db: Session):
             new_hotel = HotelModel.Hotel(
                 name=hotel.name,
                 location=hotel.location,
-                rating=hotel.rating,
-                price=hotel.price
+                checkInDate=hotel.checkInDate,
+                checkOutDate=hotel.checkOutDate,
+                guests=hotel.guests,
+                rooms=hotel.rooms,
+                reviewScore=hotel.reviewScore,
+                totalPrice=hotel.totalPrice
             )
             db.add(new_hotel)
         db.commit()

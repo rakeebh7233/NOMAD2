@@ -41,7 +41,7 @@ class Hotel(Base):
     guests = Column(Integer, nullable=False)
     rooms = Column(Integer, nullable=False)
     reviewScore = Column(Float, nullable=False)
-    totalPrice = Column(Float, nullable=False, unique=True)
+    totalPrice = Column(Float, nullable=False)
 
     def __repr__(self):
         return f'<Hotel {self.name}>'
@@ -106,11 +106,6 @@ class HotelBooking(Base):
 
     hotel_id = Column(Integer, ForeignKey('hotel.id'), primary_key=True)
     itinerary_id = Column(Integer, ForeignKey('itinerary.id'), primary_key=True)
-    # checkInDate = Column(Date, nullable=False)
-    # checkOutDate = Column(Date, nullable=False)
-    # guests = Column(Integer, nullable=False)
-    # rooms = Column(Integer, nullable=False)
-    totalPrice = Column(Float, ForeignKey('hotel.totalPrice'),nullable=False)
 
     def __repr__(self):
         return f'<HotelBooking {self.hotel_id} {self.itinerary_id_id}>'
@@ -120,12 +115,7 @@ class HotelBooking(Base):
         """Create a new hotel booking."""
         hotel_booking_obj = cls(
             hotel_id=hotel_booking.hotel_id,
-            itinerary_id=hotel_booking.itinerary_id,
-            # checkInDate=hotel_booking.checkInDate,
-            # checkOutDate=hotel_booking.checkOutDate,
-            # guests=hotel_booking.guests,
-            # rooms=hotel_booking.rooms,
-            totalPrice=hotel_booking.totalPrice,
+            itinerary_id=hotel_booking.itinerary_id
         )
         db_session.add(hotel_booking_obj)
         db_session.commit()
@@ -133,7 +123,7 @@ class HotelBooking(Base):
 
     @classmethod
     def get_hotel_booking(cls, hotel_id, itinerary_id, db_session):
-        """Get a hotel booking by hotel_id and user_id."""
+        """Get a hotel booking by hotel_id and itinerary_id."""
         return db_session.query(cls).filter_by(hotel_id=hotel_id, itinerary_id_id=itinerary_id).first()
 
     @classmethod
@@ -143,24 +133,8 @@ class HotelBooking(Base):
 
     @classmethod
     def get_hotel_booking_by_itinerary_id(cls, itinerary_id, db_session):
-        """Get all hotel bookings by user_id."""
+        """Get all hotel bookings by itinerary_id."""
         return db_session.query(cls).filter_by(itinerary_id=itinerary_id).all()
-
-    # @classmethod
-    # def update_hotel_booking(cls, hotel_id, itinerary_id, hotel_booking: schema.HotelBookingUpdate, db_session):
-    #     """Update an existing hotel booking."""
-    #     hotel_booking_obj = db_session.query(cls).filter_by(
-    #         hotel_id=hotel_id, itinerary_id=itinerary_id).first()
-    #     if hotel_booking_obj:
-    #         hotel_booking_obj.checkInDate = hotel_booking.checkInDate
-    #         hotel_booking_obj.checkOutDate = hotel_booking.checkOutDate
-    #         hotel_booking_obj.guests = hotel_booking.guests
-    #         hotel_booking_obj.rooms = hotel_booking.rooms
-    #         hotel_booking_obj.totalPrice = hotel_booking.totalPrice
-    #         db_session.commit()
-    #         return hotel_booking_obj
-    #     else:
-    #         return None
 
     @classmethod
     def delete_hotel_booking(cls, hotel_id, itinerary_id, db_session):

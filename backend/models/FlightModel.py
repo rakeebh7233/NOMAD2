@@ -76,8 +76,6 @@ class FlightBooking(Base):
     flight_id = Column(Integer, ForeignKey('flight.id'), primary_key=True)
     itinerary_id = Column(Integer, ForeignKey(
         'itinerary.id'), primary_key=True)
-    cabinClass = Column(String, nullable=False)
-    totalPrice = Column(Float, nullable=False)
 
     def __repr__(self):
         return f'<FlightBooking {self.flight_id} {self.itinerary_id}>'
@@ -87,9 +85,7 @@ class FlightBooking(Base):
         """Create a new flight booking."""
         flight_booking_obj = cls(
             flight_id=flight_booking.flight_id,
-            itinerary_id=flight_booking.itinerary_id,
-            cabinClass=flight_booking.cabinClass,
-            totalPrice=flight_booking.totalPrice,
+            itinerary_id=flight_booking.itinerary_id
         )
         db_session.add(flight_booking_obj)
         db_session.commit()
@@ -104,19 +100,6 @@ class FlightBooking(Base):
     def get_all_flight_bookings(cls, db_session):
         """Get all flight bookings."""
         return db_session.query(cls).all()
-
-    @classmethod
-    def update_flight_booking(cls, flight_id, itinerary_id, flight_booking: schema.FlightBookingUpdate, db_session):
-        """Update an existing flight booking."""
-        flight_booking_obj = db_session.query(cls).filter_by(
-            flight_id=flight_id, itinerary_id=itinerary_id).first()
-        if flight_booking_obj:
-            flight_booking_obj.cabinClass = flight_booking.cabinClass
-            flight_booking_obj.totalPrice = flight_booking.totalPrice
-            db_session.commit()
-            return flight_booking_obj
-        else:
-            return None
 
     @classmethod
     def delete_flight_booking(cls, flight_id, itinerary_id, db_session):
