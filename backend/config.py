@@ -11,11 +11,12 @@ class Settings:
 
     POSTGRES_USER : str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-    POSTGRES_SERVER : str = os.getenv("POSTGRES_SERVER","localhost")
+    POSTGRES_SERVER : str = os.getenv("POSTGRES_SERVER","loalhost")
     POSTGRES_PORT : str = os.getenv("POSTGRES_PORT",5432) # default postgres port is 5432
     POSTGRES_DB : str = os.getenv("POSTGRES_DB","nomad")
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
     JWT_SECRET_KEY : str = os.getenv("JWT_SECRET")
     JWT_ALGORITHM : str = os.getenv("JWT_ALGORITHM")
+    API_KEY: str = os.getenv("API_KEY")
 
 settings = Settings() 

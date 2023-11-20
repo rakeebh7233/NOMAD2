@@ -38,6 +38,7 @@ class FlightBase(BaseModel):
     arrivalTime: str #switch to date
     cabinClass: str
     carrier: str
+    totalPrice: float
 
 class FlightCreate(FlightBase):
     class Config:
@@ -57,7 +58,12 @@ class FlightUpdate(FlightBase):
 class HotelBase(BaseModel):
     name: str
     location: str
+    checkInDate: str
+    checkOutDate: str
+    guests: int
+    rooms: int
     reviewScore: float
+    totalPrice: float
 
 class HotelCreate(HotelBase):
     class Config:
@@ -69,6 +75,20 @@ class HotelModel(HotelBase):
         orm_mode = True
 
 class HotelUpdate(HotelModel):
+    class Config:
+        orm_mode = True
+
+# Location Schema
+
+class LocationBase(BaseModel):
+    name: str
+    geoId: int
+
+class LocationCreate(LocationBase):
+    class Config:
+        orm_mode = True
+
+class LocationModel(LocationBase):
     class Config:
         orm_mode = True
 
@@ -138,8 +158,6 @@ class RestaurantUpdate(RestaurantBase):
 class FlightBookingBase(BaseModel):
     flight_id: int
     itinerary_id: int
-    cabinClass: str
-    totalPrice: float
 
 class FlightBookingCreate(FlightBookingBase):
     class Config:
@@ -155,12 +173,7 @@ class FlightBookingUpdate(FlightBookingModel):
 
 class HotelBookingBase(BaseModel):
     hotel_id: int
-    user_id: int
-    checkInDate: str
-    checkOutDate: str
-    guests: int
-    rooms: int
-    totalPrice: float
+    itinerary_id: int
 
 class HotelBookingCreate(HotelBookingBase):
     class Config:
@@ -174,6 +187,53 @@ class HotelBookingUpdate(HotelBookingModel):
     class Config:
         orm_mode = True
 
+
+# Personal Finance Schema
+
+class FinanceBase(BaseModel):
+    email_address: str
+    yearly_income: float
+    monthly_spending: float
+    estimated_savings: float
+    travel_budget: float
+
+class FinanceCreate(FinanceBase):
+    class Config:
+        orm_mode = True
+
+class FinanceModel(FinanceBase):
+    class Config:
+        orm_mode = True
+
+class FinanceUpdate(FinanceModel):
+    class Config:
+        orm_mode = True
+
+
+# Savings Schema
+
+class SavingsBase(BaseModel):
+    email_address: str
+    current_budget: float
+    goal: float
+    period: str
+    goal_per_period: float
+    progress_per_period: float
+    start_date: str
+    travel_date: str
+
+class SavingsCreate(SavingsBase):
+    class Config:
+        orm_mode = True
+
+class SavingsModel(SavingsBase):
+    class Config:
+        orm_mode = True
+
+class SavingsUpdate(SavingsModel):
+    class Config:
+        orm_mode = True
+        
 
 
 

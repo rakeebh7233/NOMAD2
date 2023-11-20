@@ -6,6 +6,7 @@ import schema, database, oauth2
 from models import RestaurantModel
 from sqlalchemy.orm import Session
 import requests 
+from config import settings
 
 router = APIRouter(
     prefix = "/restaurant",
@@ -14,7 +15,7 @@ router = APIRouter(
 
 get_db = database.get_db
 
-API_KEY = "xxx"
+API_KEY = settings.API_KEY
 
 """ @router.get("/tripadvisorFlights")
 def get_flights():
@@ -60,7 +61,7 @@ def get_hotels():
     return {"data": json_obj["data"]["data"]} """
 
 
-@router.get('/tripadvisorSearch/{locationId}', status_code=status.HTTP_200_OK)
+@router.get('/tripadvisorSearch/{locId}', status_code=status.HTTP_200_OK)
 def search_restaurants_external(locId: str, db: Session = Depends(get_db)):
 
     url = "https://tripadvisor16.p.rapidapi.com/api/v1/restaurant/searchRestaurants"
@@ -76,7 +77,7 @@ def search_restaurants_external(locId: str, db: Session = Depends(get_db)):
 
     response = requests.request("GET", url, headers=headers, params=querystring)
     if response.status_code != 200:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Restaurants with locationId {locationId} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Restaurants with locationId {locId} not found")
     theResponse = response.json()
     for rest in theResponse["data"]["data"]:
         restaurantList.append({"locationId": locId, "name": rest["name"], "averageRating": rest["averageRating"], "userReviewCount": rest["userReviewCount"], "priceTag": rest["priceTag"], "menuUrl": rest["menuUrl"]})
@@ -90,3 +91,17 @@ def search_restaurants_external(locId: str, db: Session = Depends(get_db)):
         )
         RestaurantModel.Restaurant.create_restaurant(restSchema, db)
     return restaurantList
+
+@router.get('/tripadvisorRestaurantLocCheck/{locationId}', status_code=status.HTTP_200_OK)
+def checkLocExists(locId: str, db: Session = Depends(get_db)):
+
+    res = RestaurantModel.Restaurant.checkLocationID(locId, db)
+
+    if res != None:
+        return {'isInDB': True}
+    else:
+        return {'isInDB': False}
+
+@router.get('/', response_model=List[schema.RestaurantModel])
+def all(db: Session = Depends(get_db)):
+    return db.query(RestaurantModel.Restaurant).all()
