@@ -2,7 +2,7 @@ import "../styles/Register.css";
 import { useState, useContext } from "react";
 import { AuthContext } from "../AuthContext";
 import ErrorMessage from "../shared/ErrorMessage";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -14,7 +14,7 @@ const Register = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [, setToken] = useContext(AuthContext);
 
-  const history = useHistory();
+  const history = useNavigate();
 
   const submitRegistration = async () => {
     const requestOptions = {

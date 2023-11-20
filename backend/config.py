@@ -17,5 +17,6 @@ class Settings:
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
     JWT_SECRET_KEY : str = os.getenv("JWT_SECRET")
     JWT_ALGORITHM : str = os.getenv("JWT_ALGORITHM")
+    API_KEY: str = os.getenv("API_KEY")
 
 settings = Settings() 

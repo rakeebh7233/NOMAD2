@@ -6,6 +6,7 @@ import schema, database, oauth2
 from models import RestaurantModel
 from sqlalchemy.orm import Session
 import requests 
+from config import settings
 
 router = APIRouter(
     prefix = "/restaurant",
@@ -14,7 +15,7 @@ router = APIRouter(
 
 get_db = database.get_db
 
-API_KEY = "xxx"
+API_KEY = settings.API_KEY
 
 """ @router.get("/tripadvisorFlights")
 def get_flights():
@@ -90,3 +91,17 @@ def search_restaurants_external(locId: str, db: Session = Depends(get_db)):
         )
         RestaurantModel.Restaurant.create_restaurant(restSchema, db)
     return restaurantList
+
+@router.get('/tripadvisorRestaurantLocCheck/{locationId}', status_code=status.HTTP_200_OK)
+def checkLocExists(locId: str, db: Session = Depends(get_db)):
+
+    res = RestaurantModel.Restaurant.checkLocationID(locId, db)
+
+    if res != None:
+        return {'isInDB': True}
+    else:
+        return {'isInDB': False}
+
+@router.get('/', response_model=List[schema.RestaurantModel])
+def all(db: Session = Depends(get_db)):
+    return db.query(RestaurantModel.Restaurant).all()

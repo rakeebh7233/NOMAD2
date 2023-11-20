@@ -13,13 +13,12 @@ function Home() {
 
     const options = {
       method: 'GET',
-      url: 'http://127.0.0.1:8000/tripadvisorFlights', 
+      url: 'http://127.0.0.1:8000/restaurant/tripadvisorRestaurantLocCheck/{locationId}?locId=304551', 
     };
 
     try {
       const response = await axios.request(options);
-      const info = JSON.parse(response.data.data);
-      console.log(info.data)
+      console.log(response['data']['isInDB'])
     } catch (error) {
       console.error(error);
     }

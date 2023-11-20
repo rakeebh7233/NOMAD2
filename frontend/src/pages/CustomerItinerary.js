@@ -16,6 +16,8 @@ function CustomerItinerary(){
     const[activities, setAcitivities] = useState([]);
     const [daysforActivities, setDaysForActivities] = useState([]);
 
+    const[restaurants, setRestaurants] = useState([]);
+
     const[plannedHotelInfo, setPlannedHotelInfo] = useState([]);
     const [plannedActivitiesInfo, setPlannedActivitiesInfo] = useState([]);
     const [plannedFlightInfo, setPlanneFlightInfo] = useState([]);
@@ -44,11 +46,31 @@ function CustomerItinerary(){
     }
 
     const getRestaurants = async() =>{
-        
+        const options = {
+            method: 'GET',
+            url: 'http://127.0.0.1:8000/restaurant/tripadvisorRestaurantLocCheck/{locationId}?locId=304551', 
+          };
+      
+          try {
+            const response = await axios.request(options);
+            if(response['data']['isInDB']){
+                const options1 = {
+                    method: 'GET',
+                    url: 'http://127.0.0.1:8000/restaurant/', 
+                  };
+                axios.request(options1).then((response)=>{
+                    setRestaurants(response['data']);
+                });
+            }
+          } catch (error) {
+            console.error(error);
+          }
     }
 
 
-
+    useEffect(()=>{
+        getRestaurants();
+    }, []);
 
     return(
         <section id="customItinPage">
@@ -156,6 +178,25 @@ function CustomerItinerary(){
                 <a href="this should go to hotel booking link" className="card-btn">Booking</a>
             </div>
         </div>
+
+        <h2>Restaurants</h2>
+        <div className="d-flex">
+            {restaurants.map(rest => (
+                <div className="card-container">
+                <img
+                    src="https://monicafrancis.com/wp-content/uploads/2021/12/Monica-Francis-Best-NYC-Restaurants-La-Mercerie.jpg"
+                    alt="Card"
+                    className="card-img"
+                />
+                <h3 className="card-title">{rest.name}</h3>
+                <div className="card-description">Price Tag: {rest.priceTag}</div>
+                <div className="card-description">Avg Rating: {rest.averageRating}</div>
+                <a href={rest.menuURL} className="card-btn">Menu</a>
+            </div>
+            ))}
+
+        </div>
+
         </div>
         </div>
        
