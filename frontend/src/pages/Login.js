@@ -59,7 +59,7 @@ const LoginForm = ({ isLoginVisible, closeLogin }) => {
                                         <label id="formLabel" class="form-label" for="typeEmailX-2">Email</label>
                                     </div>
 
-                                    <div class="form-outline mb-4">
+                                    <div class="form-floating mb-4">
                                         <input 
                                             type="password" 
                                             id="typePasswordX-2" 

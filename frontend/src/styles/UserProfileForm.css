@@ -23,8 +23,8 @@ body {
 }
 
 .form-container {
-  width: 400px;
-  height: 400px;
+  width: 500px;
+  height: 550px;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);

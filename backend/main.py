@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine
 from config import settings
-from routers import user, flight, hotel, flight_booking, hotel_booking, tripAdvisor, personal_finance, personal_savings
+from routers import user, flight, hotel, flight_booking, hotel_booking, tripAdvisor, personal_finance, personal_savings, itinerary
 from database import Base
 
 
@@ -33,9 +33,9 @@ async def root():
     return {"message": "Hello World"}
 
 app.include_router(user.router)
+app.include_router(itinerary.router)
 app.include_router(personal_finance.router)
 app.include_router(personal_savings.router)
-
 app.include_router(tripAdvisor.router)
 app.include_router(flight.router)
 app.include_router(hotel.router)

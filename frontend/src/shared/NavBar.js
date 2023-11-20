@@ -32,7 +32,10 @@ function NavBar({ handleLoginClick }) {
                         {token && (
                             <>
                                 <li class="nav-item">
-                                    <a class="nav-link text-light" href="/itinerary">Current Itinerary</a>
+                                    <a class="nav-link text-light" href="/itineraries">View Itineraries</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="/currentitinerary">Current Itinerary</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-light" href="/beginitinerary">New Itinerary</a>

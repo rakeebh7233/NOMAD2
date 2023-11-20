@@ -1,17 +1,37 @@
-from sqlalchemy import Column, Sequence, ForeignKey, String, Integer
+from sqlalchemy import Column, Sequence, ForeignKey, String, Integer, Table, Date, Float
 from database import Base
 import schema
-# from .FlightModel import Flight
-# from .HotelModel import Hotel
+from sqlalchemy.orm import relationship
 
+# Association table
+user_itinerary = Table('user_itinerary', Base.metadata,
+    Column('user_id', Integer, ForeignKey('user.id')),
+    Column('itinerary_id', Integer, ForeignKey('itinerary.id'))
+)
 
 class Itinerary(Base):
     __tablename__ = 'itinerary'
 
+    # id = Column(Integer, Sequence('itinerary_id_seq'), primary_key=True, autoincrement=True)
+    # flight_id = Column(Integer, ForeignKey('flight.id'), nullable=False)
+    # hotel_id = Column(Integer, ForeignKey('hotel.id'), nullable=False)
+    # destination = Column(String, nullable=False)
+    # creator_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     id = Column(Integer, Sequence('itinerary_id_seq'), primary_key=True, autoincrement=True)
-    flight_id = Column(Integer, ForeignKey('flight.id'), nullable=False)
-    hotel_id = Column(Integer, ForeignKey('hotel.id'), nullable=False)
+    itineraryName = Column(String, nullable=False)
     destination = Column(String, nullable=False)
+    departure = Column(String, nullable=False)
+    departureDate = Column(Date, nullable=False)
+    returnDate = Column(Date, nullable=False)
+    travelReason = Column(String, nullable=False)
+    leisureActivites = Column(String, nullable=False)
+    budget = Column(Float, nullable=False)
+    creator_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    
+
+    # Relationship to User
+    members = relationship('User', secondary=user_itinerary, back_populates='itineraries')
+    creator = relationship('User')
 
     def __repr__(self):
         return f'<Itinerary {self.id}>'
@@ -19,11 +39,18 @@ class Itinerary(Base):
     @classmethod
     def create_itinerary(cls, itinerary: schema.ItineraryCreate, db_session):
         """Create a new itinerary."""
+        User = __import__("models.UserModel").User
+        creator = User.get_user_by_id(itinerary.creator_id, db_session)  # Fetch the creator
+        if creator is None:
+            raise ValueError("User not found")
+        
         itinerary_obj = cls(
             flight_id=itinerary.flight_id,
             hotel_id=itinerary.hotel_id,
             destination=itinerary.destination,
+            creator_id=itinerary.creator_id
         )
+        itinerary_obj.members.append(creator)
         db_session.add(itinerary_obj)
         db_session.commit()
         return itinerary_obj

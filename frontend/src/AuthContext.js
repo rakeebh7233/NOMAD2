@@ -11,15 +11,17 @@ export const useAuth = () => {
 // AuthProvider component to wrap the app with authentication context
 export const AuthProvider = (props) => {
     const [token, setToken] = useState(localStorage.getItem('authToken'));
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(localStorage.getItem('user'));
 
     useEffect(() => {
         const fetchUser = async () => {
             if (!token) {
-                // If the token is not present, don't try to fetch the user data
+                // If the token is not present, clear the user data
+                setUser(null);
+                localStorage.removeItem('user');
                 return;
             }
-            
+
             const requestOptions = {
                 method: 'GET',
                 headers: {
@@ -32,7 +34,6 @@ export const AuthProvider = (props) => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 setUser(data);
                 localStorage.setItem('user', JSON.stringify(data));
             } else {

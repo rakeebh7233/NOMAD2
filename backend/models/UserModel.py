@@ -9,19 +9,24 @@ from typing import Annotated, Union
 import passlib.hash
 import schema
 import jwt
+from .ItineraryModel import user_itinerary
+from sqlalchemy.orm import relationship
+
 
 oauth2_scheme = security.OAuth2PasswordBearer(tokenUrl="/token")
 
 class User(Base):
     __tablename__ = 'user'
 
-    id = Column(Integer, Sequence('user_id_seq'), primary_key=True, autoincrement=True)
+    id = Column(Integer, Sequence('user_id_seq'), primary_key=True, autoincrement=True, unique=True)
     email_address = Column(String, unique=True,
                            primary_key=True, nullable=False)
     username = Column(String, unique=True, nullable=False)
     firstName = Column(String, nullable=False)
     lastName = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
+
+    itineraries = relationship("Itinerary", secondary=user_itinerary, back_populates="members")
 
     def verify_password(self, password):
         """Verify that the provided password matches the user's password."""
@@ -48,6 +53,11 @@ class User(Base):
         return user_obj
 
     @classmethod
+    def get_user_by_id(cls, user_id, db_session):
+        """Return the user object whose id is ``user_id``."""
+        return db_session.query(cls).filter_by(id=user_id).first()
+
+    @classmethod
     def get_user_by_email(cls, email, db_session):
         """Return the user object whose email address is ``email``."""
         return db_session.query(cls).filter_by(email_address=email).first()
@@ -68,7 +78,7 @@ class User(Base):
         if expires_delta:
             expire = datetime.utcnow() + expires_delta
         else:
-            expire = datetime.utcnow() + timedelta(minutes=15)
+            expire = datetime.utcnow() + timedelta(minutes=60)
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
         return encoded_jwt

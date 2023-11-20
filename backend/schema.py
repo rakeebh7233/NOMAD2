@@ -1,5 +1,5 @@
-from typing import Optional, Union
-from pydantic import BaseModel
+from typing import List, Optional, Union
+from pydantic import BaseModel, EmailStr
 
 # This file uses pydantic to validate the incoming data from the frontend
 
@@ -95,11 +95,24 @@ class LocationModel(LocationBase):
 # Itinerary Schema
 
 class ItineraryBase(BaseModel):
+    title: str
     flight_id: int
     hotel_id: int
     destination: str
+    creator_id: int
 
-class ItineraryCreate(ItineraryBase):
+class ItineraryCreate(BaseModel):
+    itineraryName: str
+    destination: str
+    departure: str
+    departureDate: str
+    returnDate: str
+    travelReason: str
+    leisureActivites: str
+    budget: float
+    creator_id: int
+    emailList: Optional[List[EmailStr]] = []
+
     class Config:
         orm_mode = True
 

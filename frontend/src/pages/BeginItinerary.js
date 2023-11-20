@@ -1,34 +1,63 @@
 import React from "react";
 import Select from 'react-select';
 import "../styles/BeginItinerary.css";
-import { useContext, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../AuthContext";
 import { Navigate } from "react-router-dom";
 
 
-function BeginItinerary({ addCustomItinerary }) {
-    const { user } = useContext(AuthContext);
-
+function BeginItinerary() {
     const [formData, setFormData] = useState({
-        itineraryNameName: "",
+        itineraryTitle: "",
         emailList: "",
         destination: "",
         departure: "",
         departureDate: "",
         returnDate: "",
         travelReason: [],
-        leisureActivites: ""
+        leisureActivites: "",
+        budget: ""
     })
 
-    // If the user is not logged in, redirect to the login page
+    const { user } = useContext(AuthContext);
     if (!user) {
+        console.log(user)
         return <Navigate to="/register" />;
     }
+
+    const createItinerary = async (itineraryName, emailList, destination, departure, departureDate, returnDate, travelReason, leisureActivites, budget) => {
+        const response = await fetch('http://localhost:8000/create_itinerary', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                itineraryName,
+                emailList,
+                destination,
+                departure,
+                departureDate,
+                returnDate,
+                travelReason,
+                leisureActivites,
+                budget,
+                creator_id: user.id
+            }),
+        });
+    
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+    
+        const itineraryData = await response.json();
+        return itineraryData;
+    };
+    
 
     const handleSubmit = (e) => {
         //e.PreventDefault();
         console.log(formData)
-        //addCustomItinerary(formData.itineraryName, formData.emailList, formData.destination, formData.departure, formData.departureDate, formData.returnDate, formData.travelReason, formData.leisureActivites, formData.budget);
+        createItinerary(formData.itineraryName, formData.emailList, formData.destination, formData.departure, formData.departureDate, formData.returnDate, formData.travelReason, formData.leisureActivites, formData.budget);
     };
 
     const searchCustomComponents = (e) => {
@@ -37,7 +66,7 @@ function BeginItinerary({ addCustomItinerary }) {
 
     return (
         <div className="form">
-            <div className="header">
+            <div className="beginItinHeader">
                 <h1>Your Next Adventure Awaits...</h1>
             </div>
             <div className="form-container1">
@@ -47,9 +76,9 @@ function BeginItinerary({ addCustomItinerary }) {
                             Itinerary Name: <input
                                 type="text"
                                 placeholder="Name..."
-                                value={formData.itineraryName}
+                                value={formData.itineraryTitle}
                                 onChange={(event) =>
-                                    setFormData({ ...formData, itineraryName: event.target.value })
+                                    setFormData({ ...formData, itineraryTitle: event.target.value })
                                 }
                             />
                         </label>
