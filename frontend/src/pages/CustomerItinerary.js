@@ -62,6 +62,15 @@ function CustomerItinerary(){
                     setRestaurants(response['data']);
                 });
             }
+            else{
+                const options2 = {
+                    method: 'GET',
+                    url: 'http://127.0.0.1:8000/restaurant/tripadvisorSearch/{locId}?locId=304551', 
+                  };
+                axios.request(options2).then((response)=>{
+                    setRestaurants(response['data']);
+                })
+            }
           } catch (error) {
             console.error(error);
           }
