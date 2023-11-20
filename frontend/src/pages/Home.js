@@ -1,5 +1,4 @@
 import React from "react";
-import Select from 'react-select';
 import axios from "axios";
 import "../styles/Home.css";
 import { useContext, useState } from "react";

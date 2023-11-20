@@ -11,7 +11,7 @@ function NavBar({ handleLoginClick }) {
     return (
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">NOMAD</a>
+                <a class="navbar-brand" href="/">NOMAD</a>
                 <button
                     class="navbar-toggler"
                     type="button"

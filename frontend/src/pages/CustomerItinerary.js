@@ -2,11 +2,13 @@ import React from "react";
 import Select from 'react-select';
 import axios from "axios";
 import "../styles/CustomItin.css";
-import { useEffect, useState } from "react"; 
 import { useParams } from "react-router-dom";
+import { useContext, useState } from "react";
+import { AuthContext } from "../AuthContext";
+import { Navigate } from "react-router-dom";
+
 
 function CustomerItinerary(){
-
     const[hotelNames, sethotelyNames] = useState([]);
     const[hotelAddresses, setHotelAddresses] = useState([]);
 
@@ -19,6 +21,13 @@ function CustomerItinerary(){
     const[plannedHotelInfo, setPlannedHotelInfo] = useState([]);
     const [plannedActivitiesInfo, setPlannedActivitiesInfo] = useState([]);
     const [plannedFlightInfo, setPlanneFlightInfo] = useState([]);
+
+    const { user } = useContext(AuthContext);
+
+    // If the user is not logged in, redirect to the login page
+    if (!user) {
+        return <Navigate to="/register" />;
+    }
 
     const getSuggestions = () => {
         //make calls to suggestions

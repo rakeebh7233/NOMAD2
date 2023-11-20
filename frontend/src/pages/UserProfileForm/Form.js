@@ -1,25 +1,36 @@
-import React, { useState } from "react";
+import React from "react";
 import Address from "./Address";
 import PersonalInfo from "./PersonalInfo";
 import FinancialInfo from "./FinancialInfo";
 import "../../styles/UserProfileForm.css";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../AuthContext";
+import { Navigate } from "react-router-dom";
 
 function Form() {
   const [page, setPage] = useState(0);
-  const [formData, setFormData] = useState({firstName: "", 
-  lastName: "", 
-  email: "", 
-  birthday: "", 
-  phoneNumber: "", 
-  street: "", 
-  city: "", 
-  state: "", 
-  zip:"", 
-  yearlyIncome:"",
-  monthlySpending: "",
-  estimatedSavings: "",
-  travelBudget: "",
-  monthlySavingGoal: "" })
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    birthday: "",
+    phoneNumber: "",
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
+    yearlyIncome: "",
+    monthlySpending: "",
+    estimatedSavings: "",
+    travelBudget: "",
+    monthlySavingGoal: ""
+  })
+  const { user } = useContext(AuthContext);
+
+  // If the user is not logged in, redirect to the login page
+  if (!user) {
+    return <Navigate to="/register" />;
+  }
 
   const FormTitles = ["Personal Info", "Address", "Financial Info"];
 
