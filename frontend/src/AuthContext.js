@@ -10,11 +10,16 @@ export const useAuth = () => {
 
 // AuthProvider component to wrap the app with authentication context
 export const AuthProvider = (props) => {
-    const [token, setToken] = useState(localStorage.getItem('authToken')); 
+    const [token, setToken] = useState(localStorage.getItem('authToken'));
     const [user, setUser] = useState(null);
 
     useEffect(() => {
         const fetchUser = async () => {
+            if (!token) {
+                // If the token is not present, don't try to fetch the user data
+                return;
+            }
+            
             const requestOptions = {
                 method: 'GET',
                 headers: {
@@ -23,30 +28,38 @@ export const AuthProvider = (props) => {
                 },
             };
 
-            const response = await fetch("users/me", requestOptions);
+            const response = await fetch("http://localhost:8000/users/me", requestOptions);
 
-            if (!response.ok) {
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                setUser(data);
+                localStorage.setItem('user', JSON.stringify(data));
+            } else {
                 setToken(null);
             }
-            localStorage.setItem('authToken', token);
         };
         fetchUser();
     }, [token]);
 
     const login = (userData) => {
         // Simulate logging in by setting user data in state and localStorage
-        setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
+        setToken(userData.access_token);
+        localStorage.setItem('authToken', userData.access_token);
     };
 
     const logout = () => {
         // Simulate logging out by removing user data from state and localStorage
         setUser(null);
         localStorage.removeItem('user');
+
+        // Remove the authToken from local storage
+        setToken(null);
+        localStorage.removeItem('authToken');
     };
 
     return (
-        <AuthContext.Provider value={[token, setToken]}>
+        <AuthContext.Provider value={{ token, setToken, user, setUser, login, logout }}>
             {props.children}
         </AuthContext.Provider>
     );

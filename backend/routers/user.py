@@ -18,7 +18,7 @@ def register(user: schema.UserCreate, db: db_dependency):
 
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post("/token", response_model=schema.Token)
+@router.post("/login", response_model=schema.Token)
 def login(db: db_dependency, form_data: security.OAuth2PasswordRequestForm = Depends()):
     print("generating token") 
     user = UserModel.User.authenticate_user(form_data.username, form_data.password, db)

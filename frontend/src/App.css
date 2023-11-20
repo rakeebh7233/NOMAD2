@@ -71,4 +71,29 @@ nav {
 #closeLogin span {
   scale: 2;
 }
+/* 
+.form-outline {
+  position: relative;
+}
 
+.form-control {
+  padding-top: 20px;
+}
+
+.form-control:valid + .form-label,
+.form-control:focus + .form-label {
+  top: 0;
+  font-size: 12px;
+}
+
+.form-label {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  font-size: 16px;
+  transition: top 0.3s ease, font-size 0.3s ease;
+} */
+
+.form-floating {
+  height: 50px;
+}

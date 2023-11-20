@@ -2,11 +2,11 @@ import React from "react";
 import Select from 'react-select';
 import axios from "axios";
 import "../styles/Home.css";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useContext, useState } from "react";
+import { AuthContext } from "../AuthContext";
 
 function Home() {
-
+  const {token, user} = useContext(AuthContext);
   const [location, setLocation] = useState("");
 
   const handleSubmit = async(e) => {
@@ -31,8 +31,8 @@ function Home() {
         <div class="row">
           <div class="col-lg-6 vh-100">
             <h1>YOUR NEXT JOURNEY AWAITS</h1>
+            {token && user && (<p>Welcome {user.firstName} {user.lastName}</p>)}
             <p>We've Been Waiting for you Fellow Nomad</p>
-
   
               <div className='search-container'>
                 <label >Where are you  off to Next?</label>

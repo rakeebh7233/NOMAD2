@@ -1,10 +1,13 @@
-import React from "react";
-import Select from 'react-select';
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useContext } from "react";
+import { AuthContext } from "../AuthContext";
 
 function NavBar({ handleLoginClick }) {
+    const {token, logout} = useContext(AuthContext);
+
+    const handleLogout = () => {
+        logout();
+      };
+
     return (
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
@@ -26,19 +29,31 @@ function NavBar({ handleLoginClick }) {
                         <li class="nav-item">
                             <a class="nav-link active text-light" aria-current="page" href="/">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" href="/itinerary">Current Itinerary</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" href="/beginitinerary">New Itinerary</a>
-                        </li>
-                        <li class="nav-item me-auto">
-                            <a class="nav-link text-light" href="/userprofile">User Profile</a>
-                        </li>
+                        {token && (
+                            <>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="/itinerary">Current Itinerary</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="/beginitinerary">New Itinerary</a>
+                                </li>
+                                <li class="nav-item me-auto">
+                                    <a class="nav-link text-light" href="/userprofile">User Profile</a>
+                                </li>
+                            </>
+                        )}
+
                     </ul>
-                    <button onClick={handleLoginClick} class="btn btn-outline-dark" type="button">
-                        Sign In
-                    </button>
+                    {token ? (
+                        <button onClick={handleLogout} class="btn btn-outline-dark" type="button">
+                            Sign Out
+                        </button>
+                    ) : (
+                        <button onClick={handleLoginClick} class="btn btn-outline-dark" type="button">
+                            Sign In
+                        </button>
+                    )}
+
                 </div>
             </div>
         </nav>

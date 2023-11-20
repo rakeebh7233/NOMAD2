@@ -2,7 +2,7 @@ import "../styles/Register.css";
 import { useState, useContext } from "react";
 import { AuthContext } from "../AuthContext";
 import ErrorMessage from "../shared/ErrorMessage";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -12,9 +12,9 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmationPassword, setConfirmationPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [, setToken] = useContext(AuthContext);
+  const {login} = useContext(AuthContext);
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const submitRegistration = async () => {
     const requestOptions = {
@@ -30,8 +30,9 @@ const Register = () => {
       console.log(data.detail);
       setErrorMessage(data.detail);
     } else {
-      setToken(data.access_token);
-      history.push("/");
+      login(data);
+      setErrorMessage('');
+      navigate("/");
     }
   };
 
@@ -55,7 +56,7 @@ const Register = () => {
                 <form onSubmit={handleSubmit}>
                   <div class="row">
                     <div class="col-md-6 mb-4">
-                      <div class="form-outline">
+                      <div class="form-floating">
                         <input
                           type="text"
                           id="form3Example1"
@@ -66,7 +67,7 @@ const Register = () => {
                       </div>
                     </div>
                     <div class="col-md-6 mb-4">
-                      <div class="form-outline">
+                      <div class="form-floating">
                         <input
                           type="text"
                           id="form3Example2"
@@ -78,7 +79,7 @@ const Register = () => {
                     </div>
                   </div>
 
-                  <div class="form-outline mb-4">
+                  <div class="form-floating mb-4">
                     <input
                       type="text"
                       id="userNameForm"
@@ -88,7 +89,7 @@ const Register = () => {
                     <label class="form-label" for="form3Example3">Username</label>
                   </div>
 
-                  <div class="form-outline mb-4">
+                  <div class="form-floating mb-4">
                     <input 
                     type="email" 
                     id="form3Example3" 
@@ -98,7 +99,7 @@ const Register = () => {
                     <label class="form-label" for="form3Example3">Email address</label>
                   </div>
 
-                  <div class="form-outline mb-4">
+                  <div class="form-floating mb-4">
                     <input 
                       type="password" 
                       id="form3Example4"
@@ -108,7 +109,7 @@ const Register = () => {
                     <label class="form-label" for="form3Example4">Password</label>
                   </div>
 
-                  <div class="form-outline mb-4">
+                  <div class="form-floating mb-4">
                     <input 
                       type="password" 
                       id="form3Example5" 
