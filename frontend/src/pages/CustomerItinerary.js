@@ -3,7 +3,7 @@ import Select from 'react-select';
 import axios from "axios";
 import "../styles/CustomItin.css";
 import { useParams } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../AuthContext";
 import { Navigate } from "react-router-dom";
 
@@ -23,6 +23,10 @@ function CustomerItinerary(){
     const[plannedHotelInfo, setPlannedHotelInfo] = useState([]);
     const [plannedActivitiesInfo, setPlannedActivitiesInfo] = useState([]);
     const [plannedFlightInfo, setPlanneFlightInfo] = useState([]);
+
+    useEffect(()=>{
+        getRestaurants();
+    }, []);
 
     const { user } = useContext(AuthContext);
 
@@ -84,11 +88,6 @@ function CustomerItinerary(){
             console.error(error);
           }
     }
-
-
-    useEffect(()=>{
-        getRestaurants();
-    }, []);
 
     return(
         <section id="customItinPage">
