@@ -52,6 +52,34 @@ class Flight(Base):
             cabinClass=cabinClass,
             )
     
+    @classmethod 
+    def get_flight_oneway(cls, departureAirport, arrivalAirport, departureTime, cabinClass, db_session):
+        return db_session.query(cls).filter_by(
+            departureAirport=departureAirport,
+            arrivalAirport=arrivalAirport,
+            departureTime=departureTime,
+            cabinClass=cabinClass,
+            )
+    
+    @classmethod
+    def get_flight_by_price(cls, departureAirport, arrivalAirport, departureTime, arrivalTime, totalPrice, db_session):
+        return db_session.query(cls).filter_by(
+            departureAirport=departureAirport,
+            arrivalAirport=arrivalAirport,
+            departureTime=departureTime,
+            arrivalTime=arrivalTime,
+            totalPrice=totalPrice,
+            )
+    
+    @classmethod
+    def get_flight_by_oneway_price(cls, departureAirport, arrivalAirport, departureTime, totalPrice, db_session):
+        return db_session.query(cls).filter_by(
+            departureAirport=departureAirport,
+            arrivalAirport=arrivalAirport,
+            departureTime=departureTime,
+            totalPrice=totalPrice,
+            )
+    
     @classmethod
     def update_flight(cls, flight_id, flight: schema.FlightUpdate, db_session):
         """Update an existing flight."""

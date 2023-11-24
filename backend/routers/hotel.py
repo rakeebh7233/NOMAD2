@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends, status, HTTPException
+from config import settings
 import sys 
 sys.path.append("..")
 import schema, database, oauth2
@@ -14,7 +15,7 @@ router = APIRouter(
 
 get_db = database.get_db
 
-API_KEY = "1a662e0bdemsh110faa611833139p1cdab6jsn13e9ab23c24f"
+API_KEY = settings.API_KEY
 
 @router.get('/', response_model=List[schema.HotelModel])
 def all(db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
