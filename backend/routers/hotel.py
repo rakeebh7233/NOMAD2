@@ -141,7 +141,8 @@ def cache_locations(locations: List[schema.LocationModel], db: Session):
         for location in locations:
             new_location = HotelModel.Location(
                 name=location.name,
-                geoId=location.geoId
+                geoId=location.geoId,
+                type = "BookingAPI"
             )
             db.add(new_location)
         db.commit()

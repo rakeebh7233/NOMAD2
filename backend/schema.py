@@ -83,6 +83,7 @@ class HotelUpdate(HotelModel):
 class LocationBase(BaseModel):
     name: str
     geoId: int
+    type: str
 
 class LocationCreate(LocationBase):
     class Config:

@@ -7,6 +7,7 @@ class Location(Base):
 
     name = Column(String, primary_key=True)
     geoId = Column(Integer, nullable=False)
+    type = Column(String, nullable=False)
 
     def __repr__(self):
         return f'<Location {self.name}>'
@@ -17,6 +18,7 @@ class Location(Base):
         location_obj = cls(
             name=location.name,
             geoId=location.geoId,
+            type = location.type
         )
         db_session.add(location_obj)
         db_session.commit()
@@ -29,6 +31,10 @@ class Location(Base):
     @classmethod
     def get_location_by_name(cls, name, db_session):
         return db_session.query(cls).filter_by(name=name).first()
+    
+    @classmethod
+    def checkifCityExistsinDB(cls, city, db_session):
+        return db_session.query(cls).filter_by(name = city).first()
 
 class Hotel(Base):
     __tablename__ = 'hotel'
