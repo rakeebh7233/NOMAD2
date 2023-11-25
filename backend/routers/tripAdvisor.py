@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 import sys 
 sys.path.append("..")
 import schema, database, oauth2
-from models import RestaurantModel
+from models import RestaurantModel, HotelModel
 from sqlalchemy.orm import Session
 import requests 
 from config import settings
@@ -98,10 +98,47 @@ def checkLocExists(locId: str, db: Session = Depends(get_db)):
     res = RestaurantModel.Restaurant.checkLocationID(locId, db)
 
     if res != None:
-        return {'isInDB': True}
+        return {'isInDB': True, 'locationID': res['locationId']}
     else:
         return {'isInDB': False}
 
 @router.get('/', response_model=List[schema.RestaurantModel])
 def all(db: Session = Depends(get_db)):
     return db.query(RestaurantModel.Restaurant).all()
+
+@router.get('/locations/{city}')
+def newlocationSearchExternal(city: str, db: Session = Depends(get_db)):
+    url = "https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation"
+
+    querystring = {"query": city}
+
+    headers = {
+        'X-RapidAPI-Key': API_KEY,
+        'X-RapidAPI-Host': 'tripadvisor16.p.rapidapi.com'
+    }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    if response.status_code != 200:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{city} not found!")
+    
+    theResponse = response.json()
+
+    restSchema = schema.LocationBase(
+            name = city,
+            geoId = theResponse['data'][0]['geoId'],
+            type = 'TripAdvisorAPI'
+    )
+    
+    HotelModel.Location.create_location(restSchema, db)
+
+    return {"geoId" :theResponse['data'][0]['geoId']}
+
+@router.get('/tripadvisorCityCheck/{city}', status_code=status.HTTP_200_OK)
+def checkLocExists(city: str, db: Session = Depends(get_db)):
+
+    res = HotelModel.Location.checkifCityExistsinDB(city, db)
+
+    if res != None:
+        return {'isInDB': True, 'geoID': res['geoID']}
+    else:
+        return {'isInDB': False}
