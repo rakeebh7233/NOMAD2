@@ -1,5 +1,6 @@
 from typing import List, Optional, Union
 from pydantic import BaseModel, EmailStr
+from datetime import date
 
 # This file uses pydantic to validate the incoming data from the frontend
 
@@ -102,11 +103,11 @@ class ItineraryBase(BaseModel):
     creator_id: int
 
 class ItineraryCreate(BaseModel):
-    itineraryName: str
+    itineraryTitle: str
     destination: str
     departure: str
-    departureDate: str
-    returnDate: str
+    departureDate: date
+    returnDate: date
     travelReason: str
     leisureActivites: str
     budget: float

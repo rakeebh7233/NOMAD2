@@ -37,6 +37,17 @@ export const AuthProvider = (props) => {
                 setUser(data);
                 localStorage.setItem('user', JSON.stringify(data));
             } else {
+                const errorData = await response.json();
+                if (errorData.detail === 'Token has expired') {
+                    // If the token has expired, clear the user data and token
+                    setUser(null);
+                    setToken(null);
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('authToken');
+
+                    // Redirect to the home page
+                    window.location.href = '/';
+                }
                 setToken(null);
             }
         };

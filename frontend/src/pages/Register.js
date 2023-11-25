@@ -30,7 +30,6 @@ const Register = () => {
       console.log(data.detail);
       setErrorMessage(data.detail);
     } else {
-      login(data);
       setErrorMessage('');
       navigate("/");
     }

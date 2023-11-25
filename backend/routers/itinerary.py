@@ -9,20 +9,20 @@ router = APIRouter(
     tags = ['Itineraries']
 )
 
-@router.post("/create_itinerary")
+@router.post("/create")
 def create_itinerary(itinerary: schema.ItineraryCreate, db: db_dependency):
     print("creating itinerary")
     User = import_module("models.UserModel").User
 
     members = []
     if itinerary.emailList:
-        members = db.query(User).filter(User.email.in_(itinerary.emailList)).all()
+        members = db.query(User).filter(User.email_address.in_(itinerary.emailList)).all()
 
         if len(members) != len(itinerary.emailList):
             raise HTTPException(status_code=400, detail="One or more emails are not registered")
 
     itinerary_obj = ItineraryModel.Itinerary(
-        itineraryName=itinerary.itineraryName,
+        itineraryTitle=itinerary.itineraryTitle,
         destination=itinerary.destination,
         departure=itinerary.departure,
         departureDate=itinerary.departureDate,

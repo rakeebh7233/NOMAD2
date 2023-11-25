@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, security, status
-from jose import JWTError
+from jose import ExpiredSignatureError, JWTError
 from sqlalchemy import Column, Sequence, String, Integer
 from sqlalchemy.orm import Session
 from config import settings
@@ -78,7 +78,7 @@ class User(Base):
         if expires_delta:
             expire = datetime.utcnow() + expires_delta
         else:
-            expire = datetime.utcnow() + timedelta(minutes=60)
+            expire = datetime.utcnow() + timedelta(minutes=120)
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
         return encoded_jwt
@@ -96,8 +96,11 @@ class User(Base):
             if email is None:
                 raise credentials_exception
             token_data = schema.TokenData(email=email)
+        except ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="Token has expired")
         except JWTError:
             raise credentials_exception
+        
         user = cls.get_user_by_email(token_data.email, db)
         if user is None:
             raise credentials_exception
