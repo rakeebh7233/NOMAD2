@@ -12,12 +12,29 @@ function Home() {
 
     const options = {
       method: 'GET',
-      url: 'http://127.0.0.1:8000/restaurant/tripadvisorRestaurantLocCheck/{locationId}?locId=304551', 
+      url: 'http://127.0.0.1:8000/restaurant/tripadvisorCityCheck/'+location, 
     };
 
     try {
       const response = await axios.request(options);
-      console.log(response['data']['isInDB'])
+      if(response['data']['isInDB']){
+        localStorage.setItem('tripAdvisorGeoID', response['data']['geoID']);
+      }
+      else{
+        const options1 = {
+          method: 'GET',
+          url: 'http://127.0.0.1:8000/restaurant/locations/'+location, 
+        };
+
+        try{
+          const response1 = await axios.request(options1);
+          
+          localStorage.setItem('tripAdvisorGeoID', response1['data']['geoId']);
+        }
+        catch (error){
+          console.log(error)
+        }
+      }
     } catch (error) {
       console.error(error);
     }

@@ -58,9 +58,9 @@ def checkLocExists(locId: str, db: Session = Depends(get_db)):
     else:
         return {'isInDB': False}
 
-@router.get('/', response_model=List[schema.RestaurantModel])
-def all(db: Session = Depends(get_db)):
-    return db.query(RestaurantModel.Restaurant).all()
+@router.get('/{locId}', response_model=List[schema.RestaurantModel])
+def all(locId: str, db: Session = Depends(get_db)):
+    return db.query(RestaurantModel.Restaurant).filter_by(locationId = locId).all()
 
 @router.get('/locations/{city}')
 def newlocationSearchExternal(city: str, db: Session = Depends(get_db)):
@@ -93,8 +93,8 @@ def newlocationSearchExternal(city: str, db: Session = Depends(get_db)):
 def checkLocExists(city: str, db: Session = Depends(get_db)):
 
     res = HotelModel.Location.checkifCityExistsinDB(city, db)
-
+    
     if res != None:
-        return {'isInDB': True, 'geoID': res['geoID']}
+        return {'isInDB': True, 'geoID': res.geoId}
     else:
         return {'isInDB': False}

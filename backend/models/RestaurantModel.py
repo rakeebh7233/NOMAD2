@@ -28,6 +28,8 @@ class Restaurant(Base):
         db_session.commit()
         return restaurant_obj
     
+    
+    
     @classmethod
     def checkLocationID(cls, locID, db_session):
         return db_session.query(cls).filter_by(locationId = locID).first()
