@@ -54,7 +54,7 @@ def checkLocExists(locId: str, db: Session = Depends(get_db)):
     res = RestaurantModel.Restaurant.checkLocationID(locId, db)
 
     if res != None:
-        return {'isInDB': True, 'locationID': res['locationId']}
+        return {'isInDB': True}
     else:
         return {'isInDB': False}
 
