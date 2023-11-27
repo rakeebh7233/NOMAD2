@@ -27,6 +27,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
 
     itineraries = relationship("Itinerary", secondary=user_itinerary, back_populates="members")
+    created_itineraries = relationship('Itinerary', back_populates='creator')
 
     def verify_password(self, password):
         """Verify that the provided password matches the user's password."""

@@ -10,10 +10,26 @@ function Itineraries() {
 
     useEffect(() => {
         // Replace with your actual API endpoint
-        fetch(`http://localhost:8000/itinerary/${user.id}`)
+        fetch(`http://localhost:8000/itineraries/${user.id}`)
             .then(response => response.json())
             .then(data => setItineraries(data));
     }, [user]);
+
+    const deleteItinerary = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:8000/itineraries/${id}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) {
+                throw new Error(`An error occurred: ${response.statusText}`);
+            }
+    
+            // Remove the deleted itinerary from the local state
+            setItineraries(itineraries.filter(itinerary => itinerary.id !== id));
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <div class="container" id="itineraries">
@@ -25,24 +41,50 @@ function Itineraries() {
                 <thead class="bg-light">
                     <tr>
                         <th>Title</th>
-                        <th>Creator</th>
-                        <th>Members</th>
                         <th>Destination</th>
-                        <th>Flight</th>
+                        <th>Departure</th>
+                        <th>Departure Date</th>
+                        <th>Return Date</th>
+                        <th>Travel Reason</th>
+                        <th>Leisure Activities</th>
+                        <th>Budget</th>
+                        <th>Creator_ID</th>
+                        <th>Members</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>
-                            <button
-                                type="button"
-                                class="btn btn-link btn-rounded btn-sm fw-bold"
-                                data-mdb-ripple-color="dark"
-                            >
-                                Edit
-                            </button>
-                        </td>
-                    </tr>
+                    {Array.isArray(itineraries) && itineraries.map((itinerary) => (
+                        <tr key={itinerary.id}>
+                            <td>{itinerary.itineraryTitle}</td>
+                            <td>{itinerary.destination}</td>
+                            <td>{itinerary.departure}</td>
+                            <td>{itinerary.departureDate}</td>
+                            <td>{itinerary.returnDate}</td>
+                            <td>{itinerary.travelReason}</td>
+                            <td>{itinerary.leisureActivities}</td>
+                            <td>{itinerary.budget}</td>
+                            <td>{itinerary.creator_id}</td>
+                            <td>{itinerary.members.map(member => member.username).join(', ')}</td>
+                            <td>
+                                <button
+                                    type="button"
+                                    class="btn btn-link btn-rounded btn-sm fw-bold"
+                                    data-mdb-ripple-color="dark"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-link btn-rounded btn-sm fw-bold text-danger"
+                                    data-mdb-ripple-color="dark"
+                                    onClick={() => deleteItinerary(itinerary.id)}
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>

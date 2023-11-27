@@ -1,20 +1,22 @@
 from typing import List
 from fastapi import APIRouter, HTTPException
 from importlib import import_module
-from models import ItineraryModel
+from sqlalchemy import delete
+from models.ItineraryModel import Itinerary
+from models.ItineraryModel import user_itinerary
 from database import db_dependency
 import schema
 
 router = APIRouter(
-    prefix = "/itinerary",
+    prefix = "/itineraries",
     tags = ['Itineraries']
 )
 
 @router.get("/{user_id}", response_model=List[schema.ItineraryModel])
 def get_user_itineraries(user_id: int, db: db_dependency):
     User = import_module("models.UserModel").User
-    itineraries = db.query(ItineraryModel.Itinerary).filter((ItineraryModel.Itinerary.creator_id == user_id) 
-                                                            | (User.id.in_(ItineraryModel.Itinerary.members))).all()
+    itineraries = db.query(Itinerary).filter((Itinerary.creator_id == user_id) 
+                                                            | (Itinerary.members.any(User.id == user_id))).all()
     if not itineraries:
         raise HTTPException(status_code=404, detail="No itineraries found for this user")
     return itineraries
@@ -28,14 +30,14 @@ def create_itinerary(itinerary: schema.ItineraryCreate, db: db_dependency):
     creator = db.query(User).filter_by(id=itinerary.creator_id).first()
 
     members = []
-    if itinerary.emailList:
-        members = db.query(User).filter(User.email_address.in_(itinerary.emailList)).all()
+    if itinerary.members:
+        members = db.query(User).filter(User.email_address.in_(itinerary.members)).all()
         print(members)
 
-        if len(members) != len(itinerary.emailList):
+        if len(members) != len(itinerary.members):
             raise HTTPException(status_code=400, detail="One or more emails are not registered")
 
-    itinerary_obj = ItineraryModel.Itinerary(
+    itinerary_obj = Itinerary(
         itineraryTitle=itinerary.itineraryTitle,
         destination=itinerary.destination,
         departure=itinerary.departure,
@@ -56,3 +58,21 @@ def create_itinerary(itinerary: schema.ItineraryCreate, db: db_dependency):
     db.refresh(itinerary_obj)
     return itinerary_obj
     
+    # Note for later: user permissions to delete may need to be checked
+@router.delete("/{itinerary_id}")
+def delete_itinerary(itinerary_id: int, db: db_dependency):
+    # Fetch the itinerary
+    itinerary = db.query(Itinerary).filter_by(id=itinerary_id).first()
+
+    if not itinerary:
+        raise HTTPException(status_code=404, detail="Itinerary not found")
+
+    # Delete the associations
+    stmt = delete(user_itinerary).where(user_itinerary.c.itinerary_id == itinerary_id)
+    db.execute(stmt)
+
+    # Delete the itinerary
+    db.delete(itinerary)
+    db.commit()
+
+    return {"message": "Itinerary deleted successfully"}

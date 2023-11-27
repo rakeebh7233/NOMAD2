@@ -108,13 +108,15 @@ class ItineraryBase(BaseModel):
     creator_id: int
 
 class ItineraryCreate(ItineraryBase):
-    emailList: Optional[List[EmailStr]] = []
+    members: Optional[List[EmailStr]] = []
 
     class Config:
         orm_mode = True
 
 class ItineraryModel(ItineraryBase):
     id: int
+    members: Optional[List[UserModel]] = []
+    
     class Config:
         orm_mode = True
 

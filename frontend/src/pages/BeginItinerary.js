@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 function BeginItinerary() {
     const [formData, setFormData] = useState({
         itineraryTitle: "",
-        emailList: [],
+        members: [],
         destination: "",
         departure: "",
         departureDate: "",
@@ -29,7 +29,7 @@ function BeginItinerary() {
     }
 
 
-    const createItinerary = async (itineraryTitle, emailList, destination, departure, departureDate, returnDate, travelReason, leisureActivites, budget) => {
+    const createItinerary = async (itineraryTitle, members, destination, departure, departureDate, returnDate, travelReason, leisureActivites, budget) => {
         const response = await fetch('http://localhost:8000/itinerary/create', {
             method: 'POST',
             headers: {
@@ -37,7 +37,7 @@ function BeginItinerary() {
             },
             body: JSON.stringify({
                 itineraryTitle,
-                emailList,
+                members,
                 destination,
                 departure,
                 departureDate,
@@ -62,8 +62,7 @@ function BeginItinerary() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData)
-        createItinerary(formData.itineraryTitle, formData.emailList, formData.destination, formData.departure, formData.departureDate, formData.returnDate, formData.travelReason, formData.leisureActivites, formData.budget);
-
+        createItinerary(formData.itineraryTitle, formData.members, formData.destination, formData.departure, formData.departureDate, formData.returnDate, formData.travelReason, formData.leisureActivites, formData.budget);
     };
 
 
@@ -186,7 +185,7 @@ function BeginItinerary() {
                                 onChange={(selectedOptions) => {
                                     const emails = selectedOptions.map(option => option.value);
                                     console.log(emails);
-                                    setFormData({ ...formData, emailList: emails });
+                                    setFormData({ ...formData, members: emails });
                                 }}
                             />
                         </label>
