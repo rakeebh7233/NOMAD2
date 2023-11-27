@@ -4,7 +4,6 @@ import CreatableSelect from 'react-select/creatable';
 import "../styles/BeginItinerary.css";
 import { useState, useContext } from "react";
 import { AuthContext } from "../AuthContext";
-import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 
@@ -25,7 +24,8 @@ function BeginItinerary() {
     const { user } = useContext(AuthContext);
     if (!user) {
         console.log(user)
-        return <Navigate to="/register" />;
+        navigate("/register");
+        return null;
     }
 
 

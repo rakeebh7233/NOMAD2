@@ -1,14 +1,24 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../AuthContext';
+
 import '../styles/Itineraries.css';
 
-const Itineraries = () => {
-    
+function Itineraries() {
+    const [itineraries, setItineraries] = useState([]);
+    const { user } = useAuth(); // Get the current user from your AuthContext
+
+    useEffect(() => {
+        // Replace with your actual API endpoint
+        fetch(`http://localhost:8000/itinerary/${user.id}`)
+            .then(response => response.json())
+            .then(data => setItineraries(data));
+    }, [user]);
 
     return (
         <div class="container" id="itineraries">
             <button type="button" class="btn btn-primary btn-lg">
-                <a class="nav-link text-light" href="/beginitinerary">Create New Itinerary</a>
+                <a class="nav-link text-light" href="/itineraries/new">Create New Itinerary</a>
             </button>
             <h1>View Itineraries</h1>
             <table class="table align-middle bg-white">

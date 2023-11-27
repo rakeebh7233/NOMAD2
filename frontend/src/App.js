@@ -9,6 +9,7 @@ import BeginItinerary from './pages/BeginItinerary';
 import CustomerItinerary from './pages/CustomerItinerary';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import { AuthProvider } from './AuthContext';
 
 function App() {
   const [isLoginVisible, setIsLoginVisible] = useState(false);
@@ -22,22 +23,22 @@ function App() {
   }
 
   return (
-    <div>
+    <AuthProvider>
       <NavBar handleLoginClick={handleLoginClick} />
 
       <Router>
-        <Routes>
-          <Route path='/' exact element={<Home />} />
-          <Route path='/itineraries' exact element={<Itineraries />} />
-          <Route path='/currentitinerary' exact element={<CustomerItinerary />} />
-          <Route path='/beginitinerary' exact element={<BeginItinerary />} />
-          <Route path='/userprofile' exact element={<Form />} />
-          <Route path='/register' exact element={<Register />} />
-        </Routes>
+          <Routes>
+            <Route path='/' exact element={<Home />} />
+            <Route path='/itineraries' exact element={<Itineraries />} />
+            <Route path='/currentitinerary' exact element={<CustomerItinerary />} />
+            <Route path='/itineraries/new' exact element={<BeginItinerary />} />
+            <Route path='/userprofile' exact element={<Form />} />
+            <Route path='/register' exact element={<Register />} />
+          </Routes>
       </Router>
 
       <Login isLoginVisible={isLoginVisible} closeLogin={closeLogin} />
-    </div>
+    </AuthProvider>
   );
 }
 

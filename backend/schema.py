@@ -97,13 +97,6 @@ class LocationModel(LocationBase):
 # Itinerary Schema
 
 class ItineraryBase(BaseModel):
-    title: str
-    flight_id: int
-    hotel_id: int
-    destination: str
-    creator_id: int
-
-class ItineraryCreate(BaseModel):
     itineraryTitle: str
     destination: str
     departure: str
@@ -113,6 +106,8 @@ class ItineraryCreate(BaseModel):
     leisureActivites: str
     budget: float
     creator_id: int
+
+class ItineraryCreate(ItineraryBase):
     emailList: Optional[List[EmailStr]] = []
 
     class Config:
@@ -124,26 +119,36 @@ class ItineraryModel(ItineraryBase):
         orm_mode = True
 
 class ItineraryUpdate(ItineraryModel):
+    itineraryTitle: Optional[str]
+    destination: Optional[str]
+    departure: Optional[str]
+    departureDate: Optional[date]
+    returnDate: Optional[date]
+    travelReason: Optional[str]
+    leisureActivites: Optional[str]
+    budget: Optional[float]
+    creator_id: Optional[int]
+    member_ids: Optional[List[int]]
     class Config:
         orm_mode = True
 
-# Itinerary Owner Schema
+# # Itinerary Owner Schema
 
-class ItineraryOwnerBase(BaseModel):
-    itinerary_id: int
-    user_id: int
+# class ItineraryOwnerBase(BaseModel):
+#     itinerary_id: int
+#     user_id: int
 
-class ItineraryOwnerCreate(ItineraryOwnerBase):
-    class Config:
-        orm_mode = True
+# class ItineraryOwnerCreate(ItineraryOwnerBase):
+#     class Config:
+#         orm_mode = True
 
-class ItineraryOwnerModel(ItineraryOwnerBase):
-    class Config:
-        orm_mode = True
+# class ItineraryOwnerModel(ItineraryOwnerBase):
+#     class Config:
+#         orm_mode = True
 
-class ItineraryOwnerUpdate(ItineraryOwnerModel):
-    class Config:
-        orm_mode = True
+# class ItineraryOwnerUpdate(ItineraryOwnerModel):
+#     class Config:
+#         orm_mode = True
 
 # Restaurant Schema
 

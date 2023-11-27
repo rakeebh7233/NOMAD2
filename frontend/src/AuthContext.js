@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+// import { useHistory } from 'react-router-dom';
 
 // Create a context for authentication
 export const AuthContext = React.createContext();
@@ -12,6 +13,7 @@ export const useAuth = () => {
 export const AuthProvider = (props) => {
     const [token, setToken] = useState(localStorage.getItem('authToken'));
     const [user, setUser] = useState(localStorage.getItem('user'));
+    // const history = useHistory();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -68,6 +70,9 @@ export const AuthProvider = (props) => {
         // Remove the authToken from local storage
         setToken(null);
         localStorage.removeItem('authToken');
+
+        // Redirect to the home page
+        window.location.href = '/';
     };
 
     return (
