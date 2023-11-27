@@ -59,9 +59,10 @@ function CustomerItinerary(){
     }
 
     const getRestaurants = async() =>{
+        const geoID = localStorage.getItem('tripAdvisorGeoID')
         const options = {
             method: 'GET',
-            url: 'http://127.0.0.1:8000/restaurant/tripadvisorRestaurantLocCheck/{locationId}?locId=304551', 
+            url: 'http://127.0.0.1:8000/restaurant/tripadvisorRestaurantLocCheck/{locationId}?locId='+geoID, 
           };
       
           try {
@@ -69,7 +70,7 @@ function CustomerItinerary(){
             if(response['data']['isInDB']){
                 const options1 = {
                     method: 'GET',
-                    url: 'http://127.0.0.1:8000/restaurant/', 
+                    url: 'http://127.0.0.1:8000/restaurant/'+geoID, 
                   };
                 axios.request(options1).then((response)=>{
                     setRestaurants(response['data']);
@@ -78,7 +79,7 @@ function CustomerItinerary(){
             else{
                 const options2 = {
                     method: 'GET',
-                    url: 'http://127.0.0.1:8000/restaurant/tripadvisorSearch/{locId}?locId=304551', 
+                    url: 'http://127.0.0.1:8000/restaurant/tripadvisorSearch/'+geoID, 
                   };
                 axios.request(options2).then((response)=>{
                     setRestaurants(response['data']);
