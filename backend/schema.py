@@ -209,6 +209,24 @@ class HotelBookingUpdate(HotelBookingModel):
     class Config:
         orm_mode = True
 
+class RestaurantBookingBase(BaseModel):
+    geoID: int
+    restaurantName: str
+    itinerary_id: int
+
+class RestaurantBookingCreate(RestaurantBookingBase):
+    class Config:
+        orm_mode = True
+
+class RestaurantBookingModel(RestaurantBookingBase):
+    class Config:
+        orm_mode = True
+
+class RestaurantBookingUpdate(RestaurantBookingBase):
+    class Config:
+        orm_mode = True
+
+
 
 # Personal Finance Schema
 
