@@ -90,8 +90,8 @@ def train_recommender_system(input_data: torch.Tensor, target_data: torch.Tensor
             print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item()}")
 
     # Save the trained model
-    save_file = 'trained_model_{name}.pth'.format(name=component)
-    torch.save(model.state_dict(), 'trained_model.pth')
+    save_file = f'trained_model_{component}.pth'
+    torch.save(model.state_dict(), save_file)
 
 
 # Define target data for training (e.g., another flight recommendation)
@@ -113,7 +113,7 @@ def generate_flight_recommendations(flight: FlightModel.Flight) -> List[FlightMo
 
     # Load the trained model
     model = RecommenderSystem(input_data.shape[1], 64, input_data.shape[1])
-    model.load_state_dict(torch.load('trained_model.pth'))
+    model.load_state_dict(torch.load('trained_model_flight.pth'))
 
     # Generate recommendations
     with torch.no_grad():
@@ -132,7 +132,7 @@ def generate_hotel_recommendations(hotel: HotelModel.Hotel) -> List[HotelModel.H
 
     # Load the trained model
     model = RecommenderSystem(input_data.shape[1], 64, input_data.shape[1])
-    model.load_state_dict(torch.load('trained_model.pth'))
+    model.load_state_dict(torch.load('trained_model_hotel.pth'))
 
     # Generate recommendations
     with torch.no_grad():
