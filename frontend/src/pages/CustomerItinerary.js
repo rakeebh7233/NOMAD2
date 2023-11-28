@@ -64,37 +64,34 @@ function CustomerItinerary(){
             method: 'GET',
             url: 'http://127.0.0.1:8000/restaurant/tripadvisorRestaurantLocCheck/{locationId}?locId='+geoID, 
           };
-      
-          try {
-            const response = await axios.request(options);
-            if(response['data']['isInDB']){
-                const options1 = {
-                    method: 'GET',
-                    url: 'http://127.0.0.1:8000/restaurant/'+geoID, 
-                  };
-                axios.request(options1).then((response)=>{
-                    setRestaurants(response['data']);
-                });
-            }
-            else{
-                const options2 = {
-                    method: 'GET',
-                    url: 'http://127.0.0.1:8000/restaurant/tripadvisorSearch/'+geoID, 
-                  };
-                axios.request(options2).then((response)=>{
-                    setRestaurants(response['data']);
-                })
-            }
-          } catch (error) {
-            console.error(error);
-          }
+
+        axios.request(options).then((response)=>{
+        if(response['data']['isInDB']){
+            const options1 = {
+                method: 'GET',
+                url: 'http://127.0.0.1:8000/restaurant/'+geoID, 
+                };
+            axios.request(options1).then((response1)=>{
+                setRestaurants(response1['data']);
+            });
+        }
+        else{
+            const options2 = {
+                method: 'GET',
+                url: 'http://127.0.0.1:8000/restaurant/tripadvisorSearch/'+geoID, 
+                };
+            axios.request(options2).then((response1)=>{
+                setRestaurants(response1['data']);
+            })
+        }
+        })
     }
 
     return(
         <section id="customItinPage">
-        <div className="row">
+        <div className="row gx-1 px-4">
 
-        <div className="col-sm-6">
+        <div className="planned-container col-sm-6">
         <h1>Planned</h1>
         <h2>Hotel</h2>
         <div className="card-container">
@@ -146,7 +143,7 @@ function CustomerItinerary(){
         </div>
         </div>
 
-        <div className="col-sm-6">
+        <div className="suggested-container col-sm-6">
         <h1>Suggested</h1>
         <h2>Hotel</h2>
         <div className="card-container">
@@ -174,7 +171,7 @@ function CustomerItinerary(){
         </div>
 
         <h2>Activites</h2>
-        <div className="d-flex">
+        <div className="cards d-flex">
             <div className="card-container">
                 <img
                     src="https://images.ctfassets.net/0wjmk6wgfops/nb3Q0W8VmjzthrOMiSzPt/6b8bf6ccb00141d84d32829455d073a9/Skier_resize_AdobeStock_617199939.jpeg?q=70"
@@ -198,7 +195,7 @@ function CustomerItinerary(){
         </div>
 
         <h2>Restaurants</h2>
-        <div className="d-flex">
+        <div className="cards d-flex">
             {restaurants.map(rest => (
                 <div className="card-container">
                 <img
@@ -206,7 +203,9 @@ function CustomerItinerary(){
                     alt="Card"
                     className="card-img"
                 />
-                <h3 className="card-title">{rest.name}</h3>
+                <div className="d-flex">
+                    <h3 className="card-title">{rest.name}</h3>
+                </div>
                 <div className="card-description">Price Tag: {rest.priceTag}</div>
                 <div className="card-description">Avg Rating: {rest.averageRating}</div>
                 <a href={rest.menuURL} className="card-btn">Menu</a>
