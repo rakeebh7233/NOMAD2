@@ -4,9 +4,8 @@ import sys
 sys.path.append("..")
 import schema, database, oauth2
 from models import FlightModel
-
 from sqlalchemy.orm import Session
-import requests 
+
 
 router = APIRouter(
     prefix="/flight_booking",

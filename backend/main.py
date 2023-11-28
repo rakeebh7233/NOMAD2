@@ -57,7 +57,7 @@ app.include_router(flight.router)
 app.include_router(hotel.router)
 app.include_router(flight_booking.router)
 app.include_router(hotel_booking.router)
-app.include_router(restaurant_booking)
+app.include_router(restaurant_booking.router)
 
 
 

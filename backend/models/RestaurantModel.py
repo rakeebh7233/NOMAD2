@@ -38,8 +38,7 @@ class Restaurant(Base):
 class RestaurantBooking(Base):
     __tablename__ = 'restaurant_booking'
 
-    geoID = Column(Integer, ForeignKey('restaurant.locationId'),primary_key = True)
-    restaurantName = Column(String, ForeignKey('restaurant.name'),primary_key = True)
+    restaurant_id = Column(Integer, ForeignKey('restaurant.id'),primary_key = True)
     itinerary_id = Column(Integer, ForeignKey('itinerary.id'), primary_key=True)
 
     def __repr__(self):
@@ -58,8 +57,8 @@ class RestaurantBooking(Base):
         return restaurant_booking_obj
 
     @classmethod
-    def get_restaurant_booking(cls, geoID, restaurantName, itinerary_id, db_session):
-        return db_session.query(cls).filter_by(geoID=geoID, restaurantName = restaurantName, itinerary_id_id=itinerary_id).first()
+    def get_restaurant_booking(cls, restaurant_id, itinerary_id, db_session):
+        return db_session.query(cls).filter_by(restaurant_id=restaurant_id, itinerary_id_id=itinerary_id).first()
 
     @classmethod
     def get_all_restaurant_bookings(cls, db_session):
@@ -72,10 +71,10 @@ class RestaurantBooking(Base):
         return db_session.query(cls).filter_by(itinerary_id=itinerary_id).all()
 
     @classmethod
-    def delete_restaurant_booking(cls, geoID, restaurantName, itinerary_id, db_session):
+    def delete_restaurant_booking(cls, restaurant_id, itinerary_id, db_session):
         """Delete an existing restaurant booking."""
         restaurant_booking_obj = db_session.query(cls).filter_by(
-            geoID = geoID, restaurantName = restaurantName, itinerary_id=itinerary_id).first()
+            restaurant_id = restaurant_id, itinerary_id=itinerary_id).first()
         if restaurant_booking_obj:
             db_session.delete(restaurant_booking_obj)
             db_session.commit()
