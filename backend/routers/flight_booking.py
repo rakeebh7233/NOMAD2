@@ -50,3 +50,9 @@ def get_price(flight_id, itinerary_id, db: Session = Depends(get_db), current_us
     if booking == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Flight Booking with the flight id {flight_id} and itinerary id {itinerary_id} was not found")
     return booking.price
+
+@router.get('/sum_price/{itinerary_id}', status_code=status.HTTP_200_OK)
+def get_total_price(itinerary_id: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+    query = db.query(FlightModel.FlightBooking).join(FlightModel.Flight).filter(FlightModel.FlightBooking.itinerary_id == itinerary_id).with_entities(FlightModel.FlightBooking.totalPrice).all()
+    total_price = sum([booking.totalPrice for booking in query])
+    return total_price

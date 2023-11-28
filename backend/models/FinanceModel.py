@@ -3,6 +3,7 @@ from database import Base
 from datetime import datetime, date, timedelta
 import schema
 from .UserModel import User
+import json
 
 
 # The Personal Finance table will store the preliminary financial information that the user provides
@@ -130,6 +131,33 @@ class Savings(Base):
         return savings_obj
     
     @classmethod
+    def add_savings(cls, db_session, email_address, amount):
+        """Add the amount to the current budget."""
+        savings_obj = cls.get_savings_user(db_session, email_address)
+        if savings_obj == None:
+            return None
+        savings_obj.current_budget += amount
+        savings_obj.progress_per_period += amount
+        db_session.commit()
+        return savings_obj
+    
+    @classmethod 
+    def get_period(cls, db_session, email_address):
+        """Return the period of the savings object."""
+        savings_obj = cls.get_savings_user(db_session, email_address)
+        if savings_obj == None:
+            return None
+        return savings_obj.period
+    
+    @classmethod 
+    def get_start_date(cls, db_session, email_address):
+        """Return the start date of the savings object."""
+        savings_obj = cls.get_savings_user(db_session, email_address)
+        if savings_obj == None:
+            return None
+        return savings_obj.start_date
+    
+    @classmethod
     def get_savings_user(cls, db_session, email_address):
         """Return the savings object whose user_id is ``id``."""
         return db_session.query(cls).filter_by(email_address=email_address).first()
@@ -187,6 +215,7 @@ class Savings(Base):
             return None
 
         db_session.commit()
+        return savings_obj
         
     @classmethod
     def check_period_success(cls, db_session, email_address):
@@ -214,5 +243,114 @@ class Savings(Base):
         db_session.commit()
         return savings_obj
      
+
+class Transaction(Base):
+    __tablename__ = 'transaction'
+
+    transaction_id = Column(Integer, Sequence('transaction_id_seq'), primary_key=True, autoincrement=True)
+    email_address = Column(String, ForeignKey('user.email_address'))
+    transaction_date = Column(String, nullable=False)
+    transaction_amount = Column(Float, nullable=False)
+
+    def __repr__(self):
+        return '<Transaction: transaction_id=%s, email_address=%s, transaction_date=%s, transaction_amount=%s, transaction_type=%s, transaction_category=%s>' % (
+            repr(self.transaction_id),
+            repr(self.email_address),
+            repr(self.transaction_date),
+            repr(self.transaction_amount)
+        )
+    
+    @classmethod
+    def create_transaction(cls, db_session, request: schema.TransactionCreate):
+        """Create a new transaction."""
+        transaction_obj = cls(
+            email_address=request.email_address,
+            transaction_date=request.transaction_date,
+            transaction_amount=request.transaction_amount
+        )
+        db_session.add(transaction_obj)
+        db_session.commit()
+        return transaction_obj
+    
+    @classmethod
+    def get_transaction_user(cls, db_session, email_address):
+        """Return the transaction object whose user_id is ``id``."""
+        return db_session.query(cls).filter_by(email_address=email_address).all()
+    
+    @classmethod
+    def delete_transaction(cls, db_session, transaction_id):
+        """Delete the transaction object whose transaction_id is ``id``."""
+        transaction_obj = cls.get_transaction_user(db_session, transaction_id)
+        if transaction_obj == None:
+            return None
+        db_session.delete(transaction_obj)
+        db_session.commit()
+        return transaction_obj
+    
+    @classmethod
+    def get_transactions_per_day(cls, db_session, email_address):
+        """Return a dictionary of all transactions from a user with the key as the date and value as the amount."""
+        transactions = cls.get_transaction_user(db_session, email_address)
+        transactions_per_day = []
+        for transaction in transactions:
+            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
+            transaction_json = {
+                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
+                'transaction_amount': transaction.transaction_amount
+            }
+            transactions_per_day.append(transaction_json)
+        return transactions_per_day
+
+    @classmethod
+    def get_transactions_per_week(cls, db_session, email_address, start_date):
+        """Return a list of transactions as JSON objects with the keys 'transaction_date' and 'transaction_amount'."""
+        transactions = cls.get_transaction_user(db_session, email_address)
+        transactions_per_week = []
+        for transaction in transactions:
+            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
+            week_start_date = transaction_date - timedelta(days=transaction_date.weekday())
+            if week_start_date < start_date:
+                continue
+            transaction_json = {
+                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
+                'transaction_amount': transaction.transaction_amount
+            }
+            transactions_per_week.append(transaction_json)
+        return transactions_per_week
+    
+    @classmethod
+    def get_transactions_per_month(cls, db_session, email_address, start_date):
+        """Return a list of transactions as JSON objects with the keys 'transaction_date' and 'transaction_amount'."""
+        transactions = cls.get_transaction_user(db_session, email_address)
+        transactions_per_month = []
+        for transaction in transactions:
+            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
+            month_start_date = transaction_date.replace(day=1)
+            if month_start_date < start_date:
+                continue
+            transaction_json = {
+                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
+                'transaction_amount': transaction.transaction_amount
+            }
+            transactions_per_month.append(transaction_json)
+        return transactions_per_month
+    
+    @classmethod
+    def get_transactions_per_year(cls, db_session, email_address, start_date):
+        """Return a dictionary of the sum of transactions per year."""
+        transactions = cls.get_transaction_user(db_session, email_address)
+        transactions_per_year = []
+        for transaction in transactions:
+            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
+            year_start_date = transaction_date.replace(month=1, day=1)
+            if year_start_date < start_date:
+                continue
+            transaction_json = {
+                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
+                'transaction_amount': transaction.transaction_amount
+            }
+            transactions_per_year.append(transaction_json)
+        return transactions_per_year
+    
 
 

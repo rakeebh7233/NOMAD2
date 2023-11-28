@@ -96,6 +96,13 @@ def search_hotels_internal(locationID: str, checkInDate: str, checkOutDate: str,
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with location {locationID} not found")
     return hotels
 
+@router.get('/hotel_internal/budget/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}/{budget}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
+def search_hotels_internal_budget(locationID: str, checkInDate: str, checkOutDate: str, guests: int, rooms: int, budget: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+    hotels = HotelModel.Hotel.get_hotel_by_budget(locationID, checkInDate, checkOutDate, guests, rooms, budget, db)
+    if hotels == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with location {locationID} not found")
+    return hotels
+
 @router.get('/hotel_external/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
 def search_hotels_external(locationID: str, checkInDate: str, checkOutDate: str, guests: int, rooms: int, db: Session = Depends(get_db)):
     url = "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchHotels"

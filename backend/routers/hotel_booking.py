@@ -52,3 +52,9 @@ def get_price(hotel_id, itinerary_id, db: Session = Depends(get_db), current_use
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel Booking with the hotel id {hotel_id} and itinerary id {itinerary_id} was not found")
     return booking.price
 
+@router.get('/sum_price/{itinerary_id}', status_code=status.HTTP_200_OK)
+def get_total_price(itinerary_id: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+    query = db.query(HotelModel.HotelBooking).join(HotelModel.Hotel).filter(HotelModel.HotelBooking.itinerary_id == itinerary_id).with_entities(HotelModel.HotelBooking.totalPrice).all()
+    total_price = sum([booking.totalPrice for booking in query])
+    return total_price
+

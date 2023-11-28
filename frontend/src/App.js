@@ -9,6 +9,8 @@ import BeginItinerary from './pages/BeginItinerary';
 import CustomerItinerary from './pages/CustomerItinerary';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import FlightSearch from './pages/FlightSearch';
+import FinanceDashboard from './pages/FinanceDashboard';
 import { AuthProvider } from './AuthContext';
 
 function App() {
@@ -34,7 +36,10 @@ function App() {
             <Route path='/itineraries/new' exact element={<BeginItinerary />} />
             <Route path='/userprofile' exact element={<Form />} />
             <Route path='/register' exact element={<Register />} />
-          </Routes>
+            <Route path='/login' exact element={<Login />} />
+          <Route path='/flightsearch' exact element={<FlightSearch />} />
+          <Route path='/financedashboard' exact element={<FinanceDashboard />} />
+        </Routes>
       </Router>
 
       <Login isLoginVisible={isLoginVisible} closeLogin={closeLogin} />

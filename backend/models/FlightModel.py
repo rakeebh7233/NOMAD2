@@ -62,23 +62,21 @@ class Flight(Base):
             )
     
     @classmethod
-    def get_flight_by_price(cls, departureAirport, arrivalAirport, departureTime, arrivalTime, totalPrice, db_session):
+    def get_flight_by_price(cls, departureAirport, arrivalAirport, departureTime, arrivalTime, budget, db_session):
         return db_session.query(cls).filter_by(
             departureAirport=departureAirport,
             arrivalAirport=arrivalAirport,
             departureTime=departureTime,
             arrivalTime=arrivalTime,
-            totalPrice=totalPrice,
-            )
+            ).filter(cls.totalPrice <= budget)
     
     @classmethod
-    def get_flight_by_oneway_price(cls, departureAirport, arrivalAirport, departureTime, totalPrice, db_session):
+    def get_flight_by_oneway_price(cls, departureAirport, arrivalAirport, departureTime, budget, db_session):
         return db_session.query(cls).filter_by(
             departureAirport=departureAirport,
             arrivalAirport=arrivalAirport,
             departureTime=departureTime,
-            totalPrice=totalPrice,
-            )
+            ).filter(cls.totalPrice <= budget)
     
     @classmethod
     def update_flight(cls, flight_id, flight: schema.FlightUpdate, db_session):

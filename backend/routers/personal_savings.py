@@ -32,6 +32,13 @@ def update(email, request: schema.SavingsCreate, db: Session = Depends(get_db), 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with id {id} not found")
     return 'updated'
 
+@router.put('/add_savings/{email}/{amount}', status_code=status.HTTP_202_ACCEPTED)
+def add_savings(email, amount, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+    response = FinanceModel.Savings.add_savings(db, email, amount)
+    if response == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with id {id} not found")
+    return 'updated'
+
 @router.delete('/delete_savings/{email}', status_code=status.HTTP_204_NO_CONTENT)
 def destroy(email, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     response = FinanceModel.Savings.delete_savings(db, email)
@@ -42,6 +49,20 @@ def destroy(email, db: Session = Depends(get_db), current_user: schema.UserModel
 @router.get('/find_savings/{email}', status_code=status.HTTP_200_OK, response_model=schema.SavingsModel)
 def show(email, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     response = FinanceModel.Savings.get_savings_user(db, email)
+    if response == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with email {email} not found")
+    return response
+
+@router.get('/period/{email}', status_code=status.HTTP_200_OK)
+def get_period(email, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+    response = FinanceModel.Savings.get_period(db, email)
+    if response == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with email {email} not found")
+    return response
+
+@router.get('/start_date/{email}', status_code=status.HTTP_200_OK)
+def get_start_date(email, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+    response = FinanceModel.Savings.get_start_date(db, email)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with email {email} not found")
     return response

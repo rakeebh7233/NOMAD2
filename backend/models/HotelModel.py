@@ -88,6 +88,10 @@ class Hotel(Base):
     @classmethod
     def get_hotel_by_request(cls, location, checkInDate, checkOutDate, guests, rooms, db_session):
         return db_session.query(cls).filter_by(location=location, checkInDate=checkInDate, checkOutDate=checkOutDate, guests=guests, rooms=rooms)
+    
+    @classmethod
+    def get_hotel_by_budget(cls, location, checkInDate, checkOutDate, guests, rooms, budget, db_session):
+        return db_session.query(cls).filter_by(location=location, checkInDate=checkInDate, checkOutDate=checkOutDate, guests=guests, rooms=rooms).filter(cls.totalPrice <= budget)
 
     @classmethod
     def update_hotel(cls, hotel_id, hotel: schema.HotelUpdate, db_session):

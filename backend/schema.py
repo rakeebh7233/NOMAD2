@@ -273,6 +273,22 @@ class SavingsModel(SavingsBase):
 class SavingsUpdate(SavingsModel):
     class Config:
         orm_mode = True
+
+# Transaction Schema
+
+class TransactionBase(BaseModel):
+    email_address: str
+    transaction_date: str
+    transaction_amount: float
+
+class TransactionCreate(TransactionBase):
+    class Config:
+        orm_mode = True
+
+class TransactionModel(TransactionBase):
+    id: int
+    class Config:
+        orm_mode = True
         
 
 
