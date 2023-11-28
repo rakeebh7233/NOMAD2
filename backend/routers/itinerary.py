@@ -6,8 +6,8 @@ from models.ItineraryModel import Itinerary
 from models.ItineraryModel import user_itinerary
 from database import db_dependency
 import schema
-import flight_booking 
-import hotel_booking 
+from models.FlightModel import FlightBooking
+from models.HotelModel import HotelBooking
 
 router = APIRouter(
     prefix = "/itineraries",
@@ -99,8 +99,8 @@ def get_total_price(itinerary_id: int, db: db_dependency):
         #raise HTTPException(status_code=404, detail="Itinerary not found")
         return {"total_price": -1}
 
-    flights = db.query(flight_booking).filter_by(itinerary_id=itinerary_id).all()
-    hotels = db.query(hotel_booking).filter_by(itinerary_id=itinerary_id).all()
+    flights = db.query(FlightBooking).filter_by(itinerary_id=itinerary_id).all()
+    hotels = db.query(HotelBooking).filter_by(itinerary_id=itinerary_id).all()
 
     total_price = 0
     for flight in flights:

@@ -4,14 +4,30 @@ from database import engine
 from config import settings
 from routers import user, flight, hotel, flight_booking, hotel_booking, tripAdvisor, personal_finance, personal_savings, itinerary, restaurant_booking
 from database import Base
+from suggestions import Suggestions
 
 
 def create_tables():         
 	Base.metadata.create_all(bind=engine)
+     
+def train_flight_suggestions():
+    suggestions = Suggestions()
+    flights = suggestions.load_flight_data()
+    training_data, test_data = suggestions.prepare_flight_data(flights)
+    suggestions.train_recommender_system(training_data, test_data, 100, 'flight')
+
+def train_hotel_suggestions():
+    suggestions = Suggestions()
+    hotels = suggestions.load_hotel_data()
+    training_data, test_data = suggestions.prepare_hotel_data(hotels)
+    suggestions.train_recommender_system(training_data, test_data, 100, 'hotel')
+
         
 def start_application():
     app = FastAPI(title=settings.PROJECT_NAME,version=settings.PROJECT_VERSION)
     create_tables()
+    #train_flight_suggestions()
+    #train_hotel_suggestions()
     return app
 
 app = start_application()

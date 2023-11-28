@@ -109,8 +109,19 @@ class Hotel(Base):
             return hotel_obj
         else:
             return None
-
-
+        
+    # @classmethod
+    # def suggestions(cls, location, checkInDate, checkOutDate, guests, rooms, price, db_session):
+    #     cinDate = dt.strptime(checkInDate, '%Y-%m-%d')
+    #     coutDate = dt.strptime(checkOutDate, '%Y-%m-%d')
+    #     cinCls = dt.strptime(cls.checkInDate, '%Y-%m-%d')
+    #     coutCls = dt.strptime(cls.checkOutDate, '%Y-%m-%d')
+    #     return db_session.query(cls)\
+    #         .filter_by(location=location, guests=guests, rooms=rooms)\
+    #         .filter(cls.totalPrice <= price + 10 and cls.totalPrice >= price - 10)\
+    #         .filter(cinCls >= cinDate - datetime.timedelta(2) and cinDate < coutDate)\
+    #         .filter(coutCls <= coutDate + datetime.timedelta(days=2) and coutDate > cinDate)
+    
 class HotelBooking(Base):
     __tablename__ = 'hotel_booking'
 
@@ -157,3 +168,6 @@ class HotelBooking(Base):
             return hotel_booking_obj
         else:
             return None
+
+
+    
