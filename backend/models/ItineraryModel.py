@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Sequence, ForeignKey, String, Integer, Table, Date, Float
+from sqlalchemy import CheckConstraint, Column, Sequence, ForeignKey, String, Integer, Table, Date, Float
 from database import Base
 import schema
 from sqlalchemy.orm import relationship
@@ -22,6 +22,10 @@ class Itinerary(Base):
     leisureActivites = Column(String, nullable=False)
     budget = Column(Float, nullable=False)
     creator_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    rating = Column(Integer, nullable=True)  # Change this line
+    
+    # Add a check constraint for the rating
+    __table_args__ = (CheckConstraint('rating >= 1 AND rating <= 5', name='rating_check'), )
     
     # Relationship to User
     members = relationship('User', secondary=user_itinerary, back_populates='itineraries')

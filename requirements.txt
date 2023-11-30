@@ -10,3 +10,4 @@ python-multipart
 python-jose[cryptography]
 requests
 pydantic[email]
+torch

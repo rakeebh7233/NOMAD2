@@ -1,10 +1,10 @@
 import React from "react";
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
-import "../styles/BeginItinerary.css";
-import { useState, useContext } from "react";
-import { AuthContext } from "../AuthContext";
-import { useNavigate } from "react-router-dom";
+import "../../styles/BeginItinerary.css";
+import { useState, useContext, useEffect } from "react";
+import { AuthContext } from "../../AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
 
 
 function BeginItinerary() {
@@ -21,7 +21,27 @@ function BeginItinerary() {
     });
 
     const navigate = useNavigate();
+    const location = useLocation();
     const { user } = useContext(AuthContext);
+
+    const itinerary = location.state?.itinerary;
+
+    useEffect(() => {
+        if (itinerary) {
+            setFormData({
+                itineraryTitle: itinerary.itineraryTitle,
+                members: itinerary.members,
+                destination: itinerary.destination,
+                departure: itinerary.departure,
+                departureDate: itinerary.departureDate,
+                returnDate: itinerary.returnDate,
+                travelReason: itinerary.travelReason,
+                leisureActivites: itinerary.leisureActivites,
+                budget: itinerary.budget
+            });
+        }
+    }, [itinerary]);
+
     if (!user) {
         console.log(user)
         navigate("/register");
@@ -30,8 +50,11 @@ function BeginItinerary() {
 
 
     const createItinerary = async (itineraryTitle, members, destination, departure, departureDate, returnDate, travelReason, leisureActivites, budget) => {
-        const response = await fetch('http://localhost:8000/itinerary/create', {
-            method: 'POST',
+        const url = itinerary ? `http://localhost:8000/itineraries/${itinerary.id}` : 'http://localhost:8000/itineraries/create';
+        const method = itinerary ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
             },

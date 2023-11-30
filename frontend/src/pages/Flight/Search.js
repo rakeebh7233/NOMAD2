@@ -119,7 +119,7 @@ function Search() {
   };
 
   return (
-    <div>
+    <div id="flightSearch">
       <div className="row mt-4 ml-5 mr-5">
         <div className="col-md-4">
           <div className="card">

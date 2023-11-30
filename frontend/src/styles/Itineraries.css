@@ -3,7 +3,7 @@
     margin-bottom: 5%;
     margin-left: auto;
     margin-right: auto;
-    width: 80%;
+    width: 62%;
 }
 
 #itineraries h1 {
@@ -11,4 +11,85 @@
   font-weight: 700;
   margin-bottom: 1rem;
   text-align: center;
+}
+
+#itineraries table {
+  border: 2px solid #ccc;
+  text-align: center;
+}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 2px solid #ccc;
+  background-color: #ac9a79;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  color: white;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #dddddd52;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #776646;
+  font-weight: bold;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+}
+
+/* Rate Modal CSS */
+.modal-dialog {
+  margin-top: 16%;
+}
+
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.modal-open .modal-backdrop {
+  pointer-events: auto;
+}
+
+.modal-body {
+  text-align: center;
+}
+
+/* StarRating CSS */
+input[type="radio"] {
+  display: none;
+}
+
+.star {
+  cursor: pointer;
 }

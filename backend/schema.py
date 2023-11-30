@@ -106,19 +106,23 @@ class ItineraryBase(BaseModel):
     leisureActivites: str
     budget: float
     creator_id: int
+    rating: Optional[int] = None
 
 class ItineraryCreate(ItineraryBase):
     members: Optional[List[EmailStr]] = []
-
+    
     class Config:
         orm_mode = True
 
 class ItineraryModel(ItineraryBase):
     id: int
     members: Optional[List[UserModel]] = []
-    
+
     class Config:
         orm_mode = True
+
+class ViewItinerary(ItineraryModel):
+    creatorUsername: Optional[str] = None
 
 class ItineraryUpdate(ItineraryModel):
     itineraryTitle: Optional[str]
