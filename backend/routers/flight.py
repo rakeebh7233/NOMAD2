@@ -54,35 +54,35 @@ def show(id, db: Session = Depends(get_db), current_user: schema.UserModel = Dep
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Flight with id {id} not found")
     return response
 
-@router.get('/internal_search/round/{departureAirport}/{arrivalAirport}/{departureTime}/{arrivalTime}/{search}', status_code=status.HTTP_200_OK, response_model=schema.FlightModel)
+@router.get('/internal_search/round/{departureAirport}/{arrivalAirport}/{departureTime}/{arrivalTime}/{search}', status_code=status.HTTP_200_OK, response_model=List[schema.FlightModel])
 def search_flights_int(departureAirport: str, arrivalAirport: str, departureTime: str, arrivalTime: str, cabinClass: str, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     response = FlightModel.Flight.get_flight_by_request(departureAirport, arrivalAirport, departureTime, arrivalTime, cabinClass, db)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Failed to retrieve flights")
     return response
 
-@router.get('internal_search/round/budeget/{departureAirport}/{arrivalAirport}/{departureTime}/{arrivalTime}/{budget}', status_code=status.HTTP_200_OK, response_model=schema.FlightModel)
+@router.get('internal_search/round/budeget/{departureAirport}/{arrivalAirport}/{departureTime}/{arrivalTime}/{budget}', status_code=status.HTTP_200_OK, response_model=List[schema.FlightModel])
 def search_flights_int_budget(departureAirport: str, arrivalAirport: str, departureTime: str, arrivalTime: str, budget: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     response = FlightModel.Flight.get_flight_by_price(departureAirport, arrivalAirport, departureTime, arrivalTime, budget, db)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Failed to retrieve flights")
     return response
 
-@router.get('/internal_search/oneway/{departureAirport}/{arrivalAirport}/{departureTime}/{cabinClass}', status_code=status.HTTP_200_OK, response_model=schema.FlightModel)
+@router.get('/internal_search/oneway/{departureAirport}/{arrivalAirport}/{departureTime}/{cabinClass}', status_code=status.HTTP_200_OK, response_model=List[schema.FlightModel])
 def search_flights_int_oneway(departureAirport: str, arrivalAirport: str, departureTime: str, cabinClass: str, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     response = FlightModel.Flight.get_flight_oneway(departureAirport, arrivalAirport, departureTime, cabinClass, db)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Failed to retrieve flights")
     return response
 
-@router.get('/internal_search/oneway/budget/{departureAirport}/{arrivalAirport}/{departureTime}/{budget}', status_code=status.HTTP_200_OK, response_model=schema.FlightModel)
+@router.get('/internal_search/oneway/budget/{departureAirport}/{arrivalAirport}/{departureTime}/{budget}', status_code=status.HTTP_200_OK, response_model=List[schema.FlightModel])
 def search_flights_int_oneway_budget(departureAirport: str, arrivalAirport: str, departureTime: str, budget: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     response = FlightModel.Flight.get_flight_by_oneway_price(departureAirport, arrivalAirport, departureTime, budget, db)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Failed to retrieve flights")
     return response
 
-@router.get('/external_search/round/{departureAirport}/{arrivalAirport}/{departureTime}/{arrivalTime}/{cabinClass}', status_code=status.HTTP_200_OK, response_model=schema.FlightModel)
+@router.get('/external_search/round/{departureAirport}/{arrivalAirport}/{departureTime}/{arrivalTime}/{cabinClass}', status_code=status.HTTP_200_OK, response_model=List[schema.FlightCreate])
 def search_flights_ext(departureAirport: str, arrivalAirport: str, departureTime: str, arrivalTime: str, cabinClass: str, db: Session = Depends(get_db)):
     
     url = "https://booking-com15.p.rapidapi.com/api/v1/flights/searchFlights"
@@ -121,11 +121,10 @@ def search_flights_ext(departureAirport: str, arrivalAirport: str, departureTime
     print(flights_list)
     cache_flights(flights_list, db)
     print("Flights from external API cached in database")
-
-    #return response.json()
+    # return response.json()
     return flights_list
 
-@router.get('/external_search/oneway/{departureAirport}/{arrivalAirport}/{departureTime}/{cabinClass}', status_code=status.HTTP_200_OK, response_model=schema.FlightModel)
+@router.get('/external_search/oneway/{departureAirport}/{arrivalAirport}/{departureTime}/{cabinClass}', status_code=status.HTTP_200_OK, response_model=List[schema.FlightCreate])
 def search_flights_ext_oneway(departureAirport: str, arrivalAirport: str, departureTime: str, cabinClass: str, db: Session = Depends(get_db)):
     
     url = "https://booking-com15.p.rapidapi.com/api/v1/flights/searchFlights"
@@ -163,14 +162,16 @@ def search_flights_ext_oneway(departureAirport: str, arrivalAirport: str, depart
     print(flights_list)
     cache_flights(flights_list, db)
     print("Flights from external API cached in database")
-
-    #return response.json()
+    # print(response.json())
+    # return response.json()
     return flights_list
 
 def cache_flights(flights: List[schema.FlightCreate], db: Session = Depends(get_db)):
     for flight in flights:
-        new_flight = FlightModel.Flight.create_flight(flight, db)
-        db.add(new_flight)
-        db.commit()
-        db.refresh(new_flight)
-    return flights
+        # new_flight = 
+        FlightModel.Flight.create_flight(flight, db)
+        "Flight Created"
+        # db.add(new_flight)
+        # db.commit()
+        # db.refresh(new_flight)
+    # return flights

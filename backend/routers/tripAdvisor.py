@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 import sys 
 sys.path.append("..")
 import schema, database, oauth2
-from models import RestaurantModel
+from models import RestaurantModel, HotelModel
 from sqlalchemy.orm import Session
 import requests 
 from config import settings
@@ -85,14 +85,14 @@ def newlocationSearchExternal(city: str, db: Session = Depends(get_db)):
             type = 'TripAdvisorAPI'
     )
     
-    RestaurantModel.Location.create_location(restSchema, db)
+    HotelModel.Location.create_location(restSchema, db)
 
     return {"geoId" :theResponse['data'][0]['geoId']}
 
 @router.get('/tripadvisorCityCheck/{city}', status_code=status.HTTP_200_OK)
 def checkLocExists(city: str, db: Session = Depends(get_db)):
 
-    res = RestaurantModel.Location.checkifCityExistsinDB(city, db)
+    res = HotelModel.Location.checkifCityExistsinDB(city, db)
     
     if res != None:
         return {'isInDB': True, 'geoID': res.geoId}

@@ -48,28 +48,29 @@ def show(id, db: Session = Depends(get_db), current_user: schema.UserModel = Dep
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with id {id} not found")
     return hotel
 
-@router.get('/find_hotel_name/{name}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
+@router.get('/find_hotel/name/{name}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
 def search_hotels(name: str, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     hotel = HotelModel.Hotel.get_hotel_by_name(db, name)
     if hotel == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with name {name} not found")
     return hotel
 
-@router.get('/find_hotel_location/{location}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
-def search_hotels(location: str, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
-    hotel = HotelModel.Hotel.get_hotel_by_location(db, location)
-    if hotel == None:
+@router.get('/find_hotel/location/{location}', status_code=status.HTTP_200_OK, response_model=List[schema.HotelModel])
+def search_hotels_location(location: str, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+    hotels = HotelModel.Hotel.get_hotel_by_location(db, location)
+    if hotels == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with location {location} not found")
-    return hotel
+    return hotels
 
-@router.get('/location_internal/{location}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
+
+@router.get('/location_internal/{location}', status_code=status.HTTP_200_OK, response_model=List[schema.LocationModel])
 def search_locations_internal(location: str, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     locations = HotelModel.Location.get_location_by_name(db, location)
     if locations == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with location {location} not found")
     return locations
 
-@router.get('/location_external/{location}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
+@router.get('/location_external/{location}', status_code=status.HTTP_200_OK, response_model=schema.LocationModel)
 def search_locations_external(location: str, db: Session = Depends(get_db)):
     url = "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchDestination"
     querystring = {"query":location}
@@ -81,29 +82,32 @@ def search_locations_external(location: str, db: Session = Depends(get_db)):
     if response.status_code != 200:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with location {location} not found")
     
-    locations = response.json()['data']
-    locations_list = []
-    print(locations[0])
+    locations = response.json()['data'][0]
+    location = schema.LocationModel(
+        name=locations['city_name'],
+        geoId=locations['dest_id'],
+        type="BookingAPI"
+    )
     # Cache locations in database
-    #cache_locations(locations_list, db) 
+    cache_locations(location, db) 
 
-    return response.json()
+    return location 
 
-@router.get('/hotel_internal/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
+@router.get('/hotel_internal/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}', status_code=status.HTTP_200_OK, response_model=List[schema.HotelModel])
 def search_hotels_internal(locationID: str, checkInDate: str, checkOutDate: str, guests: int, rooms: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     hotels = HotelModel.Hotel.get_hotel_by_request(locationID, checkInDate, checkOutDate, guests, rooms, db)
     if hotels == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with location {locationID} not found")
     return hotels
 
-@router.get('/hotel_internal/budget/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}/{budget}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
+@router.get('/hotel_internal/budget/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}/{budget}', status_code=status.HTTP_200_OK, response_model=List[schema.HotelModel])
 def search_hotels_internal_budget(locationID: str, checkInDate: str, checkOutDate: str, guests: int, rooms: int, budget: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     hotels = HotelModel.Hotel.get_hotel_by_budget(locationID, checkInDate, checkOutDate, guests, rooms, budget, db)
     if hotels == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with location {locationID} not found")
     return hotels
 
-@router.get('/hotel_external/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}', status_code=status.HTTP_200_OK, response_model=schema.HotelModel)
+@router.get('/hotel_external/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}', status_code=status.HTTP_200_OK, response_model=List[schema.HotelCreate])
 def search_hotels_external(locationID: str, checkInDate: str, checkOutDate: str, guests: int, rooms: int, db: Session = Depends(get_db)):
     url = "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchHotels"
     querystring = {
@@ -122,7 +126,7 @@ def search_hotels_external(locationID: str, checkInDate: str, checkOutDate: str,
     response = requests.request("GET", url, headers=headers, params=querystring)
     if response.status_code != 200:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with location {locationID} not found")
-    
+    print("Call Successful for Hotel API")
     hotels = response.json()['data']['hotels']
     hotels_list = []
     for hotel in hotels:
@@ -138,20 +142,21 @@ def search_hotels_external(locationID: str, checkInDate: str, checkOutDate: str,
         ))
     # Cache hotels in database
     cache_hotels(hotels_list, db) 
+    print("Hotels from external API cached in database")
 
-    return response.json()
+    #return response.json()
+    return hotels_list
 
 
 
 
-def cache_locations(locations: List[schema.LocationModel], db: Session):
-        for location in locations:
-            new_location = HotelModel.Location(
-                name=location.name,
-                geoId=location.geoId,
-                type = "BookingAPI"
-            )
-            db.add(new_location)
+def cache_locations(location: schema.LocationModel, db: Session):
+        new_location = HotelModel.Location(
+            name=location.name,
+            geoId=location.geoId,
+            type = location.type
+        )
+        db.add(new_location)
         db.commit()
 
 

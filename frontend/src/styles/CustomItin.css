@@ -35,4 +35,20 @@
     margin: 0.5rem;
 }
 
+.suggested-container{
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.planned-container{
+    margin-top: 10px;
+    border-radius: 5px;
+
+
+}
+
+.cards{
+    overflow-y: auto;
+}
+
 
