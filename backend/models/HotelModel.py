@@ -7,7 +7,7 @@ class Location(Base):
 
     name = Column(String, primary_key=True)
     geoId = Column(Integer, nullable=False)
-    type = Column(String, nullable=False)
+    type = Column(String, primary_key=True)
 
     def __repr__(self):
         return f'<Location {self.name}>'
