@@ -114,17 +114,16 @@ class Hotel(Base):
         else:
             return None
         
-    # @classmethod
-    # def suggestions(cls, location, checkInDate, checkOutDate, guests, rooms, price, db_session):
-    #     cinDate = dt.strptime(checkInDate, '%Y-%m-%d')
-    #     coutDate = dt.strptime(checkOutDate, '%Y-%m-%d')
-    #     cinCls = dt.strptime(cls.checkInDate, '%Y-%m-%d')
-    #     coutCls = dt.strptime(cls.checkOutDate, '%Y-%m-%d')
-    #     return db_session.query(cls)\
-    #         .filter_by(location=location, guests=guests, rooms=rooms)\
-    #         .filter(cls.totalPrice <= price + 10 and cls.totalPrice >= price - 10)\
-    #         .filter(cinCls >= cinDate - datetime.timedelta(2) and cinDate < coutDate)\
-    #         .filter(coutCls <= coutDate + datetime.timedelta(days=2) and coutDate > cinDate)
+    @classmethod
+    def delete_hotel(cls, hotel_id, db_session):
+        """Delete an existing hotel."""
+        hotel_obj = db_session.query(cls).filter_by(id=hotel_id).first()
+        if hotel_obj:
+            db_session.delete(hotel_obj)
+            db_session.commit()
+            return hotel_obj
+        else:
+            return None
     
 class HotelBooking(Base):
     __tablename__ = 'hotel_booking'
