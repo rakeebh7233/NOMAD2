@@ -88,6 +88,11 @@ function Home() {
             {token && user && (<p>Welcome {user.firstName} {user.lastName}</p>)}
             <p>We've Been Waiting for you Fellow Nomad</p>
 
+            <div className='search-container'>
+              <div><label >Where are you  off to Next?</label></div>
+              <div>
+                <input id='location' type='text' placeholder='Search your location' onChange={e => setLocation(e.target.value)} />
+                
                 <div className='search-container'>
                   <label>Check in</label>
                   <input id='check-in' type='date' onChange={e => setStartDate(e.target.value)}/>
@@ -97,17 +102,6 @@ function Home() {
                   <input id='check-out' type='date' onChange={e => setEndDate(e.target.value)}/>
                 </div>
 
-              </div>
-              <div className='search-container'>
-                <button
-
-                  onClick = {handleSubmit}
-                >
-
-            <div className='search-container'>
-              <div><label >Where are you  off to Next?</label></div>
-              <div>
-                <input id='location' type='text' placeholder='Search your location' onChange={e => setLocation(e.target.value)} />
                 <button 
                   style={{ marginLeft: "10px" }}
                   class="btn btn-primary" data-mdb-ripple-init="light"
