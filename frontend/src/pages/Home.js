@@ -7,9 +7,13 @@ import { AuthContext } from "../AuthContext";
 function Home() {
   const {token, user} = useContext(AuthContext);
   const [location, setLocation] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const handleSubmit = async(e) => {
 
+    localStorage.setItem('startDate', startDate);
+    localStorage.setItem('endDate', endDate);
     const options = {
       method: 'GET',
       url: 'http://127.0.0.1:8000/restaurant/tripadvisorCityCheck/'+location, 
@@ -23,7 +27,7 @@ function Home() {
       else{
         const options1 = {
           method: 'GET',
-          url: 'http://127.0.0.1:8000/restaurant/locations/'+location, 
+          url: 'http://127.0.0.1:8000/restaurant/locations/'+location,
         };
 
         try{
@@ -37,6 +41,40 @@ function Home() {
       }
     } catch (error) {
       console.error(error);
+    }
+
+    const options3 = {
+      method: 'GET',
+      url: 'http://127.0.0.1:8000/hotel/location_internal/' + location,
+      headers: {'Authorization': `Bearer ${localStorage.getItem('authToken')}`}
+    }
+
+    try{
+      const response2 = await axios.request(options3);
+
+      console.log(response2)
+      if(response2['data']['isInDB']){
+        localStorage.setItem('BookingAPIGeoID', response2['data']['geoId']);
+      }
+      else{
+        const options4 = {
+          method: 'GET',
+          url: 'http://127.0.0.1:8000/hotel/location_external/' + location,
+          headers: {'Authorization': `Bearer ${localStorage.getItem('authToken')}`}
+        }
+
+        try{
+          const response3 = await axios.request(options4);
+
+          localStorage.setItem('BookingAPIGeoID', response3['data']['geoId']);
+        }
+        catch(error){
+          console.error(error)
+        }
+      }
+    }
+    catch(error){
+      console.error(error)
     }
   };
 
@@ -57,11 +95,11 @@ function Home() {
 
                 <div className='search-container'>
                   <label>Check in</label>
-                  <input id='check-in' type='date' />
+                  <input id='check-in' type='date' onChange={e => setStartDate(e.target.value)}/>
                 </div>
                 <div className='search-container'>
                   <label>Check out</label>
-                  <input id='check-out' type='date' />
+                  <input id='check-out' type='date' onChange={e => setEndDate(e.target.value)}/>
                 </div>
 
               </div>
