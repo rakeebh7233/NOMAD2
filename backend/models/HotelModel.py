@@ -29,12 +29,16 @@ class Location(Base):
         return db_session.query(cls).all()
     
     @classmethod
-    def get_location_by_name(cls, name, db_session):
-        return db_session.query(cls).filter_by(name=name).first()
+    def get_location_by_name(cls, db_session, name, type):
+        return db_session.query(cls).filter_by(name=name, type=type).first()
     
     @classmethod
     def checkifCityExistsinDB(cls, city, db_session):
         return db_session.query(cls).filter_by(name = city).first()
+    
+    @classmethod
+    def get_location_by_id(cls, db_session, locationID, type):
+        return db_session.query(cls).filter_by(geoId = locationID, type=type).first()
 
 class Hotel(Base):
     __tablename__ = 'hotel'
@@ -87,7 +91,7 @@ class Hotel(Base):
     
     @classmethod
     def get_hotel_by_request(cls, location, checkInDate, checkOutDate, guests, rooms, db_session):
-        return db_session.query(cls).filter_by(location=location, checkInDate=checkInDate, checkOutDate=checkOutDate, guests=guests, rooms=rooms)
+        return db_session.query(cls).filter_by(location=location, checkInDate=checkInDate, checkOutDate=checkOutDate, guests=guests, rooms=rooms).all()
     
     @classmethod
     def get_hotel_by_budget(cls, location, checkInDate, checkOutDate, guests, rooms, budget, db_session):
