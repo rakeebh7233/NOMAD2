@@ -11,6 +11,7 @@ import { Navigate } from "react-router-dom";
 function CustomerItinerary(){
     const[hotels, setHotels] = useState([]);
 
+
     const[restaurants, setRestaurants] = useState([]);
 
     const [flights, setFlights] = useState([]);
@@ -19,6 +20,9 @@ function CustomerItinerary(){
         getRestaurants();
         getHotels();
         getFlights();
+
+        console.log("Itinerary_id ", itinerary_id)
+
     }, []);
 
     const { user } = useContext(AuthContext);
@@ -184,6 +188,31 @@ function CustomerItinerary(){
         })
     }
 
+    const addRestaurant = async (restaurant_id, restaurantName) => {
+        const geoID = localStorage.getItem('tripAdvisorGeoID')
+        const response = await fetch('http://localhost:8000/restaurant_booking/new_booking', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                geoID: geoID,
+                restaurant_id: restaurant_id,
+                itinerary_id: itinerary_id,
+                restaurantName: restaurantName
+            })
+        });
+
+        if (response.ok) {
+            console.log("Added restaurant")
+        } else {
+            throw new Error("Restaurant not added");
+        }
+
+        const data = await response.json();
+        return data;
+    }
+
     return(
         <section id="customItinPage">
         <div className="row gx-1 px-4">
@@ -282,7 +311,6 @@ function CustomerItinerary(){
                 <a href="https://www.booking.com" target="_blank" className="card-btn">View </a>
             </div>
             ))}
-
         </div>
 
         <h2>Activites</h2>
@@ -295,6 +323,7 @@ function CustomerItinerary(){
                 />
                 <h3 className="card-title">Skiing</h3>
                 <div className="card-description">Day: October 30th, 2023</div>
+                <a className="primary-btn">Add to Itinerary</a>
                 <a href="this should go to hotel booking link" className="card-btn">Booking</a>
             </div>
             <div className="card-container">
@@ -305,6 +334,7 @@ function CustomerItinerary(){
                 />
                 <h3 className="card-title">Jet Packing</h3>
                 <div className="card-description">Day: November 2nd, 2023</div>
+                <a className="primary-btn">Add to Itinerary</a>
                 <a href="this should go to hotel booking link" className="card-btn">Booking</a>
             </div>
         </div>
@@ -323,6 +353,7 @@ function CustomerItinerary(){
                 </div>
                 <div className="card-description">Price Tag: {rest.priceTag}</div>
                 <div className="card-description">Avg Rating: {rest.averageRating}</div>
+                <a className="primary-btn" onClick={()=>addRestaurant(rest.id, rest.name)}>Add to Itinerary</a>
                 <a href={rest.menuURL} className="card-btn">Menu</a>
             </div>
             ))}

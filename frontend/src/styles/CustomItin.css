@@ -36,6 +36,17 @@
     margin: 0.5rem;
 }
 
+.primary-btn{
+    text-align: center;
+    width: 90%;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    background-color: rgb(8, 136, 228);
+    color: white;
+    text-decoration: none;
+    margin: 0.5rem;
+}
+
 .suggested-container{
     margin-top: 10px;
     border-radius: 5px;

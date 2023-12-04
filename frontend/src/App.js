@@ -32,7 +32,7 @@ function App() {
         <Routes>
           <Route path='/' exact element={<Home />} />
           <Route path='/itineraries' exact element={<Itineraries />} />
-          <Route path='/currentitinerary' exact element={<CustomerItinerary />} />
+          <Route path='/itineraries/:itinerary_id' exact element={<CustomerItinerary />} />
           <Route path='/itineraries/new' exact element={<BeginItinerary />} />
           <Route path='/userprofile' exact element={<Form />} />
           <Route path='/register' exact element={<Register />} />
