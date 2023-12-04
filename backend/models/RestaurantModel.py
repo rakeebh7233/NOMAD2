@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Sequence, ForeignKey, String, Integer, Float
+from sqlalchemy.orm import relationship
 from database import Base
 import schema
 
@@ -12,6 +13,8 @@ class Restaurant(Base):
     userReviewCount = Column(Integer, nullable=False)
     priceTag = Column(String, nullable=False)
     menuURL = Column(String)
+
+    restaurant_bookings = relationship('RestaurantBooking', back_populates='restaurant')
 
     @classmethod
     def create_restaurant(cls, restaurant: schema.RestaurantCreate, db_session):
@@ -42,6 +45,9 @@ class RestaurantBooking(Base):
     itinerary_id = Column(Integer, ForeignKey('itinerary.id'), primary_key=True)
     restaurantName = Column(String, nullable=False)
     geoID = Column(Integer, nullable=False)
+
+    restaurant = relationship('Restaurant', back_populates='restaurant_bookings')
+    
 
     def __repr__(self):
         return f'<RestaurantBooking {self.geoID} {self.restaurantName} {self.itinerary_id_id}>'

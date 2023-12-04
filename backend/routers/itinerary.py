@@ -2,17 +2,19 @@ from typing import List
 from fastapi import APIRouter, Body, HTTPException
 from importlib import import_module
 from sqlalchemy import delete
+from sqlalchemy.orm import joinedload
 from datetime import date
 from models.ItineraryModel import Itinerary
 from models.ItineraryModel import user_itinerary
-from database import db_dependency
-import schema
 from models.FlightModel import FlightBooking
 from models.HotelModel import HotelBooking
+from models.RestaurantModel import RestaurantBooking, Restaurant
+from database import db_dependency
+import schema
 
 router = APIRouter(
-    prefix = "/itineraries",
-    tags = ['Itineraries']
+    prefix="/itineraries",
+    tags=['Itineraries']
 )
 
 @router.get("/{user_id}", response_model=List[schema.ViewItinerary])
@@ -168,6 +170,17 @@ def rate_itinerary(db: db_dependency, itinerary_id: int, rating = Body(...)):
     db.refresh(itinerary)
 
     return itinerary
+
+@router.get("/{itinerary_id}/restaurants")
+def get_restaurants(itinerary_id: int, db: db_dependency):
+    itinerary = db.query(Itinerary).filter_by(id=itinerary_id).first()
+
+    if not itinerary:
+        raise HTTPException(status_code=404, detail="Itinerary not found")
+
+    restaurants = db.query(RestaurantBooking).options(joinedload(RestaurantBooking.restaurant)).filter_by(itinerary_id=itinerary_id).all()
+
+    return restaurants
 
 @router.get("/price/total/{itinerary_id}")
 def get_total_price(itinerary_id: int, db: db_dependency):
