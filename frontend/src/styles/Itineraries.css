@@ -3,7 +3,13 @@
     margin-bottom: 5%;
     margin-left: auto;
     margin-right: auto;
-    width: 62%;
+    width: 100%;
+}
+
+#tableContainer {
+  display: inline-block;
+  /* margin-left: auto;
+  margin-right: auto; */
 }
 
 #itineraries h1 {

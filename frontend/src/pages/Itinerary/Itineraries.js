@@ -4,7 +4,7 @@ import { useAuth } from '../../AuthContext';
 import '../../styles/Itineraries.css';
 import RatingModal from './RatingModal';
 import { useNavigate } from "react-router-dom";
-
+import { Link } from 'react-router-dom';
 
 function Itineraries() {
     const [itineraries, setItineraries] = useState([]);
@@ -52,12 +52,12 @@ function Itineraries() {
         setShowModal(false);
 
         // Re-fetch the data from the server
-        const response = await fetch('http://localhost:8000/itineraries');
+        const response = await fetch(`http://localhost:8000/itineraries/${user.id}/past`);
         if (!response.ok) {
             throw new Error(`An error occurred: ${response.statusText}`);
         }
         const data = await response.json();
-        setItineraries(data);
+        setPastItineraries(data);
     };
 
     function openTab(evt, tabName) {
@@ -88,131 +88,141 @@ function Itineraries() {
             </button>
             <br />
             <h1>Your Itineraries</h1>
-            <div class="tab">
-                <button class="tablinks" onClick={(evt) => openTab(evt, 'currItin')}>Current Itineraries</button>
-                <button class="tablinks" onClick={(evt) => openTab(evt, 'pastItin')}>Past Itineraries</button>
-            </div>
+            <div id="tableContainer">
+                <div class="tab">
+                    <button class="tablinks" onClick={(evt) => openTab(evt, 'currItin')}>Current Itineraries</button>
+                    <button class="tablinks" onClick={(evt) => openTab(evt, 'pastItin')}>Past Itineraries</button>
+                </div>
 
-            <table id="currItin" class="table align-middle bg-white tabcontent">
-                <thead class="bg-light">
-                    <tr>
-                        <th>Title</th>
-                        <th>Destination</th>
-                        <th>Departure</th>
-                        <th>Departure Date</th>
-                        <th>Return Date</th>
-                        {/* <th>Travel Reason</th>
-                        <th>Leisure Activities</th> */}
-                        <th>Budget</th>
-                        <th>Owner</th>
-                        <th>Members</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Array.isArray(itineraries) && itineraries.map((itinerary) => (
-                        <tr key={itinerary.id}>
-                            <td>{itinerary.itineraryTitle}</td>
-                            <td>{itinerary.destination}</td>
-                            <td>{itinerary.departure}</td>
-                            <td>{itinerary.departureDate}</td>
-                            <td>{itinerary.returnDate}</td>
-                            {/* <td>{itinerary.travelReason}</td>
-                            <td>{itinerary.leisureActivities}</td> */}
-                            <td>{itinerary.budget}</td>
-                            <td>{itinerary.creatorUsername}</td>
-                            <td>{itinerary.members.map(member => member.username).join(', ')}</td>
-                            <td>
-                                <button
-                                    type="button"
-                                    class="btn btn-link btn-rounded btn-sm fw-bold"
-                                    data-mdb-ripple-color="dark"
-                                    onClick={() => navigate('/itineraries/new', { state: { itinerary } })}
-                                >
-                                    Edit
-                                </button>
-                                <br />
-                                <button
-                                    type="button"
-                                    class="btn btn-link btn-rounded btn-sm fw-bold text-danger"
-                                    data-mdb-ripple-color="dark"
-                                    onClick={() => deleteItinerary(itinerary.id)}
-                                >
-                                    Delete
-                                </button>
-                            </td>
+                <table id="currItin" class="table align-middle bg-white tabcontent">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Destination</th>
+                            <th>Departure</th>
+                            <th>Departure Date</th>
+                            <th>Return Date</th>
+                            {/* <th>Travel Reason</th>
+                            <th>Leisure Activities</th> */}
+                            <th>Budget</th>
+                            <th>Owner</th>
+                            <th>Members</th>
+                            <th>Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            <table id="pastItin" class="table align-middle bg-white tabcontent">
-                <thead class="bg-light">
-                    <tr>
-                        <th>Title</th>
-                        <th>Destination</th>
-                        <th>Departure</th>
-                        <th>Departure Date</th>
-                        <th>Return Date</th>
-                        {/* <th>Travel Reason</th>
-                        <th>Leisure Activities</th> */}
-                        <th>Budget</th>
-                        <th>Owner</th>
-                        <th>Members</th>
-                        <th>Actions</th>
-                        <th>Rating</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Array.isArray(pastItineraries) && pastItineraries.map((itinerary) => (
-                        <tr key={itinerary.id}>
-                            <td>{itinerary.itineraryTitle}</td>
-                            <td>{itinerary.destination}</td>
-                            <td>{itinerary.departure}</td>
-                            <td>{itinerary.departureDate}</td>
-                            <td>{itinerary.returnDate}</td>
-                            {/* <td>{itinerary.travelReason}</td>
-                            <td>{itinerary.leisureActivities}</td> */}
-                            <td>{itinerary.budget}</td>
-                            <td>{itinerary.creatorUsername}</td>
-                            <td>{itinerary.members.map(member => member.username).join(', ')}</td>
-                            <td>
-                                <button
-                                    type="button"
-                                    class="btn btn-link btn-rounded btn-sm fw-bold"
-                                    data-mdb-ripple-color="dark"
-                                    onClick={() => navigate('/itineraries/new', { state: { itinerary } })}
-                                >
-                                    Edit
-                                </button>
-                                <br />
-                                <button
-                                    type="button"
-                                    class="btn btn-link btn-rounded btn-sm fw-bold text-danger"
-                                    data-mdb-ripple-color="dark"
-                                    onClick={() => deleteItinerary(itinerary.id)}
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                            <td>
-                                {itinerary.rating ? (
-                                    itinerary.rating
-                                ) : (
+                    </thead>
+                    <tbody>
+                        {Array.isArray(itineraries) && itineraries.map((itinerary) => (
+                            <tr key={itinerary.id}>
+                                <td>
+                                    <Link to={`/itineraries/${itinerary.id}`}>
+                                        {itinerary.itineraryTitle}
+                                    </Link>
+                                </td>
+                                <td>{itinerary.destination}</td>
+                                <td>{itinerary.departure}</td>
+                                <td>{itinerary.departureDate}</td>
+                                <td>{itinerary.returnDate}</td>
+                                {/* <td>{itinerary.travelReason}</td>
+                                <td>{itinerary.leisureActivities}</td> */}
+                                <td>{itinerary.budget}</td>
+                                <td>{itinerary.creatorUsername}</td>
+                                <td>{itinerary.members.map(member => member.username).join(', ')}</td>
+                                <td>
                                     <button
-                                        onClick={() => handleOpenModal(itinerary)}
                                         type="button"
-                                        className="btn btn-link btn-rounded btn-sm fw-bold text-warning"
+                                        class="btn btn-link btn-rounded btn-sm fw-bold"
                                         data-mdb-ripple-color="dark"
+                                        onClick={() => navigate('/itineraries/new', { state: { itinerary } })}
                                     >
-                                        Rate
+                                        Edit
                                     </button>
-                                )}
-                            </td>
+                                    <br />
+                                    <button
+                                        type="button"
+                                        class="btn btn-link btn-rounded btn-sm fw-bold text-danger"
+                                        data-mdb-ripple-color="dark"
+                                        onClick={() => deleteItinerary(itinerary.id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                <table id="pastItin" class="table align-middle bg-white tabcontent">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Destination</th>
+                            <th>Departure</th>
+                            <th>Departure Date</th>
+                            <th>Return Date</th>
+                            {/* <th>Travel Reason</th>
+                            <th>Leisure Activities</th> */}
+                            <th>Budget</th>
+                            <th>Owner</th>
+                            <th>Members</th>
+                            <th>Actions</th>
+                            <th>Rating</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {Array.isArray(pastItineraries) && pastItineraries.map((itinerary) => (
+                            <tr key={itinerary.id}>
+                                <td>
+                                    <Link to={`/itineraries/${itinerary.id}`}>
+                                        {itinerary.itineraryTitle}
+                                    </Link>
+                                </td>
+                                <td>{itinerary.destination}</td>
+                                <td>{itinerary.departure}</td>
+                                <td>{itinerary.departureDate}</td>
+                                <td>{itinerary.returnDate}</td>
+                                {/* <td>{itinerary.travelReason}</td>
+                                <td>{itinerary.leisureActivities}</td> */}
+                                <td>{itinerary.budget}</td>
+                                <td>{itinerary.creatorUsername}</td>
+                                <td>{itinerary.members.map(member => member.username).join(', ')}</td>
+                                <td>
+                                    <button
+                                        type="button"
+                                        class="btn btn-link btn-rounded btn-sm fw-bold"
+                                        data-mdb-ripple-color="dark"
+                                        onClick={() => navigate('/itineraries/new', { state: { itinerary } })}
+                                    >
+                                        Edit
+                                    </button>
+                                    <br />
+                                    <button
+                                        type="button"
+                                        class="btn btn-link btn-rounded btn-sm fw-bold text-danger"
+                                        data-mdb-ripple-color="dark"
+                                        onClick={() => deleteItinerary(itinerary.id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                                <td>
+                                    {itinerary.rating ? (
+                                        itinerary.rating
+                                    ) : (
+                                        <button
+                                            onClick={() => handleOpenModal(itinerary)}
+                                            type="button"
+                                            className="btn btn-link btn-rounded btn-sm fw-bold text-warning"
+                                            data-mdb-ripple-color="dark"
+                                        >
+                                            Rate
+                                        </button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
             <RatingModal show={showModal} handleClose={handleCloseModal} itinerary_id={selectedItinerary ? selectedItinerary.id : null} />
         </div>
     );

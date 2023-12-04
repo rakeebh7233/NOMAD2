@@ -40,6 +40,8 @@ class RestaurantBooking(Base):
 
     restaurant_id = Column(Integer, ForeignKey('restaurant.id'),primary_key = True)
     itinerary_id = Column(Integer, ForeignKey('itinerary.id'), primary_key=True)
+    restaurantName = Column(String, nullable=False)
+    geoID = Column(Integer, nullable=False)
 
     def __repr__(self):
         return f'<RestaurantBooking {self.geoID} {self.restaurantName} {self.itinerary_id_id}>'
@@ -50,7 +52,8 @@ class RestaurantBooking(Base):
         restaurant_booking_obj = cls(
             geoID = restaurant_booking.geoID,
             restaurantName = restaurant_booking.restaurantName,
-            itinerary_id=restaurant_booking.itinerary_id
+            itinerary_id=restaurant_booking.itinerary_id,
+            restaurant_id=restaurant_booking.restaurant_id
         )
         db_session.add(restaurant_booking_obj)
         db_session.commit()

@@ -34,9 +34,6 @@ function NavBar({ handleLoginClick }) {
                                 <li class="nav-item">
                                     <a class="nav-link text-light" href="/itineraries">View Itineraries</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" href="/currentitinerary">Current Itinerary</a>
-                                </li>
                                 <li class="nav-item me-auto">
                                     <a class="nav-link text-light" href="/userprofile">User Profile</a>
                                 </li>

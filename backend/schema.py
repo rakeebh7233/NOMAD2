@@ -217,6 +217,7 @@ class RestaurantBookingBase(BaseModel):
     geoID: int
     restaurantName: str
     itinerary_id: int
+    restaurant_id: int
 
 class RestaurantBookingCreate(RestaurantBookingBase):
     class Config:

@@ -20,7 +20,7 @@ def all(db: Session = Depends(get_db)):
     return RestaurantModel.RestaurantBooking.get_all_restaurant_bookings(db)
 
 @router.post('/new_booking', status_code=status.HTTP_201_CREATED)
-def create(request: schema.RestaurantBookingModel, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+def create(request: schema.RestaurantBookingModel, db: Session = Depends(get_db)):
     return RestaurantModel.RestaurantBooking.create_restaurant_booking(request, db)
 
 @router.put('/update_booking/{restaurantId}/{itinerary_id}', status_code=status.HTTP_202_ACCEPTED)
