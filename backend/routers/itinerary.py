@@ -178,7 +178,7 @@ def get_restaurants(itinerary_id: int, db: db_dependency):
     if not itinerary:
         raise HTTPException(status_code=404, detail="Itinerary not found")
 
-    restaurants = db.query(RestaurantBooking).options(joinedload(RestaurantBooking.restaurant)).filter_by(itinerary_id=itinerary_id).all()
+    restaurants = db.query(RestaurantBooking).options(joinedload(RestaurantBooking.restaurant   )).filter_by(itinerary_id=itinerary_id).all()
 
     return restaurants
 

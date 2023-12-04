@@ -166,6 +166,8 @@ def search_flights_ext_oneway(departureAirport: str, arrivalAirport: str, depart
     # return response.json()
     return flights_list
 
+@router.get('/isInDB/')
+
 def cache_flights(flights: List[schema.FlightCreate], db: Session = Depends(get_db)):
     for flight in flights:
         # new_flight = 
