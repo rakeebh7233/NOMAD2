@@ -10,6 +10,7 @@ import CustomerItinerary from './pages/CustomerItinerary';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import FlightSearch from './pages/FlightSearch';
+import HotelSearch from './pages/Hotel/HotelSearch';
 import FinanceDashboard from './pages/FinanceDashboard';
 import { AuthProvider } from './AuthContext';
 
@@ -38,6 +39,7 @@ function App() {
           <Route path='/register' exact element={<Register />} />
           <Route path='/login' exact element={<Login />} />
           <Route path='/flightsearch' exact element={<FlightSearch />} />
+          <Route path='/hotelsearch' exact element={<HotelSearch />} />
           <Route path='/financedashboard' exact element={<FinanceDashboard />} />
         </Routes>
       </Router>

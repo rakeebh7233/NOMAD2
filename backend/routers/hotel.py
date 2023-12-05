@@ -65,7 +65,8 @@ def search_hotels_location(location: str, db: Session = Depends(get_db), current
 
 
 @router.get('/location_internal/{location}', status_code=status.HTTP_200_OK)
-def search_locations_internal(location: str, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+# Will put back in after testing API Call: current_user: schema.UserModel = Depends(oauth2.get_current_user)
+def search_locations_internal(location: str, db: Session = Depends(get_db)):
     locations = HotelModel.Location.get_location_by_name(db, location, "BookingAPI")
     if locations != None:
         return {'isInDB': True, 'geoId': locations.geoId}
@@ -73,6 +74,7 @@ def search_locations_internal(location: str, db: Session = Depends(get_db), curr
         return {'isInDB': False}
 
 @router.get('/location_external/{location}', status_code=status.HTTP_200_OK, response_model=schema.LocationModel)
+# Will put back in after testing API Call: current_user: schema.UserModel = Depends(oauth2.get_current_user)
 def search_locations_external(location: str, db: Session = Depends(get_db)):
     url = "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchDestination"
     querystring = {"query":location}
@@ -96,7 +98,8 @@ def search_locations_external(location: str, db: Session = Depends(get_db)):
     return location 
 
 @router.get('/hotel_internal/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}', status_code=status.HTTP_200_OK)
-def search_hotels_internal(locationID: str, checkInDate: str, checkOutDate: str, guests: int, rooms: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+# Will put back in after testing API Call: current_user: schema.UserModel = Depends(oauth2.get_current_user)
+def search_hotels_internal(locationID: str, checkInDate: str, checkOutDate: str, guests: int, rooms: int, db: Session = Depends(get_db)):
     location = HotelModel.Location.get_location_by_id(db, locationID, 'BookingAPI')
     hotels = HotelModel.Hotel.get_hotel_by_request(location.name, checkInDate, checkOutDate, guests, rooms, db)
     if hotels == None:
@@ -111,6 +114,7 @@ def search_hotels_internal_budget(locationID: str, checkInDate: str, checkOutDat
     return hotels
 
 @router.get('/hotel_external/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}', status_code=status.HTTP_200_OK)
+# Will put back in after testing API Call: current_user: schema.UserModel = Depends(oauth2.get_current_user)
 def search_hotels_external(locationID: str, checkInDate: str, checkOutDate: str, guests: int, rooms: int, db: Session = Depends(get_db)):
     url = "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchHotels"
     querystring = {

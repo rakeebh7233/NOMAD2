@@ -2,14 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine
 from config import settings
-from sqlalchemy.orm import Session
 from routers import user, flight, hotel, flight_booking, hotel_booking, tripAdvisor, personal_finance, personal_savings, itinerary, restaurant_booking
 from database import Base
-from suggestions import Suggestions
-import os.path
-import database
-
-get_db = database.get_db
 
 
 def create_tables():         

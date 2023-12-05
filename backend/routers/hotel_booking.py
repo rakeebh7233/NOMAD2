@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 import sys 
 sys.path.append("..")
 import schema, database, oauth2
-from models import HotelModel
+from models import HotelModel, ItineraryModel
 from sqlalchemy.orm import Session
 import requests 
 
@@ -23,6 +23,17 @@ def all(db: Session = Depends(get_db)):
 @router.post('/new_booking/', status_code=status.HTTP_201_CREATED)
 def create(request: schema.HotelBookingModel, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
     return HotelModel.HotelBooking.create_hotel_booking(request, db)
+
+@router.get('/create/{hotel_id}', status_code=status.HTTP_201_CREATED)
+def create_booking(hotel_id: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+    user_id = current_user.id
+    itinerary_id = ItineraryModel.Itinerary.get_user_itinerary_id(user_id, db)
+    if itinerary_id == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User does not have an itinerary to book a hotel for")
+    booking = HotelModel.HotelBooking.create_hotel_booking(schema.HotelBookingModel(hotel_id=hotel_id, itinerary_id=itinerary_id), db)
+    if booking == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel Booking with the hotel id {hotel_id} and itinerary id {itinerary_id} was not found")
+    return booking
 
 @router.put('/update_booking/{hotel_id}/{itinerary_id}', status_code=status.HTTP_202_ACCEPTED)
 def update(hotel_id, itinerary_id, request: schema.HotelBookingModel, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):

@@ -57,28 +57,32 @@ def show(id, db: Session = Depends(get_db)):
     return response
 
 @router.get('/internal_search/round/{departureAirport}/{arrivalAirport}/{departureTime}/{arrivalTime}/{search}', status_code=status.HTTP_200_OK, response_model=List[schema.FlightModel])
-def search_flights_int(departureAirport: str, arrivalAirport: str, departureTime: str, arrivalTime: str, cabinClass: str, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+# Remove temporarily from function parameters after testing the API calls: current_user: schema.UserModel = Depends(oauth2.get_current_user)
+def search_flights_int(departureAirport: str, arrivalAirport: str, departureTime: str, arrivalTime: str, cabinClass: str, db: Session = Depends(get_db)):
     response = FlightModel.Flight.get_flight_by_request(departureAirport, arrivalAirport, departureTime, arrivalTime, cabinClass, db)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Failed to retrieve flights")
     return response
 
 @router.get('internal_search/round/budeget/{departureAirport}/{arrivalAirport}/{departureTime}/{arrivalTime}/{budget}', status_code=status.HTTP_200_OK, response_model=List[schema.FlightModel])
-def search_flights_int_budget(departureAirport: str, arrivalAirport: str, departureTime: str, arrivalTime: str, budget: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+# Remove temporarily from function parameters after testing the API calls: current_user: schema.UserModel = Depends(oauth2.get_current_user)
+def search_flights_int_budget(departureAirport: str, arrivalAirport: str, departureTime: str, arrivalTime: str, budget: int, db: Session = Depends(get_db)):
     response = FlightModel.Flight.get_flight_by_price(departureAirport, arrivalAirport, departureTime, arrivalTime, budget, db)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Failed to retrieve flights")
     return response
 
 @router.get('/internal_search/oneway/{departureAirport}/{arrivalAirport}/{departureTime}/{cabinClass}', status_code=status.HTTP_200_OK, response_model=List[schema.FlightModel])
-def search_flights_int_oneway(departureAirport: str, arrivalAirport: str, departureTime: str, cabinClass: str, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+# Remove temporarily from function parameters after testing the API calls: current_user: schema.UserModel = Depends(oauth2.get_current_user)
+def search_flights_int_oneway(departureAirport: str, arrivalAirport: str, departureTime: str, cabinClass: str, db: Session = Depends(get_db)):
     response = FlightModel.Flight.get_flight_oneway(departureAirport, arrivalAirport, departureTime, cabinClass, db)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Failed to retrieve flights")
     return response
 
 @router.get('/internal_search/oneway/budget/{departureAirport}/{arrivalAirport}/{departureTime}/{budget}', status_code=status.HTTP_200_OK, response_model=List[schema.FlightModel])
-def search_flights_int_oneway_budget(departureAirport: str, arrivalAirport: str, departureTime: str, budget: int, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+# Remove temporarily from function parameters after testing the API calls: current_user: schema.UserModel = Depends(oauth2.get_current_user)
+def search_flights_int_oneway_budget(departureAirport: str, arrivalAirport: str, departureTime: str, budget: int, db: Session = Depends(get_db)):
     response = FlightModel.Flight.get_flight_by_oneway_price(departureAirport, arrivalAirport, departureTime, budget, db)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Failed to retrieve flights")
@@ -93,7 +97,7 @@ def search_flights_ext(departureAirport: str, arrivalAirport: str, departureTime
                 "departDate":departureTime,
                 "returnDate":arrivalTime,
                 "cabinClass":cabinClass,
-                "sort":"BEST",
+                "sort":"CHEAPEST",
                 "currency_code":"USD"}
     headers = {
         "X-RapidAPI-Key": API_KEY,
@@ -117,7 +121,7 @@ def search_flights_ext(departureAirport: str, arrivalAirport: str, departureTime
                 arrivalTime=flight['segments'][i]['arrivalTime'][0:10],
                 cabinClass=flight['segments'][i]['legs'][0]['cabinClass'],
                 carrier=flight['segments'][i]['legs'][0]['carriersData'][0]['name'],
-                totalPrice=flight['priceBreakdown']['total']['units']
+                totalPrice=flight['priceBreakdown']['total']['units'] / 2
             )
             flights_list.append(flight_model)
     print(flights_list)
@@ -134,7 +138,7 @@ def search_flights_ext_oneway(departureAirport: str, arrivalAirport: str, depart
                 "toId":arrivalAirport + ".AIRPORT",
                 "departDate":departureTime,
                 "cabinClass":cabinClass,
-                "sort":"BEST",
+                "sort":"CHEAPEST",
                 "currency_code":"USD"}
     headers = {
         "X-RapidAPI-Key": API_KEY,
