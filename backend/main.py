@@ -8,6 +8,7 @@ from database import Base
 
 def create_tables():         
 	Base.metadata.create_all(bind=engine)
+    
 
         
 def start_application():

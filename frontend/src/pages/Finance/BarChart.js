@@ -24,7 +24,7 @@ ChartJS.register(
 );
 
 
-function BarChart({email}){
+function BarChart(){
 
     const options = {
         responsive: true,
@@ -34,6 +34,10 @@ function BarChart({email}){
           }
         },
       };
+
+
+    
+    const email = localStorage.getItem('user').email_address;
       
       const period = axios.get(`http://localhost:8000/savings/period/${email}`);
       const start_date = axios.get(`http://localhost:8000/savings/start_date/${email}`);
