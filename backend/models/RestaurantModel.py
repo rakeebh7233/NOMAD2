@@ -47,7 +47,6 @@ class RestaurantBooking(Base):
     geoID = Column(Integer, nullable=False)
 
     restaurant = relationship('Restaurant', back_populates='restaurant_bookings')
-    
 
     def __repr__(self):
         return f'<RestaurantBooking {self.geoID} {self.restaurantName} {self.itinerary_id_id}>'

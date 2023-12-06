@@ -20,8 +20,8 @@ API_KEY = "1a662e0bdemsh110faa611833139p1cdab6jsn13e9ab23c24f"
 def all(db: Session = Depends(get_db)):
     return HotelModel.HotelBooking.get_all_hotel_bookings(db)
 
-@router.post('/new_booking/', status_code=status.HTTP_201_CREATED)
-def create(request: schema.HotelBookingModel, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+@router.post('/new_booking', status_code=status.HTTP_201_CREATED)
+def create(request: schema.HotelBookingModel, db: Session = Depends(get_db)):
     return HotelModel.HotelBooking.create_hotel_booking(request, db)
 
 @router.put('/update_booking/{hotel_id}/{itinerary_id}', status_code=status.HTTP_202_ACCEPTED)
@@ -31,8 +31,8 @@ def update(hotel_id, itinerary_id, request: schema.HotelBookingModel, db: Sessio
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel Booking with the hotel id {hotel_id} and itinerary id {itinerary_id} was not found")
     return booking
 
-@router.delete('/delete_booking/{hotel_id}/{itinerary_id}', status_code=status.HTTP_204_NO_CONTENT)
-def destroy(hotel_id, itinerary_id, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+@router.delete('/delete/{hotel_id}/{itinerary_id}', status_code=status.HTTP_204_NO_CONTENT)
+def destroy(hotel_id, itinerary_id, db: Session = Depends(get_db)):
     booking = HotelModel.HotelBooking.delete_hotel_booking(hotel_id, itinerary_id, db)
     if booking == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel Booking with the hotel id {hotel_id} and itinerary id {itinerary_id} was not found")

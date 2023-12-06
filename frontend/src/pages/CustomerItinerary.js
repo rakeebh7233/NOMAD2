@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useReducer } from "react";
 import Select from 'react-select';
 import axios from "axios";
 import "../styles/CustomItin.css";
@@ -11,22 +11,28 @@ import { Navigate } from "react-router-dom";
 function CustomerItinerary() {
     const { itinerary_id } = useParams();
     const [hotels, setHotels] = useState([]);
-
-
+    const [myHotels, setMyHotels] = useState([]);
     const [restaurants, setRestaurants] = useState([]);
     const [myRestaurants, setMyRestaurants] = useState([]);
-
     const [flights, setFlights] = useState([]);
+    const [myFlights, setMyFlights] = useState([]);
 
+    const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+    const { user } = useContext(AuthContext);
+    
     useEffect(() => {
         getRestaurants();
         getHotels();
         getFlights();
         getMyRestaurants();
+        getMyFlights();
+        getMyHotels();
+        console.log(user.id)
+        console.log(user.email_address)
 
-    }, []);
+    }, [ignored]);
 
-    const { user } = useContext(AuthContext);
+
 
     // If the user is not logged in, redirect to the login page
     if (!user) {
@@ -42,7 +48,6 @@ function CustomerItinerary() {
     }
 
     const getHotels = async () => {
-
         const geoID = localStorage.getItem('BookingAPIGeoID');
         const startDate = localStorage.getItem('startDate');
         const endDate = localStorage.getItem('endDate');
@@ -80,10 +85,41 @@ function CustomerItinerary() {
         }
     }
 
+    const getMyHotels = async () => {
+        const response = await fetch(`http://localhost:8000/itineraries/${itinerary_id}/hotels`);
+        if (!response.ok) {
+            throw new Error(`An error occurred: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setMyHotels(data);
+    }
+
+    const removeMyHotel = async (hotel_id) => {
+        const response = await fetch(`http://localhost:8000/hotel_booking/delete/${hotel_id}/${itinerary_id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }});
+        forceUpdate();
+    }                
+
+    const addHotel = async (hotel_id) => {
+        const response = await fetch('http://localhost:8000/hotel_booking/new_booking', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                hotel_id: hotel_id,
+                itinerary_id: itinerary_id
+            })
+        });
+        forceUpdate();
+    }
+
     const getFlights = async () => {
         const startDate = localStorage.getItem('startDate');
         const endDate = localStorage.getItem('endDate');
-
         const flightList = [];
 
         const options = {
@@ -160,6 +196,36 @@ function CustomerItinerary() {
 
     }
 
+    const getMyFlights = async () => {
+        const response = await fetch(`http://localhost:8000/itineraries/${itinerary_id}/flights`);
+        if (!response.ok) {
+            throw new Error(`An error occurred: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setMyFlights(data);
+    }
+
+    const addFlight = async (flight_id) => {
+        const response = await fetch('http://localhost:8000/flight_booking/new_booking', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                flight_id: flight_id,
+                itinerary_id: itinerary_id
+            })
+        });
+
+        if (response.ok) {
+            console.log("Added flight")
+        } else {
+            throw new Error("Flight not added");
+        }
+        forceUpdate();
+
+    }
+
     const getRestaurants = async () => {
         const geoID = localStorage.getItem('tripAdvisorGeoID')
         const options = {
@@ -219,6 +285,8 @@ function CustomerItinerary() {
             throw new Error("Restaurant not added");
         }
 
+        forceUpdate();
+
         const data = await response.json();
         return data;
     }
@@ -226,33 +294,37 @@ function CustomerItinerary() {
     return (
         <section id="customItinPage">
             <div className="row gx-1 px-4">
-
                 <div className="planned-container col-sm-6">
                     <h1>Planned</h1>
                     <h2>Hotel</h2>
-                    <div className="card-container">
-                        <img
-                            src="https://img.freepik.com/free-photo/beautiful-luxury-outdoor-swimming-pool-hotel-resort_74190-7433.jpg"
-                            alt="Card"
-                            className="card-img"
-                        />
-                        <h3 className="card-title">Hilton</h3>
-                        <div className="card-description">Hotel-Address: NYU Tandon School of Engineering</div>
-                        <a href="this should go to hotel booking link" className="card-btn">Booking</a>
-                    </div>
+                    {myHotels.map((hotel) => (
+                        <div className="card-container" key={hotel.hotel_id}>
+                            <img
+                                src="https://img.freepik.com/free-photo/beautiful-luxury-outdoor-swimming-pool-hotel-resort_74190-7433.jpg"
+                                alt="Card"
+                                className="card-img"
+                            />
+                            <h3 className="card-title">{hotel.hotel.name}</h3>
+                            <div className="card-description">Room Cost: {hotel.hotel.totalPrice}</div>
+                            <a className="btn btn-danger card-danger-btn" onClick={() => removeMyHotel(hotel.hotel_id)}>Remove</a>
+                            <a href="this should go to hotel booking link" className="card-btn">Booking</a>
+                        </div>
+                    ))}
 
                     <h2>Flight</h2>
+                    {myFlights.map((flight) => (
+                        <div className="card-container" key={flight.flight_id}>
+                            <img
+                                src="https://petapixel.com/assets/uploads/2022/05/how-to-take-photos-out-of-an-airplane-window-featured.jpg"
+                                alt="Card"
+                                className="card-img"
+                            />
+                            <h3 className="card-title">{flight.flight.carrier}</h3>
+                            <div className="card-description">Departure Airport: {flight.flight.departureAirport}  Arrival Airport: {flight.flight.arrivalAirport}</div>
+                            <a href="this should go to hotel booking link" className="card-btn">Booking</a>
+                        </div>
+                    ))}
 
-                    <div className="card-container">
-                        <img
-                            src="https://petapixel.com/assets/uploads/2022/05/how-to-take-photos-out-of-an-airplane-window-featured.jpg"
-                            alt="Card"
-                            className="card-img"
-                        />
-                        <h3 className="card-title">Delta Airline</h3>
-                        <div className="card-description">Airport: LGA</div>
-                        <a href="this should go to hotel booking link" className="card-btn">Booking</a>
-                    </div>
 
                     <h2>Activites</h2>
                     <div className="d-flex">
@@ -281,7 +353,7 @@ function CustomerItinerary() {
                     <h2>Restaurants</h2>
                     <div className="d-flex flex-wrap">
                         {myRestaurants.map((rest) => (
-                            <div className="card-container" key={rest.id}>
+                            <div className="card-container" key={rest.restaurant_id}>
                                 <img
                                     src={rest.image_url}
                                     alt="Card"
@@ -300,7 +372,7 @@ function CustomerItinerary() {
                     <h2>Hotel</h2>
 
                     <div className="cards d-flex">
-                        {hotels.map(rest => (
+                        {hotels.map(hotel => (
                             <div className="card-container">
                                 <img
                                     src="https://monicafrancis.com/wp-content/uploads/2021/12/Monica-Francis-Best-NYC-Restaurants-La-Mercerie.jpg"
@@ -308,11 +380,11 @@ function CustomerItinerary() {
                                     className="card-img"
                                 />
                                 <div className="d-flex">
-                                    <h3 className="card-title">{rest.name}</h3>
+                                    <h3 className="card-title">{hotel.name}</h3>
                                 </div>
-                                <div className="card-description">Total Price: {rest.totalPrice}</div>
-                                <div className="card-description">Guests: {rest.guests}  Rooms: {rest.rooms}</div>
-                                <a className="primary-btn">Add to Itinerary</a>
+                                <div className="card-description">Total Price: {hotel.totalPrice}</div>
+                                <div className="card-description">Guests: {hotel.guests}  Rooms: {hotel.rooms}</div>
+                                <a className="primary-btn" onClick={() => addHotel(hotel.id)}>Add to Itinerary</a>
                                 <a href="https://www.booking.com" target="_blank" className="card-btn">View </a>
                             </div>
                         ))}
@@ -334,7 +406,7 @@ function CustomerItinerary() {
                                 <div className="card-description">Departure Airport: {flight.departureAirport}  Arrival Airport: {flight.arrivalAirport}</div>
                                 <div className="card-description">Cabin: {flight.cabinClass} </div>
                                 <div className="card-description">Cost : {flight.totalPrice}</div>
-                                <a className="primary-btn">Add to Itinerary</a>
+                                <a className="primary-btn" onClick={() => addFlight(flight.id)}>Add to Itinerary</a>
                                 <a href="https://www.booking.com" target="_blank" className="card-btn">View </a>
                             </div>
                         ))}

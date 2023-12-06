@@ -139,7 +139,6 @@ def update_itinerary(itinerary_id: int, itinerary: schema.ItineraryCreate, db: d
 
     return itinerary_obj
 
-    # Note for later: user permissions to delete may need to be checked
 @router.delete("/{itinerary_id}")
 def delete_itinerary(itinerary_id: int, db: db_dependency):
     # Fetch the itinerary
@@ -178,9 +177,31 @@ def get_restaurants(itinerary_id: int, db: db_dependency):
     if not itinerary:
         raise HTTPException(status_code=404, detail="Itinerary not found")
 
-    restaurants = db.query(RestaurantBooking).options(joinedload(RestaurantBooking.restaurant   )).filter_by(itinerary_id=itinerary_id).all()
+    restaurants = db.query(RestaurantBooking).options(joinedload(RestaurantBooking.restaurant)).filter_by(itinerary_id=itinerary_id).all()
 
     return restaurants
+
+@router.get("/{itinerary_id}/flights")
+def get_flights(itinerary_id: int, db: db_dependency):
+    itinerary = db.query(Itinerary).filter_by(id=itinerary_id).first()
+
+    if not itinerary:
+        raise HTTPException(status_code=404, detail="Itinerary not found")
+
+    flights = db.query(FlightBooking).options(joinedload(FlightBooking.flight)).filter_by(itinerary_id=itinerary_id).all()
+
+    return flights
+
+@router.get("/{itinerary_id}/hotels")
+def get_hotels(itinerary_id: int, db: db_dependency):
+    itinerary = db.query(Itinerary).filter_by(id=itinerary_id).first()
+
+    if not itinerary:
+        raise HTTPException(status_code=404, detail="Itinerary not found")
+
+    hotels = db.query(HotelBooking).options(joinedload(HotelBooking.hotel)).filter_by(itinerary_id=itinerary_id).all()
+
+    return hotels
 
 @router.get("/price/total/{itinerary_id}")
 def get_total_price(itinerary_id: int, db: db_dependency):

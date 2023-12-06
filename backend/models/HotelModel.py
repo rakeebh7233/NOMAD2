@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Sequence, ForeignKey, String, Integer, Float, Date
+from sqlalchemy.orm import relationship
 from database import Base
 import schema
 
@@ -52,6 +53,8 @@ class Hotel(Base):
     rooms = Column(Integer, nullable=False)
     reviewScore = Column(Float, nullable=False)
     totalPrice = Column(Float, nullable=False)
+
+    hotel_bookings = relationship('HotelBooking', back_populates='hotel')
 
     def __repr__(self):
         return f'<Hotel {self.name}>'
@@ -131,6 +134,8 @@ class HotelBooking(Base):
 
     hotel_id = Column(Integer, ForeignKey('hotel.id'), primary_key=True)
     itinerary_id = Column(Integer, ForeignKey('itinerary.id'), primary_key=True)
+
+    hotel = relationship('Hotel', backref='hotel_booking')
 
     def __repr__(self):
         return f'<HotelBooking {self.hotel_id} {self.itinerary_id_id}>'

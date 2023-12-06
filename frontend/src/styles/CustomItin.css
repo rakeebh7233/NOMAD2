@@ -36,6 +36,16 @@
     margin: 0.5rem;
 }
 
+.card-danger-btn{
+    text-align: center;
+    width: 90%;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    color: white;
+    text-decoration: none;
+    margin: 0.5rem;
+}
+
 .primary-btn{
     text-align: center;
     width: 90%;

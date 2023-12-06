@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Sequence, ForeignKey, String, Integer, Float
+from sqlalchemy.orm import relationship
 from database import Base
 import schema
-from .ItineraryModel import Itinerary
 
 class Flight(Base):
     __tablename__ = 'flight'
@@ -14,6 +14,8 @@ class Flight(Base):
     cabinClass = Column(String, nullable=False)
     carrier = Column(String, nullable=False)
     totalPrice = Column(Float, nullable=False)
+
+    flight_bookings = relationship('FlightBooking', back_populates='flight')
 
     def __repr__(self):
         return f'<Flight {self.id}>'
@@ -102,6 +104,8 @@ class FlightBooking(Base):
     flight_id = Column(Integer, ForeignKey('flight.id'), primary_key=True)
     itinerary_id = Column(Integer, ForeignKey(
         'itinerary.id'), primary_key=True)
+    
+    flight = relationship('Flight', back_populates='flight_bookings')
 
     def __repr__(self):
         return f'<FlightBooking {self.flight_id} {self.itinerary_id}>'
