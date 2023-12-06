@@ -28,7 +28,7 @@ ChartJS.register(
     Legend
 );
 
-function LineChart({email}) {
+function LineChart() {
 
     const options = {
         responsive: true,
@@ -40,10 +40,11 @@ function LineChart({email}) {
     };
 
     const [data, setData] = useState({});
+    const email = localStorage.getItem('user').email_address;
 
     const fetchData = async () => {
         let response;
-        response = await axios.get(`http://localhost:8000/transactions/daily/`);
+        response = await axios.get(`http://localhost:8000/transactions/daily/${email}`);
 
         const chartData = {
             labels: response.data.map(item => item.transaction_date),

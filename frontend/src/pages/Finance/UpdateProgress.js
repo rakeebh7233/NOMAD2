@@ -3,7 +3,7 @@ import { useState } from "react"
 import TitleCard from "../../components/cards/TitleCard"
 import axios from "axios"
 
-function UpdateProgress({email}){
+function UpdateProgress(){
 
     // const navigate = useNavigate()
 
@@ -13,6 +13,7 @@ function UpdateProgress({email}){
         setAddToSavings(parseFloat(val))
     }
     
+    const email = localStorage.getItem('user').email_address;
 
     const updateSavings = () => {
 

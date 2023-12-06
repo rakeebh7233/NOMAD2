@@ -1,4 +1,21 @@
 import React from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+
+const handleBookClick = async (flight_id) => {
+  try {
+    // Make axios GET call here
+    // const response = await axios.get(`http://localhost:8000/flight_booking/`);
+    const newBooking = await axios.get(`http://localhost:8000/flight_booking/create/${flight_id}`);
+    // Navigate to another page
+    // const navigate = useNavigate();
+    // navigate('/itineraries');
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
 
 function Ticket(props) {
   const { filteredData} = props;
@@ -27,19 +44,20 @@ function Ticket(props) {
                       }}
                     >
                       <span>
-                        <b>$ {data.price}</b>
+                        <b>$ {data.totalPrice}</b>
                       </span>
                     </div>
                     <div>
-                      <b>
+                      {/* <b>
                         {data.from.short} {'>>'} {data.to.short}
-                      </b>
+                      </b> */}
                     </div>
                     <div>Departure Aiport: {data.departureAirport}</div>
                     <div>Arrival Airport: {data.arrivalAirport}</div>
                     <div>Depart: {data.departureTime}</div>
                     <div>Arrive: {data.arrivalTime}</div>
                     <div>Class: {data.cabinClass}</div>
+                    <div>Carrier: {data.carrier}</div>
                   </div>
                 </div>
                 <div
@@ -58,7 +76,7 @@ function Ticket(props) {
                     />
                   </div>
                   <div>
-                    <button type="button" className="btn btn-sm btn-info">
+                    <button type="button" className="btn btn-sm btn-info" onClick={handleBookClick(data.id)}>
                       <b>Book</b>
                     </button>
                   </div>

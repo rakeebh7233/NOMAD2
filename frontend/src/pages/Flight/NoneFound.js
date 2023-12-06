@@ -1,7 +1,7 @@
 import React from "react";
 
 
-function NoneFound() {
+function NoneFound(type) {
 
     return (
         <div
@@ -23,7 +23,7 @@ function NoneFound() {
                         className="text-muted"
                         style={{ fontSize: "20px", fontWeight: "bold" }}
                     >
-                        Search Flights
+                        {type.type}
                     </div>
                 </div>
             </div>

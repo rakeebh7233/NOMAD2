@@ -96,6 +96,17 @@ class Flight(Base):
             return flight_obj
         else:
             return None
+        
+    @classmethod
+    def delete_flight(cls, flight_id, db_session):
+        """Delete an existing flight."""
+        flight_obj = db_session.query(cls).filter_by(id=flight_id).first()
+        if flight_obj:
+            db_session.delete(flight_obj)
+            db_session.commit()
+            return flight_obj
+        else:
+            return None
 
 
 class FlightBooking(Base):

@@ -48,45 +48,64 @@ function Search() {
 
     const handleFilter = async () => {
         try {
+            console.log("Book Return:" + bookReturn)
+            console.log("Return Date:" + returnDate)
             // Make a database call to check for a flight
             const response = await axios.get(`http://localhost:8000/flight/internal_search/oneway/${originCity}/${destinationCity}/${departureDate}/${cabinClass}`);
             const flightData = response.data;
-
-            if (flightData !== null) {
+            console.log(flightData)
+            if (flightData.length !== 0) {
                 // Flight found in the database, return the data
                 setFilteredData(flightData);
             } else {
                 // Flight not found in the database, make an API call, will then populate the database
                 let apiResponse
-                if (bookReturn && returnDate) {
-                    apiResponse = await axios.get(`http://localhost:8000/flight/external_search/round/${originCity}/${destinationCity}/${departureDate}/${returnDate}/${cabinClass}`);
+                let updatedResponse
+                let updatedFlightData
+                if (bookReturn === true && returnDate.length !== 0) {
+                    apiResponse = await axios.get(`http://localhost:8000/flight/external_search/round/${originCity}/${destinationCity}/${departureDate}/${returnDate}/${cabinClass}`).then(async (response) => {
+                      updatedResponse = await axios.get(`http://localhost:8000/flight/internal_search/oneway/${originCity}/${destinationCity}/${departureDate}/${cabinClass}`).then((response) => {
+                        updatedFlightData = response.data;
+                        console.log("Updated Flight Data: " + updatedFlightData)
+                        setFilteredData(updatedFlightData);
+                      });
+                });
                 } else {
-                    apiResponse = await axios.get(`http://localhost:8000/flight/external_search/oneway/${originCity}/${destinationCity}/${departureDate}/${cabinClass}`);
-                }
-                const externalFlightData = apiResponse.data;
+                    apiResponse = await axios.get(`http://localhost:8000/flight/external_search/oneway/${originCity}/${destinationCity}/${departureDate}/${cabinClass}`).then(async (response) => {
+                      updatedResponse = await axios.get(`http://localhost:8000/flight/internal_search/oneway/${originCity}/${destinationCity}/${departureDate}/${cabinClass}`).then((response) => {
+                        updatedFlightData = response.data;
+                        console.log("Updated Flight Data: " + updatedFlightData)
+                        setFilteredData(updatedFlightData);
+                      });
+                    });
+                // const externalFlightData = apiResponse.data;
+                // console.log("External Flight Data: " + externalFlightData)
 
                 // Make the database call again
-                const updatedResponse = await axios.get(`http://localhost:8000/flight/internal_search/oneway/${originCity}/${destinationCity}/${departureDate}/${cabinClass}`);
-                const updatedFlightData = updatedResponse.data;
+                // const updatedResponse = await axios.get(`http://localhost:8000/flight/internal_search/oneway/${originCity}/${destinationCity}/${departureDate}/${cabinClass}`);
+                // const updatedFlightData = updatedResponse.data;
+                // onsole.log("Updated Flight Data: " + updatedFlightData)
 
-                if (updatedFlightData == null) {
-                    // No matching flights found
-                    alert("No matching flights found for your criteria.");
-                }
+                // if (updatedFlightData.length === 0) {
+                //     // No matching flights found
+                //     alert("No matching flights found for your criteria.");
+                // }
 
-                setFilteredData(updatedFlightData);
+                // setFilteredData(updatedFlightData);
+              }
             }
         } catch (error) {
             console.error("Error:", error);
         }
     };
     const returnFilter = async () => {
+      console.log("Return Filter")
         try {
             // Make a database call to check for a flight
             const response = await axios.get(`http://localhost:8000/flight/internal_search/oneway/${destinationCity}/${originCity}/${returnDate}/${cabinClass}`);
             const flightData = response.data;
 
-            if (flightData !== null) {
+            if (flightData.length !== 0) {
                 // Flight found in the database, return the data
                 setReturnFilterData(flightData);
             } else {
@@ -99,7 +118,7 @@ function Search() {
     };
 
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (bookReturn && !returnDate) {
       alert("You must specify a Return Date!");
     } else if (!originCity) {
@@ -111,8 +130,8 @@ function Search() {
     }
     if (originCity && destinationCity && departureDate) {
       setIsSearchClicked(true);
-      handleFilter();
-      if (bookReturn && returnDate) {
+      await handleFilter();
+      if (bookReturn === true && returnDate.length !== 0) {
         returnFilter();
       }
     }

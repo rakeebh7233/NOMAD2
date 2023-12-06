@@ -55,3 +55,12 @@ class Itinerary(Base):
             return itinerary_obj
         else:
             return None
+        
+    @classmethod
+    def get_user_itinerary_id(cls, user_id, db_session):
+        """Get the first itinerary_id from the user_itinerary table based on a passed user_id parameter."""
+        query = db_session.query(user_itinerary).filter_by(user_id=user_id).first()
+        if query:
+            return query.itinerary_id
+        else:
+            return None

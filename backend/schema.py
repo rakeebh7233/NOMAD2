@@ -59,8 +59,8 @@ class FlightUpdate(FlightBase):
 class HotelBase(BaseModel):
     name: str
     location: str
-    checkInDate: str
-    checkOutDate: str
+    checkInDate: date
+    checkOutDate: date
     guests: int
     rooms: int
     reviewScore: float
