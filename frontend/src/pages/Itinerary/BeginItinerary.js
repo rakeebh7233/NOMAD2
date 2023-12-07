@@ -12,7 +12,8 @@ function BeginItinerary() {
         itineraryTitle: "",
         members: [],
         destination: "",
-        departure: "",
+        departureAirport: "",
+        arrivalAirport: "",
         departureDate: "",
         returnDate: "",
         travelReason: "",
@@ -32,7 +33,8 @@ function BeginItinerary() {
                 itineraryTitle: itinerary.itineraryTitle,
                 members: itinerary.members,
                 destination: itinerary.destination,
-                departure: itinerary.departure,
+                departureAirport: itinerary.departureAirport,
+                arrivalAirport: itinerary.arrivalAirport,
                 departureDate: itinerary.departureDate,
                 returnDate: itinerary.returnDate,
                 travelReason: itinerary.travelReason,
@@ -49,7 +51,7 @@ function BeginItinerary() {
     }
 
 
-    const createItinerary = async (itineraryTitle, members, destination, departure, departureDate, returnDate, travelReason, leisureActivites, budget) => {
+    const createItinerary = async (itineraryTitle, members, destination, departureAirport, arrivalAirport, departureDate, returnDate, travelReason, leisureActivites, budget) => {
         const url = itinerary ? `http://localhost:8000/itineraries/${itinerary.id}` : 'http://localhost:8000/itineraries/create';
         const method = itinerary ? 'PUT' : 'POST';
 
@@ -62,7 +64,8 @@ function BeginItinerary() {
                 itineraryTitle,
                 members,
                 destination,
-                departure,
+                departureAirport,
+                arrivalAirport,
                 departureDate,
                 returnDate,
                 travelReason,
@@ -85,7 +88,7 @@ function BeginItinerary() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData)
-        createItinerary(formData.itineraryTitle, formData.members, formData.destination, formData.departure, formData.departureDate, formData.returnDate, formData.travelReason, formData.leisureActivites, formData.budget);
+        createItinerary(formData.itineraryTitle, formData.members, formData.destination, formData.departureAirport, formData.arrivalAirport, formData.departureDate, formData.returnDate, formData.travelReason, formData.leisureActivites, formData.budget);
     };
 
 
@@ -120,12 +123,23 @@ function BeginItinerary() {
                         </label>
 
                         <label>
-                            Departing From: <input
+                            Departure Airport: <input
                                 type="text"
                                 placeholder="Departing from..."
-                                value={formData.departure}
+                                value={formData.departureAirport}
                                 onChange={(event) =>
-                                    setFormData({ ...formData, departure: event.target.value })
+                                    setFormData({ ...formData, departureAirport: event.target.value })
+                                }
+                            />
+                        </label>
+
+                        <label>
+                            Arrival Airport: <input
+                                type="text"
+                                placeholder="Departing from..."
+                                value={formData.arrivalAirport}
+                                onChange={(event) =>
+                                    setFormData({ ...formData, arrivalAirport: event.target.value })
                                 }
                             />
                         </label>
@@ -163,7 +177,7 @@ function BeginItinerary() {
                             />
                         </label>
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        {/* <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <label style={{ marginRight: '20px' }}>
                                 Reason for Travel: <Select
                                     placeholder="Select One"
@@ -200,7 +214,7 @@ function BeginItinerary() {
                                     }
                                 />
                             </label>
-                        </div>
+                        </div> */}
                         <label>
                             Email List: <CreatableSelect
                                 isMulti

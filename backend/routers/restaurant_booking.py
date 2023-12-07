@@ -30,9 +30,9 @@ def update(restaurantId, itinerary_id, request: schema.RestaurantBookingModel, d
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Restaurant Booking was not found")
     return booking
 
-@router.delete('/delete_booking/{restaurantID}/{itinerary_id}', status_code=status.HTTP_204_NO_CONTENT)
-def destroy(restaurantID, itinerary_id, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
-    booking = RestaurantModel.RestaurantBooking.delete_flight_booking(restaurantID, itinerary_id, db)
+@router.delete('/delete/{restaurantID}/{itinerary_id}', status_code=status.HTTP_204_NO_CONTENT)
+def destroy(restaurantID, itinerary_id, db: Session = Depends(get_db)):
+    booking = RestaurantModel.RestaurantBooking.delete_restaurant_booking(restaurantID, itinerary_id, db)
     if booking == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Restaurant Booking was not found")
     return booking

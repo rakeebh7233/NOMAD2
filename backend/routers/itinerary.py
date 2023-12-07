@@ -86,11 +86,12 @@ def create_itinerary(itinerary: schema.ItineraryCreate, db: db_dependency):
     itinerary_obj = Itinerary(
         itineraryTitle=itinerary.itineraryTitle,
         destination=itinerary.destination,
-        departure=itinerary.departure,
+        departureAirport=itinerary.departureAirport,
+        arrivalAirport=itinerary.arrivalAirport,
         departureDate=itinerary.departureDate,
         returnDate=itinerary.returnDate,
-        travelReason=itinerary.travelReason,
-        leisureActivites=itinerary.leisureActivites,
+        # travelReason=itinerary.travelReason,
+        # leisureActivites=itinerary.leisureActivites,
         budget=itinerary.budget,
         creator=creator
     )

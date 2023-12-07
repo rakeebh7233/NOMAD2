@@ -17,11 +17,14 @@ function Itineraries() {
     useEffect(() => {
         fetch(`http://localhost:8000/itineraries/${user.id}`)
             .then(response => response.json())
-            .then(data => setItineraries(data));
+            .then(data => setItineraries(data))
+            .catch(error => console.log(error));
 
         fetch(`http://localhost:8000/itineraries/${user.id}/past`)
             .then(response => response.json())
-            .then(data => setPastItineraries(data));
+            .then(data => setPastItineraries(data))
+            .catch(error => console.log(error));
+
     }, [user]);
 
     const deleteItinerary = async (id) => {
@@ -99,7 +102,8 @@ function Itineraries() {
                         <tr>
                             <th>Title</th>
                             <th>Destination</th>
-                            <th>Departure</th>
+                            <th>Departure Airport</th>
+                            <th>Arrival Airport</th>
                             <th>Departure Date</th>
                             <th>Return Date</th>
                             {/* <th>Travel Reason</th>
@@ -119,7 +123,8 @@ function Itineraries() {
                                     </Link>
                                 </td>
                                 <td>{itinerary.destination}</td>
-                                <td>{itinerary.departure}</td>
+                                <td>{itinerary.departureAirport}</td>
+                                <td>{itinerary.arrivalAirport}</td>
                                 <td>{itinerary.departureDate}</td>
                                 <td>{itinerary.returnDate}</td>
                                 {/* <td>{itinerary.travelReason}</td>
@@ -156,7 +161,8 @@ function Itineraries() {
                         <tr>
                             <th>Title</th>
                             <th>Destination</th>
-                            <th>Departure</th>
+                            <th>Departure Airport</th>
+                            <th>Arrival Airport</th>
                             <th>Departure Date</th>
                             <th>Return Date</th>
                             {/* <th>Travel Reason</th>
@@ -177,7 +183,8 @@ function Itineraries() {
                                     </Link>
                                 </td>
                                 <td>{itinerary.destination}</td>
-                                <td>{itinerary.departure}</td>
+                                <td>{itinerary.departureAirport}</td>
+                                <td>{itinerary.arrivalAirport}</td>
                                 <td>{itinerary.departureDate}</td>
                                 <td>{itinerary.returnDate}</td>
                                 {/* <td>{itinerary.travelReason}</td>

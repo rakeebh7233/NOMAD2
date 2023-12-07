@@ -15,14 +15,15 @@ class Itinerary(Base):
     id = Column(Integer, Sequence('itinerary_id_seq'), primary_key=True, autoincrement=True)
     itineraryTitle = Column(String, nullable=False)
     destination = Column(String, nullable=False)
-    departure = Column(String, nullable=False)
+    departureAirport = Column(String, nullable=False)
+    arrivalAirport = Column(String, nullable=False)
     departureDate = Column(Date, nullable=False)
     returnDate = Column(Date, nullable=False)
-    travelReason = Column(String, nullable=False)
-    leisureActivites = Column(String, nullable=False)
+    # travelReason = Column(String, nullable=False)
+    # leisureActivites = Column(String, nullable=False)
     budget = Column(Float, nullable=False)
     creator_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    rating = Column(Integer, nullable=True)  # Change this line
+    rating = Column(Integer, nullable=True)  
     
     # Add a check constraint for the rating
     __table_args__ = (CheckConstraint('rating >= 1 AND rating <= 5', name='rating_check'), )

@@ -99,11 +99,12 @@ class LocationModel(LocationBase):
 class ItineraryBase(BaseModel):
     itineraryTitle: str
     destination: str
-    departure: str
+    departureAirport: str
+    arrivalAirport: str
     departureDate: date
     returnDate: date
-    travelReason: str
-    leisureActivites: str
+    # travelReason: str
+    # leisureActivites: str
     budget: float
     creator_id: int
     rating: Optional[int] = None

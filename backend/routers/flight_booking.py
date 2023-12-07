@@ -40,8 +40,8 @@ def update(flight_id, itinerary_id, request: schema.FlightBookingModel, db: Sess
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Flight Booking with the flight id {flight_id} and itinerary id {itinerary_id} was not found")
     return booking
 
-@router.delete('/delete_booking/{flight_id}/{itinerary_id}', status_code=status.HTTP_204_NO_CONTENT)
-def destroy(flight_id, itinerary_id, db: Session = Depends(get_db), current_user: schema.UserModel = Depends(oauth2.get_current_user)):
+@router.delete('/delete/{flight_id}/{itinerary_id}', status_code=status.HTTP_204_NO_CONTENT)
+def destroy(flight_id, itinerary_id, db: Session = Depends(get_db)):
     booking = FlightModel.FlightBooking.delete_flight_booking(flight_id, itinerary_id, db)
     if booking == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Flight Booking with the flight id {flight_id} and itinerary id {itinerary_id} was not found")
