@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
 // import { useNavigate } from "react-router-dom"
+import { AuthContext } from "../../AuthContext"
 import TitleCard from "../../components/cards/TitleCard"
 import axios from "axios"
 
@@ -9,14 +10,24 @@ function UpdateProgress(){
 
     const [addToSavings, setAddToSavings] = useState(0);
 
+    const { user } = useContext(AuthContext);
+
     const updateInputValue = (val) => {
-        setAddToSavings(parseFloat(val))
+        console.log(val)
+        if (!isNaN(val)) {
+            setAddToSavings(parseFloat(val))
+        } else {
+            setAddToSavings(0)
+        }
+        console.log(addToSavings)
     }
     
-    const email = localStorage.getItem('user').email_address;
+    
 
     const updateSavings = () => {
 
+        const email = user.email_address;
+        console.log(email);
         axios.get(`http://localhost:8000/savings/update_progress/${email}/${addToSavings}`)
           .then(response => {
             console.log("Current Savings: " + response.data.current_savings);
@@ -31,6 +42,11 @@ function UpdateProgress(){
         // navigate("/Dashboard") // Redirect to Dashboard
 
     }
+
+    const onClick = () => {
+        updateSavings()
+        window.location.reload()
+    }
     
     return(
         <>
@@ -41,10 +57,10 @@ function UpdateProgress(){
                         <label className="label">
                             <span className={"label-text text-base-content "}>Added Savings ($)</span>
                         </label>
-                        <input type="text" value={addToSavings} placeholder="" onChange={(e) => updateInputValue(e.target.value)}className="input  input-bordered w-full " />
+                        <input type="number" value={addToSavings} placeholder={0} onChange={(e) => updateInputValue(e.target.value)}className="input  input-bordered w-full " />
                     </div>
                 </div>
-                <div className="mt-16"><button className="btn btn-primary float-right" onClick={() => updateSavings()}>Update</button></div>
+                <div className="mt-16"><button className="btn btn-primary float-right" onClick={onClick}>Update</button></div>
 
             </TitleCard>
         </>

@@ -58,6 +58,7 @@ def get_period(email, db: Session = Depends(get_db)):
     response = FinanceModel.Savings.get_period(db, email)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with email {email} not found")
+    # print("Router Period: " + response)
     return response
 
 @router.get('/start_date/{email}', status_code=status.HTTP_200_OK)
@@ -65,6 +66,7 @@ def get_start_date(email, db: Session = Depends(get_db)):
     response = FinanceModel.Savings.get_start_date(db, email)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with email {email} not found")
+    # print("Router Start Date: " + response)
     return response
 
 @router.get('/update_progress/{email}/{progress}', status_code=status.HTTP_200_OK)
@@ -72,6 +74,7 @@ def update_progress_per_period(email, progress, db: Session = Depends(get_db)):
     response = FinanceModel.Savings.update_progress(db, email, progress)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with email {email} not found")
+    print(response.current_budget)
     return response
 
 @router.get('/check_progress/{email}', status_code=status.HTTP_200_OK)
@@ -88,9 +91,9 @@ def check_savings(email, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with email {email} not found")
     return response
 
-@router.get('/reset_progress{email}', status_code=status.HTTP_200_OK)
+@router.get('/reset_progress/{email}', status_code=status.HTTP_200_OK)
 def reset_progress(email, db: Session = Depends(get_db)):
-    response = FinanceModel.Savings.reset_progress_per_period(email, db)
+    response = FinanceModel.Savings.reset_progress_per_period(db, email)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Failed to reset progress")
     return response

@@ -55,6 +55,8 @@ function BeginItinerary() {
         const url = itinerary ? `http://localhost:8000/itineraries/${itinerary.id}` : 'http://localhost:8000/itineraries/create';
         const method = itinerary ? 'PUT' : 'POST';
 
+        console.log(departureDate)
+        console.log(returnDate)
         const response = await fetch(url, {
             method: method,
             headers: {

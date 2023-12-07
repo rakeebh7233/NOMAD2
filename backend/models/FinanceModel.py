@@ -147,6 +147,7 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj == None:
             return None
+        # print("Period: " + savings_obj.period)
         return savings_obj.period
     
     @classmethod 
@@ -155,19 +156,24 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj == None:
             return None
+        # print("Start Date: " + savings_obj.start_date)
         return savings_obj.start_date
     
     @classmethod
     def get_savings_user(cls, db_session, email_address):
-        """Return the savings object whose user_id is ``id``."""
+        """Return the savings object whose email_address is ``email_address``."""
+        print("Email Address: " + email_address)
         return db_session.query(cls).filter_by(email_address=email_address).first()
     
     @classmethod
-    def update_goal_per_period(goal, current_budget, period, travel_date):
+    def update_goal_per_period(cls, goal, current_budget, period, travel_date):
 
         today = date.today()
-        d1 = datetime.strptime(today, "%Y/%m/%d")
-        d2 = datetime.strptime(travel_date, "%Y/%m/%d")
+        #d1 = datetime.strptime(today, "%Y/%m/%d")
+        d1 = today
+        travel_date_obj = datetime.strptime(travel_date, "%Y-%m-%d")
+        d2 = travel_date_obj.date()
+        #d2 = travel_date
         remaining_goal = goal - current_budget
 
         if (period.lower() == "weekly"):
@@ -184,9 +190,9 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj is None:
             return None
-
-        savings_obj.progress_per_period += progress
-        savings_obj.current_budget += progress
+        progress = float(progress)
+        savings_obj.progress_per_period = savings_obj.progress_per_period + progress
+        savings_obj.current_budget = savings_obj.current_budget + progress
         savings_obj.goal_per_period = cls.update_goal_per_period(savings_obj.goal, savings_obj.current_budget, savings_obj.period, savings_obj.travel_date)
 
         db_session.commit()
@@ -197,10 +203,12 @@ class Savings(Base):
         """Reset the progress_per_period to 0 based on the goal and period."""
 
         savings_obj = cls.get_savings_user(db_session, email_address)
+        print("User Found: " + savings_obj.email_address)
 
         today = date.today()
-        d1 = datetime.strptime(today, "%Y/%m/%d")
-        d2 = datetime.strptime(savings_obj.travel_date, "%Y/%m/%d")
+        d1 = today
+        travel_date_obj = datetime.strptime(savings_obj.travel_date, "%Y-%m-%d")
+        d2 = travel_date_obj.date()
 
         if savings_obj.period.lower() == "weekly":
             if (d2 - d1).days % 7 == 0:
@@ -253,7 +261,7 @@ class Transaction(Base):
     transaction_amount = Column(Float, nullable=False)
 
     def __repr__(self):
-        return '<Transaction: transaction_id=%s, email_address=%s, transaction_date=%s, transaction_amount=%s, transaction_type=%s, transaction_category=%s>' % (
+        return '<Transaction: transaction_id=%s, email_address=%s, transaction_date=%s, transaction_amount=%s>' % (
             repr(self.transaction_id),
             repr(self.email_address),
             repr(self.transaction_date),
@@ -293,63 +301,51 @@ class Transaction(Base):
         transactions = cls.get_transaction_user(db_session, email_address)
         transactions_per_day = []
         for transaction in transactions:
-            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
-            transaction_json = {
-                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
-                'transaction_amount': transaction.transaction_amount
-            }
-            transactions_per_day.append(transaction_json)
+            transactions_per_day.append(transaction)
+        print(transactions_per_day)
         return transactions_per_day
 
     @classmethod
     def get_transactions_per_week(cls, db_session, email_address, start_date):
         """Return a list of transactions as JSON objects with the keys 'transaction_date' and 'transaction_amount'."""
         transactions = cls.get_transaction_user(db_session, email_address)
+        start_date = datetime.strptime(start_date[0:11], "%Y-%m-%d")
         transactions_per_week = []
         for transaction in transactions:
-            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
+            transaction_date = datetime.strptime(transaction.transaction_date[0:11], "%Y-%m-%d")
             week_start_date = transaction_date - timedelta(days=transaction_date.weekday())
             if week_start_date < start_date:
                 continue
-            transaction_json = {
-                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
-                'transaction_amount': transaction.transaction_amount
-            }
-            transactions_per_week.append(transaction_json)
+            transactions_per_week.append(transaction)
         return transactions_per_week
     
     @classmethod
     def get_transactions_per_month(cls, db_session, email_address, start_date):
         """Return a list of transactions as JSON objects with the keys 'transaction_date' and 'transaction_amount'."""
         transactions = cls.get_transaction_user(db_session, email_address)
+        start_date = datetime.strptime(start_date[0:11], "%Y-%m-%d")
         transactions_per_month = []
         for transaction in transactions:
-            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
+            transaction_date = datetime.strptime(transaction.transaction_date[0:11], "%Y-%m-%d")
             month_start_date = transaction_date.replace(day=1)
             if month_start_date < start_date:
                 continue
-            transaction_json = {
-                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
-                'transaction_amount': transaction.transaction_amount
-            }
-            transactions_per_month.append(transaction_json)
+            transactions_per_month.append(transaction)
+        print(transactions_per_month)
         return transactions_per_month
     
     @classmethod
     def get_transactions_per_year(cls, db_session, email_address, start_date):
         """Return a dictionary of the sum of transactions per year."""
         transactions = cls.get_transaction_user(db_session, email_address)
+        start_date = datetime.strptime(start_date[0:11], "%Y-%m-%d")
         transactions_per_year = []
         for transaction in transactions:
-            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
+            transaction_date = datetime.strptime(transaction.transaction_date[0:11], "%Y-%m-%d")
             year_start_date = transaction_date.replace(month=1, day=1)
             if year_start_date < start_date:
                 continue
-            transaction_json = {
-                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
-                'transaction_amount': transaction.transaction_amount
-            }
-            transactions_per_year.append(transaction_json)
+            transactions_per_year.append(transaction)
         return transactions_per_year
     
 

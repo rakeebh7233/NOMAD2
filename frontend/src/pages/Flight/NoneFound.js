@@ -23,7 +23,7 @@ function NoneFound(type) {
                         className="text-muted"
                         style={{ fontSize: "20px", fontWeight: "bold" }}
                     >
-                        {type.type}
+                        Loading {type.type} ...
                     </div>
                 </div>
             </div>

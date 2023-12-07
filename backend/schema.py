@@ -292,7 +292,7 @@ class TransactionCreate(TransactionBase):
         orm_mode = True
 
 class TransactionModel(TransactionBase):
-    id: int
+    transaction_id: int
     class Config:
         orm_mode = True
         

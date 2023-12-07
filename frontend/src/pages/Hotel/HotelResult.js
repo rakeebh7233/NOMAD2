@@ -15,7 +15,7 @@ function HotelResult(props) {
         {!isSearchClicked &&
         filteredData.length === 0 ? (
           <NoneFound
-            type="Search for Hotels" 
+            type="Hotels" 
           />
         ) : isSearchClicked &&
           filteredData.length === 0  ? (
