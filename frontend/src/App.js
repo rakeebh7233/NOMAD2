@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useState } from 'react';
 import Home from './pages/Home';
 import NavBar from './shared/NavBar';
-import Form from './pages/UserProfileForm/Form';
+import ProfileForm from './pages/ProfileForm';
 import Itineraries from './pages/Itinerary/Itineraries';
 import BeginItinerary from './pages/Itinerary/BeginItinerary';
 import CustomerItinerary from './pages/CustomerItinerary';
@@ -35,7 +35,7 @@ function App() {
           <Route path='/itineraries' exact element={<Itineraries />} />
           <Route path='/itineraries/:itinerary_id' exact element={<CustomerItinerary />} />
           <Route path='/itineraries/new' exact element={<BeginItinerary />} />
-          <Route path='/userprofile' exact element={<Form />} />
+          <Route path='/userprofile' exact element={<ProfileForm />} />
           <Route path='/register' exact element={<Register />} />
           <Route path='/login' exact element={<Login />} />
           <Route path='/flightsearch' exact element={<FlightSearch />} />

@@ -24,18 +24,21 @@ body {
 
 .form-container {
   width: 500px;
-  height: 550px;
+  height: 450px;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
+  margin-top: 80px;
 }
 
 .form-container .header {
   flex: 20%;
   display: grid;
   place-items: center;
+  text-align: center;
+  padding-top: 20px;
 }
 
 .form-container .body {
@@ -112,12 +115,16 @@ body {
 }
 
 .financial-info-container {
-  height: 100%;
+  height: 80%;
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.financial-info-container label {
+  padding-top: 10px;
 }
 
 .financial-info-container input {
@@ -126,6 +133,18 @@ body {
   height: 40px;
   padding-left: 5px;
   font-size: 20px;
+}
+
+.financial-info-container select {
+  margin: 5px;
+  width: 200px;
+  height: 40px;
+  padding-left: 5px;
+  font-size: 20px;
+}
+
+.financial-info-container button {
+  text-align: center;
 }
 
 input {

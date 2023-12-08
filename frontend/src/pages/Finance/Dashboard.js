@@ -30,7 +30,7 @@ function Dashboard() {
   //   const response = await axios.get(`http://localhost:8000/savings/reset_progress/${email}`);
   //   setPeriodProgress(response.data.progress_per_period);
   //   const current_progress = await axios.get(`http://localhost:8000/savings/update_progress/${email}/${0}`);
-  //   setCurrentSavings(current_progress.data.current_budget);
+  //   setCurrentSavings(current_progress.data.travel_budget);
   //   setSavingsGoal(current_progress.data.goal);
   //   setPeriodGoal(current_progress.data.goal_per_period);
   // };

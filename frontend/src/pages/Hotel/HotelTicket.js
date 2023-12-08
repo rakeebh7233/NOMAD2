@@ -1,24 +1,22 @@
 import React from 'react';
 import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-
-
-const handleBookClick = async (hotel_id) => {
-  try {
-    // Make axios GET call here
-    // const response = await axios.get(`http://localhost:8000/flight_booking/`);
-    const newBooking = await axios.get(`http://localhost:8000/hotel_booking/create/${hotel_id}`);
-    // Navigate to another page
-    // const navigate = useNavigate();
-    // navigate('/itineraries');
-  } catch (error) {
-    console.error('Error:', error);
-  }
-};
-
 
 function HotelTicket(props) {
-  const { filteredData} = props;
+  const { itinerary_id } = useParams();
+  const { filteredData } = props;
+
+  const addHotel = async (hotel_id) => {
+    const response = await fetch('http://localhost:8000/hotel_booking/new_booking', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        hotel_id: hotel_id,
+        itinerary_id: itinerary_id
+      })
+    });
+  }
 
   return (
     <>
@@ -70,15 +68,15 @@ function HotelTicket(props) {
                   }}
                 >
                   <div style={{ height: '100px', width: '140px' }}>
-                    <img
+                    {/* <img
                       src={data.flightImg}
                       alt="flight_img"
                       style={{ height: '100%', width: '100%' }}
-                    />
+                    /> */}
                   </div>
                   <div>
-                    <button type="button" className="btn btn-sm btn-info" onClick={handleBookClick(data.id)}>
-                      <b>Book</b>
+                    <button type="button" className="btn btn-sm btn-info" onClick={() => addHotel(data.id)}>
+                      <b>Add to Itinerary</b>
                     </button>
                   </div>
                 </div>

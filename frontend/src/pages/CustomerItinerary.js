@@ -1,5 +1,4 @@
 import React, { useReducer } from "react";
-import Select from 'react-select';
 import axios from "axios";
 import "../styles/CustomItin.css";
 import { useParams } from "react-router-dom";
@@ -28,8 +27,6 @@ function CustomerItinerary() {
         getMyFlights();
         getMyHotels();
     }, [ignored]);
-
-
 
     // If the user is not logged in, redirect to the login page
     if (!user) {
@@ -231,7 +228,6 @@ function CustomerItinerary() {
             throw new Error("Flight not added");
         }
         forceUpdate();
-
     }
 
     const getRestaurants = async () => {
