@@ -3,72 +3,6 @@ from database import Base
 from datetime import datetime, date, timedelta
 import schema
 from .UserModel import User
-import json
-
-
-# The Personal Finance table will store the preliminary financial information that the user provides
-# We will use these features to generate finance based recommendations
-class PersonalFinance(Base):
-    __tablename__ = 'personal_finance'
-
-    email_address = Column(String, ForeignKey('user.email_address'), primary_key=True)
-    yearly_income = Column(Float, nullable=False)
-    monthly_spending = Column(Float, nullable=False)
-    estimated_savings = Column(Float, nullable=False)
-    travel_budget = Column(Float, nullable=False)
-
-    def __repr__(self):
-        return '<Personal Finance: email_address=%s, yearly_income=%s, monthly_spending=%s, estimated_savings=%s, travel_budget=%s>' % (
-            repr(self.email_address),
-            repr(self.yearly_income),
-            repr(self.monthly_spending),
-            repr(self.estimated_savings),
-            repr(self.travel_budget)
-        )
-    
-    @classmethod
-    def create_finance(cls, db_session, request: schema.FinanceCreate):
-        """Create a new personal finance."""
-        finance_obj = cls(
-            email_address=request.email_address,
-            yearly_income=request.yearly_income,
-            monthly_spending=request.monthly_spending,
-            estimated_savings=request.estimated_savings,
-            travel_budget=request.travel_budget
-        )
-        db_session.add(finance_obj)
-        db_session.commit()
-        return finance_obj
-    
-    @classmethod
-    def update_finance(cls, db_session, email_address, request: schema.FinanceCreate):
-        """Update an existing personal finance."""
-        finance_obj = cls.get_finance_user(db_session, email_address)
-        if finance_obj == None:
-            return None
-        finance_obj.yearly_income = request.yearly_income
-        finance_obj.monthly_spending = request.monthly_spending
-        finance_obj.estimated_savings = request.estimated_savings
-        finance_obj.travel_budget = request.travel_budget
-        db_session.commit()
-        return finance_obj
-    
-    @classmethod
-    def get_finance_user(cls, db_session, email_address):
-        """Return the personal finance object whose user_id is ``id``."""
-        return db_session.query(cls).filter_by(email_address=email_address).first()
-    
-    @classmethod
-    def delete_finance(cls, db_session, email_address):
-        """Delete the personal finance object whose user_id is ``id``."""
-        finance_obj = cls.get_finance_user(db_session, email_address)
-        if finance_obj == None:
-            return None
-        db_session.delete(finance_obj)
-        db_session.commit()
-        return finance_obj
-    
-
     
 # The Savings tables will store the budget goals and updates for the user to progress towards
 # This can be used for reccommendation and finance based itineraries 
@@ -76,9 +10,8 @@ class Savings(Base):
     __tablename__ = 'savings'
 
     email_address = Column(String, ForeignKey('user.email_address'), primary_key=True)
-    current_budget = Column(Float, nullable=False)
+    travel_budget = Column(Float, nullable=False)
     goal = Column(Float, nullable=False)
-
     period = Column(String, nullable=False)
     goal_per_period = Column(Float, nullable=False)
     progress_per_period = Column(Float, nullable=False)
@@ -86,9 +19,9 @@ class Savings(Base):
     travel_date = Column(String, nullable=False)
 
     def __repr__(self):
-        return '<Savings: email_address=%s, current_budget=%s, goal=%s, period=%s, goal_per_period=%s, progress_per_period=%s>' % (
+        return '<Savings: email_address=%s, travel_budget=%s, goal=%s, period=%s, goal_per_period=%s, progress_per_period=%s>' % (
             repr(self.email_address),
-            repr(self.current_budget),
+            repr(self.travel_budget),
             repr(self.goal),
             repr(self.period),
             repr(self.goal_per_period),
@@ -102,10 +35,11 @@ class Savings(Base):
         """Create a new savings goal."""
         savings_obj = cls(
             email_address=request.email_address,
-            current_budget=request.current_budget,
+            travel_budget=request.travel_budget,
             goal=request.goal,
             period=request.period,
-            goal_per_period=cls.update_goal_per_period(request.goal, request.current_budget, request.period, request.travel_date),
+            # goal_per_period=cls.update_goal_per_period(request.goal, request.travel_budget, request.period, request.travel_date),
+            goal_per_period=request.goal,
             progress_per_period=0.0,
             start_date=date.today(),
             travel_date=request.travel_date
@@ -120,11 +54,11 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj == None:
             return None
-        savings_obj.current_budget = request.current_budget
+        savings_obj.travel_budget = request.travel_budget
         savings_obj.goal = request.goal
         savings_obj.period = request.period
         # goal per period will be updated with progress per period
-        savings_obj.progress_per_period = cls.update_progress(request.current_budget, request.period, request.travel_date)
+        savings_obj.progress_per_period = cls.update_progress(request.travel_budget, request.period, request.travel_date)
         savings_obj.start_date = request.start_date
         savings_obj.travel_date = request.travel_date
         db_session.commit()
@@ -136,7 +70,7 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj == None:
             return None
-        savings_obj.current_budget += amount
+        savings_obj.travel_budget += amount
         savings_obj.progress_per_period += amount
         db_session.commit()
         return savings_obj
@@ -147,6 +81,7 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj == None:
             return None
+        # print("Period: " + savings_obj.period)
         return savings_obj.period
     
     @classmethod 
@@ -155,20 +90,25 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj == None:
             return None
+        # print("Start Date: " + savings_obj.start_date)
         return savings_obj.start_date
     
     @classmethod
     def get_savings_user(cls, db_session, email_address):
-        """Return the savings object whose user_id is ``id``."""
+        """Return the savings object whose email_address is ``email_address``."""
+        print("Email Address: " + email_address)
         return db_session.query(cls).filter_by(email_address=email_address).first()
     
     @classmethod
-    def update_goal_per_period(goal, current_budget, period, travel_date):
+    def update_goal_per_period(cls, goal, travel_budget, period, travel_date):
 
         today = date.today()
-        d1 = datetime.strptime(today, "%Y/%m/%d")
-        d2 = datetime.strptime(travel_date, "%Y/%m/%d")
-        remaining_goal = goal - current_budget
+        #d1 = datetime.strptime(today, "%Y/%m/%d")
+        d1 = today
+        travel_date_obj = datetime.strptime(travel_date, "%Y-%m-%d")
+        d2 = travel_date_obj.date()
+        #d2 = travel_date
+        remaining_goal = goal - travel_budget
 
         if (period.lower() == "weekly"):
             return remaining_goal / ((d2 - d1).days / 7)
@@ -184,10 +124,10 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj is None:
             return None
-
-        savings_obj.progress_per_period += progress
-        savings_obj.current_budget += progress
-        savings_obj.goal_per_period = cls.update_goal_per_period(savings_obj.goal, savings_obj.current_budget, savings_obj.period, savings_obj.travel_date)
+        progress = float(progress)
+        savings_obj.progress_per_period = savings_obj.progress_per_period + progress
+        savings_obj.travel_budget = savings_obj.travel_budget + progress
+        savings_obj.goal_per_period = cls.update_goal_per_period(savings_obj.goal, savings_obj.travel_budget, savings_obj.period, savings_obj.travel_date)
 
         db_session.commit()
         return savings_obj
@@ -197,10 +137,12 @@ class Savings(Base):
         """Reset the progress_per_period to 0 based on the goal and period."""
 
         savings_obj = cls.get_savings_user(db_session, email_address)
+        print("User Found: " + savings_obj.email_address)
 
         today = date.today()
-        d1 = datetime.strptime(today, "%Y/%m/%d")
-        d2 = datetime.strptime(savings_obj.travel_date, "%Y/%m/%d")
+        d1 = today
+        travel_date_obj = datetime.strptime(savings_obj.travel_date, "%Y-%m-%d")
+        d2 = travel_date_obj.date()
 
         if savings_obj.period.lower() == "weekly":
             if (d2 - d1).days % 7 == 0:
@@ -229,7 +171,7 @@ class Savings(Base):
     def check_savings_success(cls, db_session, email_address):
         """Check if the user has successfully saved enough money for the trip."""
         savings_obj = db_session.query(cls).filter_by(email_address=email_address).first()
-        if savings_obj.current_budget >= savings_obj.goal:
+        if savings_obj.travel_budget >= savings_obj.goal:
             return True
         return False
     
@@ -253,7 +195,7 @@ class Transaction(Base):
     transaction_amount = Column(Float, nullable=False)
 
     def __repr__(self):
-        return '<Transaction: transaction_id=%s, email_address=%s, transaction_date=%s, transaction_amount=%s, transaction_type=%s, transaction_category=%s>' % (
+        return '<Transaction: transaction_id=%s, email_address=%s, transaction_date=%s, transaction_amount=%s>' % (
             repr(self.transaction_id),
             repr(self.email_address),
             repr(self.transaction_date),
@@ -293,63 +235,51 @@ class Transaction(Base):
         transactions = cls.get_transaction_user(db_session, email_address)
         transactions_per_day = []
         for transaction in transactions:
-            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
-            transaction_json = {
-                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
-                'transaction_amount': transaction.transaction_amount
-            }
-            transactions_per_day.append(transaction_json)
+            transactions_per_day.append(transaction)
+        print(transactions_per_day)
         return transactions_per_day
 
     @classmethod
     def get_transactions_per_week(cls, db_session, email_address, start_date):
         """Return a list of transactions as JSON objects with the keys 'transaction_date' and 'transaction_amount'."""
         transactions = cls.get_transaction_user(db_session, email_address)
+        start_date = datetime.strptime(start_date[0:11], "%Y-%m-%d")
         transactions_per_week = []
         for transaction in transactions:
-            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
+            transaction_date = datetime.strptime(transaction.transaction_date[0:11], "%Y-%m-%d")
             week_start_date = transaction_date - timedelta(days=transaction_date.weekday())
             if week_start_date < start_date:
                 continue
-            transaction_json = {
-                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
-                'transaction_amount': transaction.transaction_amount
-            }
-            transactions_per_week.append(transaction_json)
+            transactions_per_week.append(transaction)
         return transactions_per_week
     
     @classmethod
     def get_transactions_per_month(cls, db_session, email_address, start_date):
         """Return a list of transactions as JSON objects with the keys 'transaction_date' and 'transaction_amount'."""
         transactions = cls.get_transaction_user(db_session, email_address)
+        start_date = datetime.strptime(start_date[0:11], "%Y-%m-%d")
         transactions_per_month = []
         for transaction in transactions:
-            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
+            transaction_date = datetime.strptime(transaction.transaction_date[0:11], "%Y-%m-%d")
             month_start_date = transaction_date.replace(day=1)
             if month_start_date < start_date:
                 continue
-            transaction_json = {
-                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
-                'transaction_amount': transaction.transaction_amount
-            }
-            transactions_per_month.append(transaction_json)
+            transactions_per_month.append(transaction)
+        print(transactions_per_month)
         return transactions_per_month
     
     @classmethod
     def get_transactions_per_year(cls, db_session, email_address, start_date):
         """Return a dictionary of the sum of transactions per year."""
         transactions = cls.get_transaction_user(db_session, email_address)
+        start_date = datetime.strptime(start_date[0:11], "%Y-%m-%d")
         transactions_per_year = []
         for transaction in transactions:
-            transaction_date = datetime.strptime(transaction.transaction_date, "%Y-%m-%d")
+            transaction_date = datetime.strptime(transaction.transaction_date[0:11], "%Y-%m-%d")
             year_start_date = transaction_date.replace(month=1, day=1)
             if year_start_date < start_date:
                 continue
-            transaction_json = {
-                'transaction_date': transaction_date.strftime("%Y-%m-%d"),
-                'transaction_amount': transaction.transaction_amount
-            }
-            transactions_per_year.append(transaction_json)
+            transactions_per_year.append(transaction)
         return transactions_per_year
     
 

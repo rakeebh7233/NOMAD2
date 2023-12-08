@@ -12,7 +12,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmationPassword, setConfirmationPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const {login} = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -30,8 +30,25 @@ const Register = () => {
       console.log(data.detail);
       setErrorMessage(data.detail);
     } else {
-      setErrorMessage('');
-      navigate("/");
+      // Log in the user with the access token
+      const loginRequestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: JSON.stringify(JSON.stringify(`grant_type=&username=${email}&password=${password}&scope=&client_id=&client_secret=`)),
+      };
+
+      const loginResponse = await fetch("http://localhost:8000/login", loginRequestOptions);
+      const loginData = await loginResponse.json();
+
+      if (!loginResponse.ok) {
+        console.log(loginData.detail);
+        setErrorMessage(loginData.detail);
+      } else {
+        // Log in the user with the access token
+        login(loginData);
+        setErrorMessage('');
+        navigate("/");
+      }
     }
   };
 
@@ -89,18 +106,18 @@ const Register = () => {
                   </div>
 
                   <div class="form-floating mb-4">
-                    <input 
-                    type="email" 
-                    id="form3Example3" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    class="form-control" />
+                    <input
+                      type="email"
+                      id="form3Example3"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      class="form-control" />
                     <label class="form-label" for="form3Example3">Email address</label>
                   </div>
 
                   <div class="form-floating mb-4">
-                    <input 
-                      type="password" 
+                    <input
+                      type="password"
                       id="form3Example4"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -109,9 +126,9 @@ const Register = () => {
                   </div>
 
                   <div class="form-floating mb-4">
-                    <input 
-                      type="password" 
-                      id="form3Example5" 
+                    <input
+                      type="password"
+                      id="form3Example5"
                       value={confirmationPassword}
                       onChange={(e) => setConfirmationPassword(e.target.value)}
                       class="form-control" />

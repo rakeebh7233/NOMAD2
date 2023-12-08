@@ -260,13 +260,13 @@ class FinanceUpdate(FinanceModel):
 
 class SavingsBase(BaseModel):
     email_address: str
-    current_budget: float
+    travel_budget: float
     goal: float
     period: str
-    goal_per_period: float
-    progress_per_period: float
-    start_date: str
-    travel_date: str
+    goal_per_period: Optional[float]
+    progress_per_period: Optional[float]
+    start_date: Optional[str]
+    travel_date: Optional[str]
 
 class SavingsCreate(SavingsBase):
     class Config:
@@ -292,7 +292,7 @@ class TransactionCreate(TransactionBase):
         orm_mode = True
 
 class TransactionModel(TransactionBase):
-    id: int
+    transaction_id: int
     class Config:
         orm_mode = True
         

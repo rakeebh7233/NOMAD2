@@ -24,7 +24,7 @@ def login(db: db_dependency, form_data: security.OAuth2PasswordRequestForm = Dep
     user = UserModel.User.authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
-    access_token_expires = timedelta(minutes=60)
+    access_token_expires = timedelta(minutes=120)
     access_token = UserModel.User.create_access_token(data={"sub": user.email_address}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
