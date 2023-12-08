@@ -1,4 +1,3 @@
-
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../AuthContext';
 import axios from 'axios';
@@ -8,10 +7,6 @@ import BarChart from './BarChart';
 import LineChart from './LineChart';
 import UpdateProgress from './UpdateProgress';
 
-import CircleStackIcon  from '@heroicons/react/24/outline/CircleStackIcon'
-import CreditCardIcon  from '@heroicons/react/24/outline/CreditCardIcon'
-import CurrencyDollarIcon  from '@heroicons/react/24/outline/CurrencyDollarIcon'
-
 
 function Dashboard() {
 
@@ -19,11 +14,12 @@ function Dashboard() {
   const [savingsGoal, setSavingsGoal] = useState(1000);
   const [periodGoal, setPeriodGoal] = useState(0);
   const [periodProgress, setPeriodProgress] = useState(0);
+  const [statsData, setStatsData] = useState(undefined);
+  const [loading, setLoading] = useState(false);
 
 
   const { user } = useContext(AuthContext);
-  const email = user.email_address;
-  //console.log(user.email_address);
+
   
 
   // const fetchData = async () => {
@@ -37,93 +33,74 @@ function Dashboard() {
 
   // fetchData();
 
-  useEffect(() => {
-    const response = axios.get(`http://localhost:8000/savings/reset_progress/${email}`).then(response => {
-      setCurrentSavings(response.data.current_savings);
-      setSavingsGoal(response.data.savings_goal);
-      setPeriodGoal(response.data.period_goal);
+useEffect(() => {
+  if (user && user.email_address) {
+    const email = user.email_address;
+    // console.log(email);
+
+    const fetchData = async () => {
+      setLoading(true);
+      const email = user.email_address;
+      //console.log(user.email_address);
+      const response = await axios.get(`http://localhost:8000/savings/reset_progress/${email}`);
       setPeriodProgress(response.data.progress_per_period);
-      console.log(email)
-    });
-  }, []);
+  
+      const current_progress = await axios.get(`http://localhost:8000/savings/update_progress/${email}/${0}`);
+      //console.log(current_progress.data);
+      setCurrentSavings(current_progress.data.current_budget);
+      setSavingsGoal(current_progress.data.goal);
+      setPeriodGoal(current_progress.data.goal_per_period);
+      const newStatsData = [
+        {title:"Current Savings", value:current_progress.data.current_budget,color:"bg-green-500"},
+        {title:"Savings Goal", value:current_progress.data.goal, color:"bg-yellow-500"},
+        {title:"Period Goal", value:current_progress.data.goal_per_period, color:"bg-blue-500"},
+        {title:"Period Progress", value:current_progress.data.progress_per_period, color:"bg-blue-500"},
+      ];
+      // console.log(newStatsData);
+      setStatsData(newStatsData);
+      setLoading(false);
+    };
 
-  const statsData = [
-    {title:"Current Savings", value:currentSavings, icon:CurrencyDollarIcon, color:"bg-green-500"},
-    {title:"Savings Goal", value:savingsGoal, icon:CircleStackIcon, color:"bg-yellow-500"},
-    {title:"Period Goal", value:periodGoal, icon:CreditCardIcon, color:"bg-blue-500"},
-    {title:"Period Progress", value:periodProgress, icon:CreditCardIcon, color:"bg-blue-500"},
-  ]
+    fetchData();
+  }
+}, [user]); 
 
-  // return (
-  //   <>
-  //    {/** Savings Stats */}
-  //    <div className="grid lg:grid-cols-4 mt-2 md:grid-cols-2 grid-cols-1 gap-6">
-  //         {
-  //             statsData.map((d, k) => {
-  //                 return (
-  //                     <Stats key={k} {...d} colorIndex={k}/>
-  //                 )
-  //             })
-  //         }
-  //     </div>
+useEffect(() => {
+if (statsData !== undefined) {
+  //setLoading(false);
+  //console.log(statsData);
+  }
+  }, [statsData]);
 
-  //     {/** Savings Tracker Charts */}
-  //     <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
-  //         <LineChart />
-  //         <BarChart />
-  //     </div>
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
-  //     {/** Progress Update */}
-  //     <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
-  //         <UpdateProgress />
-  //     </div>
-  //   </>
-  // )
   return (
-    <>${email}</>
+    <>
+    <div className="grid lg:grid-cols-4 mt-2 md:grid-cols-2 grid-cols-1 gap-6">
+      {statsData !== undefined && statsData.map((stat) => (
+        <Stats title={stat.title} value={stat.value} color={stat.color} />
+      ))}
+    </div>
+    <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
+      <BarChart />
+      <LineChart />
+    </div>
+    <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
+      <UpdateProgress />
+    </div>
+    {/* <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
+      <BarChart />
+      <LineChart />
+    </div>
+    <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
+      <UpdateProgress />
+    </div> */}
+    </>
   )
 
 }
-
-
-
-
-
-// const Savings = ({ email }) => {
-//   const [currentSavings, setCurrentSavings] = useState(0);
-//   const [savingsGoal, setSavingsGoal] = useState(1000);
-//   const [periodGoal, setPeriodGoal] = useState(0);
-//   const [periodProgress, setPeriodProgress] = useState(0);
-//   const [addToSavings, setAddToSavings] = useState(0);
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       const response = await axios.get(`http://localhost:8000/savings/reset_progress/${email}`);
-//       setCurrentSavings(response.data.current_savings);
-//       setSavingsGoal(response.data.savings_goal);
-//       setPeriodGoal(response.data.period_goal);
-//       setPeriodProgress(response.data.progress_per_period);
-//     };
-
-//     fetchData();
-//   }, [email]);
-
-//   const handleAddToSavings = (e) => {
-//     // Update current savings in the backend
-//     axios.get(`http://localhost:8000/savings/update_progress/${email}/${addToSavings}`)
-//       .then(response => {
-//         e.preventDefault();
-//         setCurrentSavings(response.data.current_savings);
-//         setPeriodProgress(response.data.progress_per_period);
-//         setAddToSavings(0);
-//       })
-//       .catch(error => {
-//         console.error('Error fetching current savings:', error);
-//       });
-//   };
-
-
-// };
 
 export default Dashboard;
 

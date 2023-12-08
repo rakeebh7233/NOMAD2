@@ -18,7 +18,7 @@ function Result(props) {
         filteredData.length === 0 &&
         returnFilterData.length === 0 ? (
           <NoneFound 
-            type={"Search for Flights"}
+            type={"Flights"}
           />
         ) : isSearchClicked &&
           filteredData.length === 0 &&
