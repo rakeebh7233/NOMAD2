@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Search from './Flight/Search';
 import '../styles/FlightSearch.css';
 
 function FlightSearch() {
+
   return (
     <div>
       <Search />

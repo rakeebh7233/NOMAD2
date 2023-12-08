@@ -11,7 +11,7 @@ function Home() {
   const [endDate, setEndDate] = useState("");
 
   const handleSubmit = async (e) => {
-
+/* 
     localStorage.setItem('startDate', startDate);
     localStorage.setItem('endDate', endDate);
     const options = {
@@ -76,7 +76,7 @@ function Home() {
     }
     catch(error){
       console.error(error)
-    }
+    } */
   };
 
   return (

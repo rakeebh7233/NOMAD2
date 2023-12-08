@@ -5,7 +5,7 @@ import "../styles/CustomItin.css";
 import { useParams } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../AuthContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link} from "react-router-dom";
 
 
 function CustomerItinerary() {
@@ -17,16 +17,39 @@ function CustomerItinerary() {
     const [flights, setFlights] = useState([]);
     const [myFlights, setMyFlights] = useState([]);
 
+
+    const [destination, setDestination] = useState('');
+    const [departureAirport, setDeparture] = useState('');
+    const [arrivalAirport, setArrival] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [tripAdvisorGeoID, setTripAdvisorID] = useState('');
+    const [bookingGeoID, setBookingGeoID] = useState('');
+
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const { user } = useContext(AuthContext);
 
+
     useEffect(() => {
-        getRestaurants();
-        getHotels();
-        getFlights();
-        getMyRestaurants();
-        getMyFlights();
-        getMyHotels();
+
+        const itinData = async()=>{
+
+                const response = await fetch(`http://127.0.0.1:8000/itineraries/currItin/{itinerary_id}?itin_id=${itinerary_id}`)
+                const data = await response.json();
+
+                setDestination(data[0].destination);
+                setDeparture(data[0].departureAirport);
+                setArrival(data[0].arrivalAirport);
+                setStartDate(data[0].departureDate);
+                setEndDate(data[0].returnDate); 
+
+                getLocations(data[0].destination);
+                getMyRestaurants();
+                getMyFlights();
+                getMyHotels();
+
+        }
+        itinData();
     }, [ignored]);
 
 
@@ -36,50 +59,108 @@ function CustomerItinerary() {
         return <Navigate to="/register" />;
     }
 
-    const getSuggestions = () => {
+    const getLocations = (dest) => {
+        const options = {
+            method: 'GET',
+            url: 'http://127.0.0.1:8000/restaurant/tripadvisorCityCheck/' + dest,
+            };
+        
+            try {
+                axios.request(options).then((response)=>{
+                    if (response['data']['isInDB']) {
+                        setTripAdvisorID(response['data']['geoID']);
+                        getRestaurants(response['data']['geoID']);
+                    }
+                    else {
+                        const options1 = {
+                        method: 'GET',
+                        url: 'http://127.0.0.1:8000/restaurant/locations/'+dest,
+                
+                        };
+                
+                        try {
+                            axios.request(options1).then((response1)=>{
+                                setTripAdvisorID(response1['data']['geoId']);
+                                getRestaurants(response['data']['geoID']);
+                            })
+                        }
+                        catch (error) {
+                        console.log(error)
+                        }
+                    }
+                });
+            } catch (error) {
+            console.error(error);
+            }
+        
+        const options3 = {
+            method: 'GET',
+            url: 'http://127.0.0.1:8000/hotel/location_internal/' + dest,
+            headers: {'Authorization': `Bearer ${localStorage.getItem('authToken')}`}
+            }
+        
+            try{
+                axios.request(options3).then((response2)=>{
+                    if(response2['data']['isInDB']){
+                        setBookingGeoID(response2['data']['geoId']);
+                    }
+                    else{
+                        const options4 = {
+                        method: 'GET',
+                        url: 'http://127.0.0.1:8000/hotel/location_external/' + dest,
+                        headers: {'Authorization': `Bearer ${localStorage.getItem('authToken')}`}
+                        }
+                
+                        try{
+                            axios.request(options4).then((response3)=>{
+                                setBookingGeoID(response3['data']['geoId']);
+                            });
+                        }
+                        catch(error){
+                        console.error(error)
+                        }
+                    }
+                });
+            }
+            catch(error){
+            console.error(error)
+          }
+    }
+
+    const getSuggestions = (id, type) => {
         //make calls to suggestions
+        if(type==='flight'){
+            const option = {
+                method: 'GET',
+                url: 'http://127.0.0.1:8000/flight/suggestions/' + id
+            }
+            try{
+                axios.request(option).then((response)=>{
+                    setFlights(response['data'])
+                })
+            }
+            catch(error){
+                console.error(error)
+            }
+        }
+        if(type==='hotel'){
+            const option1 = {
+                method: 'GET',
+                url: 'http://127.0.0.1:8000/hotel/suggestions/' + id
+            }
+            try{
+                axios.request(option1).then((response)=>{
+                    setHotels(response['data'])
+                })
+            }
+            catch(error){
+                console.error(error)
+            }
+        }
     };
 
     const setPlannedSection = () => {
         //setThingsAsNeeded
-    }
-
-    const getHotels = async () => {
-        const geoID = localStorage.getItem('BookingAPIGeoID');
-        const startDate = localStorage.getItem('startDate');
-        const endDate = localStorage.getItem('endDate');
-
-        const options = {
-            method: 'GET',
-            url: 'http://127.0.0.1:8000/hotel/hotel_internal/' + geoID + '/' + startDate + '/' + endDate + '/2/1',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
-        };
-
-        try {
-            axios.request(options).then((data) => {
-                if (data['data'].length === 0) {
-                    const options1 = {
-                        method: 'GET',
-                        url: 'http://127.0.0.1:8000/hotel/hotel_external/' + geoID + '/' + startDate + '/' + endDate + '/2/1',
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
-                    };
-                    try {
-                        axios.request(options1).then((data1) => {
-                            setHotels(data1.data);
-                        })
-                    }
-                    catch (error) {
-                        console.error(error)
-                    }
-                }
-                else {
-                    setHotels(data.data);
-                }
-
-            });
-        } catch (error) {
-            console.error(error);
-        }
     }
 
     const getMyHotels = async () => {
@@ -89,6 +170,7 @@ function CustomerItinerary() {
         }
         const data = await response.json();
         setMyHotels(data);
+        getSuggestions(data[0]['hotel_id'], 'hotel')
     }
 
     const removeMyHotel = async (hotel_id) => {
@@ -115,85 +197,6 @@ function CustomerItinerary() {
         forceUpdate();
     }
 
-    const getFlights = async () => {
-        const startDate = localStorage.getItem('startDate');
-        const endDate = localStorage.getItem('endDate');
-        const flightList = [];
-
-        const options = {
-            method: 'GET',
-            url: 'http://127.0.0.1:8000/flight/internal_search/round/JFK/LAX/' + startDate + '/' + startDate + '/{search}?cabinClass=ECONOMY',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
-        }
-        try {
-            axios.request(options).then((data) => {
-                if (data['data'].length !== 0) {
-                    const options1 = {
-                        method: 'GET',
-                        url: 'http://127.0.0.1:8000/flight/internal_search/round/LAX/JFK/' + endDate + '/' + endDate + '/{search}?cabinClass=ECONOMY',
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
-                    }
-                    try {
-                        axios.request(options1).then((data1) => {
-                            if (data1['data'].length !== 0) {
-                                for (let i = 0; i < data['data'].length; i++) {
-                                    flightList.push(data['data'][i]);
-                                }
-                                for (let i = 0; i < data1['data'].length; i++) {
-                                    flightList.push(data1['data'][i]);
-                                }
-                                setFlights(flightList)
-                            }
-                            else {
-                                const options2 = {
-                                    method: 'GET',
-                                    url: 'http://127.0.0.1:8000/flight/external_search/round/JFK.AIRPORT/LAX.AIRPORT/' + startDate + '/' + endDate + '/ECONOMY',
-                                    headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
-                                }
-                                try {
-                                    axios.request(options2).then((data) => {
-                                        for (let i = 0; i < data.length; i++) {
-                                            flightList.push(data[i]);
-                                        }
-                                        setFlights(flightList);
-                                    })
-                                }
-                                catch (error) {
-                                    console.error(error)
-                                }
-                            }
-                        })
-                    }
-                    catch (error) {
-                        console.error(error)
-                    }
-                }
-                else {
-                    const options2 = {
-                        method: 'GET',
-                        url: 'http://127.0.0.1:8000/flight/external_search/round/JFK.AIRPORT/LAX.AIRPORT/' + startDate + '/' + endDate + '/ECONOMY',
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
-                    }
-                    try {
-                        axios.request(options2).then((data) => {
-                            for (let i = 0; i < data.length; i++) {
-                                flightList.push(data[i]);
-                            }
-                            setFlights(flightList);
-                        })
-                    }
-                    catch (error) {
-                        console.error(error)
-                    }
-                }
-            })
-        }
-        catch (error) {
-            console.error(error)
-        }
-
-    }
-
     const getMyFlights = async () => {
         const response = await fetch(`http://localhost:8000/itineraries/${itinerary_id}/flights`);
         if (!response.ok) {
@@ -201,6 +204,7 @@ function CustomerItinerary() {
         }
         const data = await response.json();
         setMyFlights(data);
+        getSuggestions(data[0]['flight_id'], 'flight');
     }
 
     const removeMyFlight = async (flight_id) => {
@@ -234,8 +238,7 @@ function CustomerItinerary() {
 
     }
 
-    const getRestaurants = async () => {
-        const geoID = localStorage.getItem('tripAdvisorGeoID')
+    const getRestaurants = async (geoID) => {
         const options = {
             method: 'GET',
             url: 'http://127.0.0.1:8000/restaurant/tripadvisorRestaurantLocCheck/{locationId}?locId=' + geoID,
@@ -307,6 +310,16 @@ function CustomerItinerary() {
 
     return (
         <section id="customItinPage">
+            <button>
+                <Link to={`/flightSearch/${departureAirport}/${arrivalAirport}/${startDate}/${endDate}`}>
+                    Search Flights
+                </Link>
+            </button>
+            <button>
+                <Link to={`/hotelSearch/${destination}/${startDate}/${endDate}`}>
+                    Search Hotels
+                </Link>
+            </button>
             <div className="row gx-1 px-4">
                 <div className="planned-container col-sm-6">
                     <h1>Planned</h1>
@@ -330,9 +343,11 @@ function CustomerItinerary() {
                     )}
 
                     <h2>Flight</h2>
+                    <div className="cards d-flex">
                     {myFlights.length === 0 ? (
                         <p style={{fontStyle: 'italic'}}>Add a Flight to your itinerary</p>
                     ) : (
+    
                         myFlights.map((flight) => (
                             <div className="card-container" key={flight.flight_id}>
                                 <img
@@ -347,7 +362,7 @@ function CustomerItinerary() {
                             </div>
                         ))
                     )}
-
+                    </div>
                     {/* <h2>Activites</h2>
                     <div className="d-flex">
                         <div className="card-container">
@@ -380,7 +395,7 @@ function CustomerItinerary() {
                             myRestaurants.map((rest) => (
                                 <div className="card-container" key={rest.restaurant_id}>
                                     <img
-                                        src={rest.image_url}
+                                        src="https://monicafrancis.com/wp-content/uploads/2021/12/Monica-Francis-Best-NYC-Restaurants-La-Mercerie.jpg"
                                         alt="Card"
                                         className="card-img"
                                     />

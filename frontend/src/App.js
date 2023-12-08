@@ -38,8 +38,8 @@ function App() {
           <Route path='/userprofile' exact element={<Form />} />
           <Route path='/register' exact element={<Register />} />
           <Route path='/login' exact element={<Login />} />
-          <Route path='/flightsearch' exact element={<FlightSearch />} />
-          <Route path='/hotelsearch' exact element={<HotelSearch />} />
+          <Route path='/flightsearch/:departureAirport/:arrivalAirport/:departureDate/:arrivalDate' exact element={<FlightSearch />} />
+          <Route path='/hotelsearch/:city/:startDate/:endDate' exact element={<HotelSearch />} />
           <Route path='/financedashboard' exact element={<FinanceDashboard />} />
         </Routes>
       </Router>

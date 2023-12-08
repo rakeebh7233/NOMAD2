@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Result from "./Result";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 function Search() {
   const [btnType, setbtnType] = useState("oneWay");
   const [bookReturn, setBookReturn] = useState(false);
+
+  const {flightData} = useParams();
 
   const [originCity, setOriginCity] = useState("");
   const [destinationCity, setDestinationCity] = useState("");
@@ -15,6 +18,10 @@ function Search() {
 
   const [isSearchClicked, setIsSearchClicked] = useState(false);
   const [returnFilterData, setReturnFilterData] = useState([]);
+
+  useEffect(()=>{
+    console.log(flightData);
+  })
 
   const bookType = [
     {

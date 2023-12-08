@@ -92,6 +92,8 @@ def newlocationSearchExternal(city: str, db: Session = Depends(get_db)):
 @router.get('/tripadvisorCityCheck/{city}', status_code=status.HTTP_200_OK)
 def checkLocExists(city: str, db: Session = Depends(get_db)):
 
+    print("This is the city: " + city)
+
     res = HotelModel.Location.get_location_by_name(db, city, "TripAdvisorAPI")
     
     if res != None:

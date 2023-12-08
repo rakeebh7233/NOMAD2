@@ -17,6 +17,11 @@ router = APIRouter(
     tags=['Itineraries']
 )
 
+@router.get("/currItin/{itinerary_id}", response_model = List[schema.ViewItinerary])
+def get_itinerary_byID(itin_id: int, db: db_dependency):
+    itin = db.query(Itinerary).filter_by(id = itin_id).all()
+    return itin
+
 @router.get("/{user_id}", response_model=List[schema.ViewItinerary])
 def get_user_itineraries(user_id: int, db: db_dependency):
     User = import_module("models.UserModel").User
