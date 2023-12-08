@@ -306,12 +306,12 @@ function CustomerItinerary() {
 
     return (
         <section id="customItinPage">
-            <button>
+            <button className="flight-button">
                 <Link to={`/flightSearch/${departureAirport}/${arrivalAirport}/${startDate}/${endDate}`}>
                     Search Flights
                 </Link>
             </button>
-            <button>
+            <button className="hotel-button">
                 <Link to={`/hotelSearch/${destination}/${startDate}/${endDate}`}>
                     Search Hotels
                 </Link>
