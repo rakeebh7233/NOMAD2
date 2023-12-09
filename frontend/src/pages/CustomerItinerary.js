@@ -123,7 +123,7 @@ function CustomerItinerary() {
         }
     }
 
-    const getSuggestions = (id, type) => {
+    const getSuggestions = (id, type, data) => {
         //make calls to suggestions
         if (type === 'flight') {
             const option = {
@@ -132,7 +132,16 @@ function CustomerItinerary() {
             }
             try {
                 axios.request(option).then((response) => {
-                    setFlights(response['data'])
+                    let flightData = response['data'];
+                    flightData = flightData.filter(val => {
+                        for(let i =0; i < data.length; i++){
+                            if(val['id'] === data[i]['flight_id']){
+                                return false;
+                            }
+                        }
+                        return true;
+                    })
+                    setFlights(flightData)
                 })
             }
             catch (error) {
@@ -146,7 +155,16 @@ function CustomerItinerary() {
             }
             try {
                 axios.request(option1).then((response) => {
-                    setHotels(response['data'])
+                    let hotelData = response['data'];
+                    hotelData = hotelData.filter(val => {
+                        for(let i =0; i < data.length; i++){
+                            if(val['id'] === data[i]['hotel_id']){
+                                return false;
+                            }
+                        }
+                        return true;
+                    })
+                    setHotels(hotelData)
                 })
             }
             catch (error) {
@@ -167,7 +185,7 @@ function CustomerItinerary() {
         const data = await response.json();
         setMyHotels(data);
         if (data.length > 0) {
-            getSuggestions(data[0]['hotel_id'], 'hotel')
+            getSuggestions(data[0]['hotel_id'], 'hotel', data)
         }
     }
 
@@ -204,7 +222,7 @@ function CustomerItinerary() {
         setMyFlights(data);
 
         if (data.length > 0) {
-            getSuggestions(data[0]['flight_id'], 'flight');
+            getSuggestions(data[0]['flight_id'], 'flight', data);
         }
     }
 
@@ -245,7 +263,6 @@ function CustomerItinerary() {
         };
 
         axios.request(options).then((response) => {
-            console.log(response['data']['isInDB'])
             if (response['data']['isInDB']) {
                 const options1 = {
                     method: 'GET',
