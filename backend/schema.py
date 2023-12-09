@@ -139,23 +139,6 @@ class ItineraryUpdate(ItineraryModel):
     class Config:
         orm_mode = True
 
-# # Itinerary Owner Schema
-
-# class ItineraryOwnerBase(BaseModel):
-#     itinerary_id: int
-#     user_id: int
-
-# class ItineraryOwnerCreate(ItineraryOwnerBase):
-#     class Config:
-#         orm_mode = True
-
-# class ItineraryOwnerModel(ItineraryOwnerBase):
-#     class Config:
-#         orm_mode = True
-
-# class ItineraryOwnerUpdate(ItineraryOwnerModel):
-#     class Config:
-#         orm_mode = True
 
 # Restaurant Schema
 
@@ -164,7 +147,7 @@ class RestaurantBase(BaseModel):
     name: str
     averageRating: float
     userReviewCount: int
-    priceTag: str
+    priceTag: Optional[str]
     menuURL: Union[str, None] = None
 
 class RestaurantCreate(RestaurantBase):

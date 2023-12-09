@@ -106,8 +106,6 @@ function Itineraries() {
                             <th>Arrival Airport</th>
                             <th>Departure Date</th>
                             <th>Return Date</th>
-                            {/* <th>Travel Reason</th>
-                            <th>Leisure Activities</th> */}
                             <th>Budget</th>
                             <th>Owner</th>
                             <th>Members</th>
@@ -127,8 +125,6 @@ function Itineraries() {
                                 <td>{itinerary.arrivalAirport}</td>
                                 <td>{itinerary.departureDate}</td>
                                 <td>{itinerary.returnDate}</td>
-                                {/* <td>{itinerary.travelReason}</td>
-                                <td>{itinerary.leisureActivities}</td> */}
                                 <td>{itinerary.budget}</td>
                                 <td>{itinerary.creatorUsername}</td>
                                 <td>{itinerary.members.map(member => member.username).join(', ')}</td>
@@ -165,8 +161,6 @@ function Itineraries() {
                             <th>Arrival Airport</th>
                             <th>Departure Date</th>
                             <th>Return Date</th>
-                            {/* <th>Travel Reason</th>
-                            <th>Leisure Activities</th> */}
                             <th>Budget</th>
                             <th>Owner</th>
                             <th>Members</th>
@@ -187,8 +181,6 @@ function Itineraries() {
                                 <td>{itinerary.arrivalAirport}</td>
                                 <td>{itinerary.departureDate}</td>
                                 <td>{itinerary.returnDate}</td>
-                                {/* <td>{itinerary.travelReason}</td>
-                                <td>{itinerary.leisureActivities}</td> */}
                                 <td>{itinerary.budget}</td>
                                 <td>{itinerary.creatorUsername}</td>
                                 <td>{itinerary.members.map(member => member.username).join(', ')}</td>

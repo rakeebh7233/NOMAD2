@@ -1,11 +1,11 @@
 import React from 'react';
 import axios from 'axios';
-import { useParams } from "react-router-dom";
-
+import { useParams, useNavigate } from "react-router-dom";
 
 function HotelTicket(props) {
-  const { itinerary_id } = useParams();
+  const { itinID } = useParams();
   const { filteredData } = props;
+  const navigate = useNavigate();
 
   const addHotel = async (hotel_id) => {
     const response = await fetch('http://localhost:8000/hotel_booking/new_booking', {
@@ -15,9 +15,15 @@ function HotelTicket(props) {
       },
       body: JSON.stringify({
         hotel_id: hotel_id,
-        itinerary_id: itinerary_id
+        itinerary_id: itinID
       })
     });
+    if (response.ok) {
+      console.log("Added hotel")
+      navigate("/itineraries/"+itinID)
+    } else {
+      throw new Error("Hotel not added");
+    }
   }
 
   return (
@@ -69,13 +75,13 @@ function HotelTicket(props) {
                     flexDirection: 'column',
                   }}
                 >
-                  <div style={{ height: '100px', width: '140px' }}>
+                  <div style={{ height: '70px', width: '140px' }}> 
                     {/* <img
                       src={data.flightImg}
                       alt="flight_img"
                       style={{ height: '100%', width: '100%' }}
-                    /> */}
-                  </div>
+                    />   */}
+                  </div> 
                   <div>
                     <button type="button" className="btn btn-sm btn-info" onClick={() => addHotel(data.id)}>
                       <b>Add to Itinerary</b>

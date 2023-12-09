@@ -11,7 +11,7 @@ class Restaurant(Base):
     name = Column(String, nullable=False)
     averageRating = Column(Float, nullable=False)
     userReviewCount = Column(Integer, nullable=False)
-    priceTag = Column(String, nullable=False)
+    priceTag = Column(String)
     menuURL = Column(String)
 
     restaurant_bookings = relationship('RestaurantBooking', back_populates='restaurant')

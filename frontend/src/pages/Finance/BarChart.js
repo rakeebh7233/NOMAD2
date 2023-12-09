@@ -51,15 +51,16 @@ function BarChart(){
             const fetchData = async () => {
                 setLoading(true);
                 const period_response = await axios.get(`http://localhost:8000/savings/period/${email}`);
+            
                 setPeriod(period_response.data);
-                // console.log(period_response.data);
+                console.log(period_response.data);
     
                 const start_date_response = await axios.get(`http://localhost:8000/savings/start_date/${email}`);
                 setStartDate(start_date_response.data);
-                // console.log(start_date_response.data);
+                console.log(start_date_response.data);
     
                 const data_response = await axios.get(`http://localhost:8000/transactions/${period_response.data}/${email}/${start_date_response.data}`);
-                // console.log(data_response.data[0].transaction_date)
+                console.log(data_response.data[0].transaction_date)
                 const chartData = {
                     labels: data_response.data.map(item => item.transaction_date),
                     datasets: [

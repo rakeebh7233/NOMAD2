@@ -14,6 +14,11 @@
     height: fit-content;
 }
 
+.inline-element {
+    display: inline-block;
+    padding-right: 15px;
+}
+
 .flight-button{
     border-radius: 7px;
     height: 40px;
@@ -28,7 +33,7 @@
 
   }
 
-  a{
+  .flight-button a, .hotel-button a {
     color:white;
   }
 

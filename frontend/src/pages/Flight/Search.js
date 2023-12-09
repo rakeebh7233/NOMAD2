@@ -7,21 +7,17 @@ function Search() {
   const [btnType, setbtnType] = useState("oneWay");
   const [bookReturn, setBookReturn] = useState(false);
 
-  const {flightData} = useParams();
+  const {departureAirport, arrivalAirport, depDate, arrDate, itinID} = useParams();
 
-  const [originCity, setOriginCity] = useState("");
-  const [destinationCity, setDestinationCity] = useState("");
-  const [departureDate, setDepartureDate] = useState("");
-  const [returnDate, setReturnDate] = useState("");
+  const [originCity, setOriginCity] = useState(departureAirport);
+  const [destinationCity, setDestinationCity] = useState(arrivalAirport);
+  const [departureDate, setDepartureDate] = useState(depDate);
+  const [returnDate, setReturnDate] = useState(arrDate);
   const [cabinClass, setCabinClass] = useState("Economy"); // ["Economy", "Business", "First"
   const [filteredData, setFilteredData] = useState([]);
 
   const [isSearchClicked, setIsSearchClicked] = useState(false);
   const [returnFilterData, setReturnFilterData] = useState([]);
-
-  useEffect(()=>{
-    console.log(flightData);
-  })
 
   const bookType = [
     {
@@ -172,12 +168,14 @@ function Search() {
                     type="text"
                     placeholder="Enter Origin Airport"
                     className="form-control mt-4"
+                    value={departureAirport}
                     onChange={(e) => setOriginCity(e.target.value)}
                   />
                   <input
                     type="text"
                     placeholder="Enter Destination Airport"
                     className="form-control mt-2"
+                    value={arrivalAirport}
                     onChange={(e) => setDestinationCity(e.target.value)}
                   />
                   <input
@@ -186,6 +184,7 @@ function Search() {
                     className="form-control mt-2"
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    value={depDate}
                     onChange={(e) => setDepartureDate(e.target.value)}
                   />
                   {btnType === "roundTrip" ? (
@@ -195,6 +194,7 @@ function Search() {
                       className="form-control mt-2"
                       onFocus={handleFocus}
                       onBlur={handleBlur}
+                      value={arrDate}
                       onChange={(e) => setReturnDate(e.target.value)}
                     />
                   ) : null}

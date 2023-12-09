@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import HotelResult from "./HotelResult";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 function HotelSearch() {
+  const { city, startDate, endDate, itinID } = useParams();
 
-  const [location, setLocation] = useState("");
-  const [checkInDate, setCheckInDate] = useState("");
-  const [checkOutDate, setCheckOutDate] = useState("");
+  const [location, setLocation] = useState(city);
+  const [checkInDate, setCheckInDate] = useState(startDate);
+  const [checkOutDate, setCheckOutDate] = useState(endDate);
   const [guests, setGuests] = useState(0);
   const [rooms, setRooms] = useState(0);
   const [filteredData, setFilteredData] = useState([]);
@@ -90,6 +92,7 @@ function HotelSearch() {
                     type="text"
                     placeholder="Enter Desired Location (City)"
                     className="form-control mt-4"
+                    value={city}
                     onChange={(e) => setLocation(e.target.value)}
                   />
                   <input
@@ -98,6 +101,7 @@ function HotelSearch() {
                     className="form-control mt-2"
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    value={startDate}
                     onChange={(e) => setCheckInDate(e.target.value)}
                   />
                   <input
@@ -106,6 +110,7 @@ function HotelSearch() {
                     className="form-control mt-2"
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    value={endDate}
                     onChange={(e) => setCheckOutDate(e.target.value)}
                   />
                   <input

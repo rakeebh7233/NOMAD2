@@ -1,10 +1,10 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from 'react-router-dom';
 
 function Ticket(props) {
-  const { itinerary_id } = useParams();
-  const { filteredData} = props;
+  const { itinID } = useParams();
+  const { filteredData } = props;
+  const navigate = useNavigate();
 
   const addFlight = async (flight_id) => {
     const response = await fetch('http://localhost:8000/flight_booking/new_booking', {
@@ -14,12 +14,13 @@ function Ticket(props) {
         },
         body: JSON.stringify({
             flight_id: flight_id,
-            itinerary_id: itinerary_id
+            itinerary_id: itinID
         })
     });
   
     if (response.ok) {
         console.log("Added flight")
+        navigate("/itineraries/"+itinID)
     } else {
         throw new Error("Flight not added");
     }

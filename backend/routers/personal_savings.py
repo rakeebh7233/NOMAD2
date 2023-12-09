@@ -74,7 +74,7 @@ def update_progress_per_period(email, progress, db: Session = Depends(get_db)):
     response = FinanceModel.Savings.update_progress(db, email, progress)
     if response == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with email {email} not found")
-    print(response.current_budget)
+    print(response.travel_budget)
     return response
 
 @router.get('/check_progress/{email}', status_code=status.HTTP_200_OK)
