@@ -60,16 +60,45 @@ function BarChart(){
                 setStartDate(start_date_response.data);
                 console.log(start_date_response.data);
     
+                // const data_response = await axios.get(`http://localhost:8000/transactions/${period_response.data}/${email}/${start_date_response.data}`);
+                // console.log(data_response.data)
+                // const chartData = {
+                //     labels: data_response.data.map(item => item.transaction_date),
+                //     datasets: [
+                //         {
+                //             label: 'Savings Breakdown by Period',
+                //             data: data_response.data.map(item => item.transaction_amount),
+                //             backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                //             borderColor: 'rgba(75, 192, 192, 1)', 
+                //             borderWidth: 1,
+                //         },
+                //     ],
+                // };
+
+                const groupData = (data, period) => {
+                    return data.reduce((acc, item) => {
+                        const date = new Date(item.transaction_date);
+                        const key = period === 'monthly' 
+                            ? `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}` // YYYY-MM
+                            : `${date.getFullYear()}-W${('0' + (Math.floor(date.getDate() / 7) + 1)).slice(-2)}`; // YYYY-WW
+                        acc[key] = (acc[key] || 0) + item.transaction_amount;
+                        return acc;
+                    }, {});
+                };
+                
                 const data_response = await axios.get(`http://localhost:8000/transactions/${period_response.data}/${email}/${start_date_response.data}`);
                 console.log(data_response.data)
+                
+                const groupedData = groupData(data_response.data, period_response.data);
+                
                 const chartData = {
-                    labels: data_response.data.map(item => item.transaction_date),
+                    labels: Object.keys(groupedData),
                     datasets: [
                         {
-                            label: 'Savings Breakdown by Period',
-                            data: data_response.data.map(item => item.transaction_amount),
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)', // change this line
-                            borderColor: 'rgba(75, 192, 192, 1)', // and this line
+                            label: 'Savings Breakdown by ' + (period_response.data === 'monthly' ? 'Month' : 'Week'),
+                            data: Object.values(groupedData),
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)', 
                             borderWidth: 1,
                         },
                     ],

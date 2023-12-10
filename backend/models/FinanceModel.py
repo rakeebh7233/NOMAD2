@@ -257,15 +257,17 @@ class Transaction(Base):
         return transactions_per_day
 
     @classmethod
+    
     def get_transactions_per_week(cls, db_session, email_address, start_date):
         """Return a list of transactions as JSON objects with the keys 'transaction_date' and 'transaction_amount'."""
         transactions = cls.get_transaction_user(db_session, email_address)
         start_date = datetime.strptime(start_date[0:11], "%Y-%m-%d")
+        start_week_start_date = start_date - timedelta(days=start_date.weekday())  # get the start of the week of the start date
         transactions_per_week = []
         for transaction in transactions:
             transaction_date = datetime.strptime(transaction.transaction_date[0:11], "%Y-%m-%d")
             week_start_date = transaction_date - timedelta(days=transaction_date.weekday())
-            if week_start_date < start_date:
+            if week_start_date < start_week_start_date:  # compare with the start of the week of the start date
                 continue
             transactions_per_week.append(transaction)
         return transactions_per_week
@@ -275,11 +277,12 @@ class Transaction(Base):
         """Return a list of transactions as JSON objects with the keys 'transaction_date' and 'transaction_amount'."""
         transactions = cls.get_transaction_user(db_session, email_address)
         start_date = datetime.strptime(start_date[0:11], "%Y-%m-%d")
+        start_month_start_date = start_date.replace(day=1)  # get the start of the month of the start date
         transactions_per_month = []
         for transaction in transactions:
             transaction_date = datetime.strptime(transaction.transaction_date[0:11], "%Y-%m-%d")
             month_start_date = transaction_date.replace(day=1)
-            if month_start_date < start_date:
+            if month_start_date < start_month_start_date:  # compare with the start of the month of the start date
                 continue
             transactions_per_month.append(transaction)
         print(transactions_per_month)
