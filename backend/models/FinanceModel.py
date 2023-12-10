@@ -3,14 +3,15 @@ from database import Base
 from datetime import datetime, date, timedelta
 import schema
 from .UserModel import User
-    
+from .ItineraryModel import Itinerary, user_itinerary 
+
 # The Savings tables will store the budget goals and updates for the user to progress towards
 # This can be used for reccommendation and finance based itineraries 
 class Savings(Base):
     __tablename__ = 'savings'
 
     email_address = Column(String, ForeignKey('user.email_address'), primary_key=True)
-    travel_budget = Column(Float, nullable=False)
+    current_budget = Column(Float, nullable=False)
     goal = Column(Float, nullable=False)
     period = Column(String, nullable=False)
     goal_per_period = Column(Float, nullable=False)
@@ -19,9 +20,9 @@ class Savings(Base):
     travel_date = Column(String, nullable=False)
 
     def __repr__(self):
-        return '<Savings: email_address=%s, travel_budget=%s, goal=%s, period=%s, goal_per_period=%s, progress_per_period=%s>' % (
+        return '<Savings: email_address=%s, current_budget=%s, goal=%s, period=%s, goal_per_period=%s, progress_per_period=%s>' % (
             repr(self.email_address),
-            repr(self.travel_budget),
+            repr(self.current_budget),
             repr(self.goal),
             repr(self.period),
             repr(self.goal_per_period),
@@ -35,15 +36,19 @@ class Savings(Base):
         """Create a new savings goal."""
         savings_obj = cls(
             email_address=request.email_address,
-            travel_budget=request.travel_budget,
+            current_budget=request.current_budget,
             goal=request.goal,
             period=request.period,
             # goal_per_period=cls.update_goal_per_period(request.goal, request.travel_budget, request.period, request.travel_date),
             goal_per_period=request.goal,
             progress_per_period=0.0,
             start_date=date.today(),
-            travel_date=request.travel_date
+            travel_date=(date.today() + timedelta(days=6*30))  
+            # Default Travel Date: Assign travel_date to be 6 months added to start_date
         )
+        earliest_departure_date = Itinerary.get_earliest_departure_date(request.email_address, db_session)
+        if earliest_departure_date != -1:
+            savings_obj.travel_date = earliest_departure_date
         db_session.add(savings_obj)
         db_session.commit()
         return savings_obj
@@ -54,11 +59,11 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj == None:
             return None
-        savings_obj.travel_budget = request.travel_budget
+        savings_obj.current_budget = request.current_budget
         savings_obj.goal = request.goal
         savings_obj.period = request.period
         # goal per period will be updated with progress per period
-        savings_obj.progress_per_period = cls.update_progress(request.travel_budget, request.period, request.travel_date)
+        savings_obj.progress_per_period = cls.update_progress(request.current_budget, request.period, request.travel_date)
         savings_obj.start_date = request.start_date
         savings_obj.travel_date = request.travel_date
         db_session.commit()
@@ -70,7 +75,7 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj == None:
             return None
-        savings_obj.travel_budget += amount
+        savings_obj.current_budget += amount
         savings_obj.progress_per_period += amount
         db_session.commit()
         return savings_obj
@@ -100,15 +105,17 @@ class Savings(Base):
         return db_session.query(cls).filter_by(email_address=email_address).first()
     
     @classmethod
-    def update_goal_per_period(cls, goal, travel_budget, period, travel_date):
+    def update_goal_per_period(cls, goal, current_budget, period, travel_date):
 
         today = date.today()
         #d1 = datetime.strptime(today, "%Y/%m/%d")
         d1 = today
-        travel_date_obj = datetime.strptime(travel_date, "%Y-%m-%d")
-        d2 = travel_date_obj.date()
+        d2 = travel_date
+        if (type(travel_date) == str):
+            travel_date_obj = datetime.strptime(travel_date, "%Y-%m-%d")
+            d2 = travel_date_obj.date()
         #d2 = travel_date
-        remaining_goal = goal - travel_budget
+        remaining_goal = goal - current_budget
 
         if (period.lower() == "weekly"):
             return remaining_goal / ((d2 - d1).days / 7)
@@ -124,10 +131,19 @@ class Savings(Base):
         savings_obj = cls.get_savings_user(db_session, email_address)
         if savings_obj is None:
             return None
+        
+        earliest_departure_date = Itinerary.get_earliest_departure_date(email_address, db_session)
+        if earliest_departure_date != -1:
+            savings_obj.travel_date = earliest_departure_date
+
+        it_id = Itinerary.get_itinerary_by_email_and_departure_date(email_address, savings_obj.travel_date, db_session)
+        total_itinerary_price = Itinerary.get_itinerary_price(it_id, db_session)
+        savings_obj.goal = max(savings_obj.goal, total_itinerary_price)
+
         progress = float(progress)
         savings_obj.progress_per_period = savings_obj.progress_per_period + progress
-        savings_obj.travel_budget = savings_obj.travel_budget + progress
-        savings_obj.goal_per_period = cls.update_goal_per_period(savings_obj.goal, savings_obj.travel_budget, savings_obj.period, savings_obj.travel_date)
+        savings_obj.current_budget = savings_obj.current_budget + progress
+        savings_obj.goal_per_period = cls.update_goal_per_period(savings_obj.goal, savings_obj.current_budget, savings_obj.period, savings_obj.travel_date)
 
         db_session.commit()
         return savings_obj
@@ -171,7 +187,7 @@ class Savings(Base):
     def check_savings_success(cls, db_session, email_address):
         """Check if the user has successfully saved enough money for the trip."""
         savings_obj = db_session.query(cls).filter_by(email_address=email_address).first()
-        if savings_obj.travel_budget >= savings_obj.goal:
+        if savings_obj.current_budget >= savings_obj.goal:
             return True
         return False
     

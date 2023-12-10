@@ -243,7 +243,7 @@ class FinanceUpdate(FinanceModel):
 
 class SavingsBase(BaseModel):
     email_address: str
-    travel_budget: float
+    current_budget: float
     goal: float
     period: str
     goal_per_period: Optional[float]

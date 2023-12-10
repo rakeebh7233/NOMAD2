@@ -4,7 +4,7 @@ from importlib import import_module
 from sqlalchemy import delete
 from sqlalchemy.orm import joinedload
 from datetime import date
-from models.ItineraryModel import Itinerary
+from models.ItineraryModel import Itinerary, user_itinerary
 from models.ItineraryModel import user_itinerary
 from models.FlightModel import FlightBooking
 from models.HotelModel import HotelBooking
@@ -229,35 +229,26 @@ def get_total_price(itinerary_id: int, db: db_dependency):
 
     return {"total_price": total_price}
 
-@router.get("/price/flight/{itinerary_id}")
-def get_flight_price(itinerary_id: int, db: db_dependency):
-    itinerary = db.query(Itinerary).filter_by(id=itinerary_id).first()
 
-    if not itinerary:
-        #raise HTTPException(status_code=404, detail="Itinerary not found")
-        return {"total_price": -1}
+@router.get("/next_trip/date/{email_address}")
+def get_next_trip_date(email_address: str, db: db_dependency):
+    earliest_departure_date = Itinerary.get_earliest_departure_date(email_address, db)  
+    if earliest_departure_date == -1:
+        return {"earliest_departure_date": -1}
+    return {"earliest_departure_date": earliest_departure_date}
 
-    flights = db.query(flight_booking).filter_by(itinerary_id=itinerary_id).all()
+@router.get("/next_trip/itinerary/{email_address}/{departure_date}")
+def get_next_trip_itinerary(email_address: str, departure_date: date, db: db_dependency):
+    itinerary_id = Itinerary.get_itinerary_by_email_and_departure_date(email_address, departure_date, db)
+    if itinerary_id == None:
+        return {"itinerary_id": -1}
+    return {"itinerary_id": itinerary_id}
 
-    total_price = 0
-    for flight in flights:
-        total_price += flight.price
+@router.get("/next_trip/price/{itinerary_id}")
+def get_next_trip_price(itinerary_id: int, db: db_dependency):
+    price = Itinerary.get_itinerary_price(itinerary_id, db)
+    return {"price": price}
 
-    return {"total_price": total_price}
 
-@router.get("/price/hotel/{itinerary_id}")
-def get_hotel_price(itinerary_id: int, db: db_dependency):
-    itinerary = db.query(Itinerary).filter_by(id=itinerary_id).first()
-
-    if not itinerary:
-        #raise HTTPException(status_code=404, detail="Itinerary not found")
-        return {"total_price": -1}
-
-    hotels = db.query(hotel_booking).filter_by(itinerary_id=itinerary_id).all()
-
-    total_price = 0
-    for hotel in hotels:
-        total_price += hotel.price
-
-    return {"total_price": total_price}
+    
     
