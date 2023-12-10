@@ -20,7 +20,7 @@ function HotelTicket(props) {
     });
     if (response.ok) {
       console.log("Added hotel")
-      navigate("/itineraries/"+itinID)
+      navigate("/itineraries/" + itinID)
     } else {
       throw new Error("Hotel not added");
     }
@@ -50,7 +50,7 @@ function HotelTicket(props) {
                       }}
                     >
                       <span>
-                        <b>$ {data.totalPrice}</b>
+                        <b>$ {(data.totalPrice).toFixed(2)}</b>
                       </span>
                     </div>
                     <div>
@@ -75,18 +75,19 @@ function HotelTicket(props) {
                     flexDirection: 'column',
                   }}
                 >
-                  <div style={{ height: '70px', width: '140px' }}> 
-                    {/* <img
-                      src={data.flightImg}
-                      alt="flight_img"
-                      style={{ height: '100%', width: '100%' }}
-                    />   */}
-                  </div> 
-                  <div>
-                    <button type="button" className="btn btn-sm btn-info" onClick={() => addHotel(data.id)}>
-                      <b>Add to Itinerary</b>
+                  <div style={{ height: '100px', width: '140px' }}> </div>
+                  {itinID &&
+                    <div>
+                      <button type="button" className="btn btn-sm btn-info" onClick={() => addHotel(data.id)}>
+                        <b>Add to Itinerary</b>
+                      </button>
+                    </div>
+                  }
+                   { !itinID &&
+                    <button type="button" class="btn btn-primary btn-lg">
+                      <a class="nav-link text-light" href="/itineraries/new">Create New Itinerary</a>
                     </button>
-                  </div>
+                  }
                 </div>
               </div>
             </div>

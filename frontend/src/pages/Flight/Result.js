@@ -27,7 +27,7 @@ function Result(props) {
             className="d-flex justify-content-center"
             style={{ color: "red" }}
           >
-            <h3>No Flights Found</h3>
+            <h3>Loading</h3>
           </div>
         ) : (
           <div>

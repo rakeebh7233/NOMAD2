@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../AuthContext";
+import logo from './NOMAD_LOGO.PNG';
 
 function NavBar({ handleLoginClick }) {
     const {token, logout} = useContext(AuthContext);
@@ -11,7 +12,12 @@ function NavBar({ handleLoginClick }) {
     return (
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/">NOMAD</a>
+                {/* <a class="navbar-brand" href="/">NOMAD</a> */}
+                <img 
+                    style={{ marginRight: '10px' }}
+                    src={logo} alt="logo" width="50" height="50" 
+                    href="/"
+                />
                 <button
                     class="navbar-toggler"
                     type="button"
@@ -35,7 +41,10 @@ function NavBar({ handleLoginClick }) {
                                     <a class="nav-link text-light" href="/itineraries">View Itineraries</a>
                                 </li>
                                 <li class="nav-item me-auto">
-                                    <a class="nav-link text-light" href="/userprofile">User Profile</a>
+                                    <a class="nav-link text-light" href="/flightsearch">Flight Search</a>
+                                </li>
+                                <li class="nav-item me-auto">
+                                    <a class="nav-link text-light" href="/hotelsearch">Hotel Search</a>
                                 </li>
                                 <li class="nav-item me-auto">
                                     <a class="nav-link text-light" href="/financedashboard">Finances</a>

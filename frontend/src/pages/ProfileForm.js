@@ -14,7 +14,7 @@ function Form() {
         if (user) {
             setFormData({
                 email_address: user.email_address,
-                travel_budget: "",
+                current_budget: "",
                 goal: "",
                 period: "weekly",
                 goal_per_period: 0,
@@ -71,9 +71,9 @@ function Form() {
                             Travel Budget: <input
                                 type="number"
                                 placeholder="$$$$..."
-                                value={formData.travel_budget}
+                                value={formData.current_budget}
                                 onChange={(event) =>
-                                    setFormData({ ...formData, travel_budget: event.target.value })
+                                    setFormData({ ...formData, current_budget: event.target.value })
                                 }
                             />
                         </label>

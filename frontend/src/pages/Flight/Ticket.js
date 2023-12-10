@@ -8,21 +8,21 @@ function Ticket(props) {
 
   const addFlight = async (flight_id) => {
     const response = await fetch('http://localhost:8000/flight_booking/new_booking', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            flight_id: flight_id,
-            itinerary_id: itinID
-        })
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        flight_id: flight_id,
+        itinerary_id: itinID
+      })
     });
-  
+
     if (response.ok) {
-        console.log("Added flight")
-        navigate("/itineraries/"+itinID)
+      console.log("Added flight")
+      navigate("/itineraries/" + itinID)
     } else {
-        throw new Error("Flight not added");
+      throw new Error("Flight not added");
     }
   }
 
@@ -50,7 +50,7 @@ function Ticket(props) {
                       }}
                     >
                       <span>
-                        <b>$ {data.totalPrice}</b>
+                        <b>$ {(data.totalPrice).toFixed(2)}</b>
                       </span>
                     </div>
                     <div>
@@ -74,18 +74,19 @@ function Ticket(props) {
                     flexDirection: 'column',
                   }}
                 >
-                  <div style={{ height: '100px', width: '140px' }}>
-                    {/* <img
-                      src={data.flightImg}
-                      alt="flight_img"
-                      style={{ height: '100%', width: '100%' }}
-                    /> */}
-                  </div>
-                  <div>
-                    <button type="button" className="btn btn-sm btn-info" onClick={() => addFlight(data.id)}>
-                      <b>Add to Itinerary</b>
+                  <div style={{ height: '100px', width: '140px' }}></div>
+                  {itinID &&
+                    <div>
+                      <button type="button" className="btn btn-sm btn-info" onClick={() => addFlight(data.id)}>
+                        <b>Add to Itinerary</b>
+                      </button>
+                    </div>
+                  }
+                  { !itinID &&
+                    <button type="button" class="btn btn-primary btn-lg">
+                      <a class="nav-link text-light" href="/itineraries/new">Create New Itinerary</a>
                     </button>
-                  </div>
+                  }
                 </div>
               </div>
             </div>

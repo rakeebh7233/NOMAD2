@@ -95,8 +95,6 @@ def create_itinerary(itinerary: schema.ItineraryCreate, db: db_dependency):
         arrivalAirport=itinerary.arrivalAirport,
         departureDate=itinerary.departureDate,
         returnDate=itinerary.returnDate,
-        # travelReason=itinerary.travelReason,
-        # leisureActivites=itinerary.leisureActivites,
         budget=itinerary.budget,
         creator=creator
     )
@@ -122,7 +120,7 @@ def update_itinerary(itinerary_id: int, itinerary: schema.ItineraryCreate, db: d
 
     # Fetch the creator
     creator = db.query(User).filter_by(id=itinerary.creator_id).first()
-
+    
     members = []
     if itinerary.members:
         members = db.query(User).filter(User.email_address.in_(itinerary.members)).all()
@@ -133,13 +131,16 @@ def update_itinerary(itinerary_id: int, itinerary: schema.ItineraryCreate, db: d
     # Update the itinerary
     itinerary_obj.itineraryTitle = itinerary.itineraryTitle
     itinerary_obj.destination = itinerary.destination
-    itinerary_obj.departure = itinerary.departure
+    itinerary_obj.departureAirport = itinerary.departureAirport
+    itinerary_obj.arrivalAirport = itinerary.arrivalAirport
     itinerary_obj.departureDate = itinerary.departureDate
     itinerary_obj.returnDate = itinerary.returnDate
-    itinerary_obj.travelReason = itinerary.travelReason
-    itinerary_obj.leisureActivites = itinerary.leisureActivites
     itinerary_obj.budget = itinerary.budget
     itinerary_obj.creator = creator
+
+    # Add the fetched users to the members relationship
+    for member in members:
+        itinerary_obj.members.append(member)
 
     db.commit()
 

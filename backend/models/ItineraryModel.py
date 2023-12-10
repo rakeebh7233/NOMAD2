@@ -21,8 +21,6 @@ class Itinerary(Base):
     arrivalAirport = Column(String, nullable=False)
     departureDate = Column(Date, nullable=False)
     returnDate = Column(Date, nullable=False)
-    # travelReason = Column(String, nullable=False)
-    # leisureActivites = Column(String, nullable=False)
     budget = Column(Float, nullable=False)
     creator_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     rating = Column(Integer, nullable=True)  

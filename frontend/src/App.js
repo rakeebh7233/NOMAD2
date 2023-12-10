@@ -40,6 +40,8 @@ function App() {
           <Route path='/login' exact element={<Login />} />
           <Route path='/flightsearch/:departureAirport/:arrivalAirport/:depDate/:arrDate/:itinID' exact element={<FlightSearch />} />
           <Route path='/hotelsearch/:city/:startDate/:endDate/:itinID' exact element={<HotelSearch />} />
+          <Route path='/flightsearch' exact element={<FlightSearch />} />
+          <Route path='/hotelsearch' exact element={<HotelSearch />} />
           <Route path='/financedashboard' exact element={<FinanceDashboard />} />
           <Route path='/dashboard' exact element={<Dashboard />} />
 

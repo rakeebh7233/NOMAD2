@@ -16,8 +16,6 @@ function BeginItinerary() {
         arrivalAirport: "",
         departureDate: "",
         returnDate: "",
-        travelReason: "",
-        leisureActivites: "",
         budget: 0
     });
 
@@ -37,8 +35,6 @@ function BeginItinerary() {
                 arrivalAirport: itinerary.arrivalAirport,
                 departureDate: itinerary.departureDate,
                 returnDate: itinerary.returnDate,
-                travelReason: itinerary.travelReason,
-                leisureActivites: itinerary.leisureActivites,
                 budget: itinerary.budget
             });
         }
@@ -51,7 +47,7 @@ function BeginItinerary() {
     }
 
 
-    const createItinerary = async (itineraryTitle, members, destination, departureAirport, arrivalAirport, departureDate, returnDate, travelReason, leisureActivites, budget) => {
+    const createItinerary = async (itineraryTitle, members, destination, departureAirport, arrivalAirport, departureDate, returnDate, budget) => {
         const url = itinerary ? `http://localhost:8000/itineraries/${itinerary.id}` : 'http://localhost:8000/itineraries/create';
         const method = itinerary ? 'PUT' : 'POST';
 
@@ -70,8 +66,6 @@ function BeginItinerary() {
                 arrivalAirport,
                 departureDate,
                 returnDate,
-                travelReason,
-                leisureActivites,
                 budget,
                 creator_id: user.id
             }),
@@ -90,7 +84,7 @@ function BeginItinerary() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData)
-        createItinerary(formData.itineraryTitle, formData.members, formData.destination, formData.departureAirport, formData.arrivalAirport, formData.departureDate, formData.returnDate, formData.travelReason, formData.leisureActivites, formData.budget);
+        createItinerary(formData.itineraryTitle, formData.members, formData.destination, formData.departureAirport, formData.arrivalAirport, formData.departureDate, formData.returnDate, formData.budget);
     };
 
 
@@ -179,44 +173,7 @@ function BeginItinerary() {
                             />
                         </label>
 
-                        {/* <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <label style={{ marginRight: '20px' }}>
-                                Reason for Travel: <Select
-                                    placeholder="Select One"
-                                    options={[
-                                        { value: 'Leisure', label: 'Leisure' },
-                                        { value: 'Business', label: 'Business' },
-                                        { value: 'Family', label: 'Family' },
-                                        { value: 'Friends', label: 'Friends' },
-                                        { value: 'Other', label: 'Other' },
-                                    ]}
-                                    defaultValue={""}
-                                    onChange={(event) => {
-                                        setFormData({ ...formData, travelReason: event.value })
-                                    }
-                                    }
-                                />
-                            </label>
-
-                            <label>
-                                Favorite Activites: <Select
-                                    placeholder="Select One"
-                                    options={[
-                                        { value: 'Resturants and Local Cuisine', label: 'Resturants and Local Cuisine' },
-                                        { value: 'Museums', label: 'Museums' },
-                                        { value: 'Historical Sites', label: 'Historical Sites' },
-                                        { value: 'Shopping', label: 'Shopping' },
-                                        { value: 'Amusement Parks', label: 'Amusement Parks' },
-                                        { value: 'Nightlife', label: 'Nightlife' },
-                                        { value: 'Other', label: 'Other' },
-                                    ]}
-                                    onChange={(event) => {
-                                        setFormData({ ...formData, leisureActivites: event.value })
-                                    }
-                                    }
-                                />
-                            </label>
-                        </div> */}
+        
                         <label>
                             Email List: <CreatableSelect
                                 isMulti

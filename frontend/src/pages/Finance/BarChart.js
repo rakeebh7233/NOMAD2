@@ -61,7 +61,7 @@ function BarChart(){
                 console.log(start_date_response.data);
     
                 const data_response = await axios.get(`http://localhost:8000/transactions/${period_response.data}/${email}/${start_date_response.data}`);
-                console.log(data_response.data[0].transaction_date)
+                console.log(data_response.data)
                 const chartData = {
                     labels: data_response.data.map(item => item.transaction_date),
                     datasets: [

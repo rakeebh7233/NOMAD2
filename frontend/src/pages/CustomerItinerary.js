@@ -233,6 +233,7 @@ function CustomerItinerary() {
                 'Content-Type': 'application/json',
             }
         });
+        
         forceUpdate();
     }
 
@@ -256,7 +257,7 @@ function CustomerItinerary() {
         forceUpdate();
     }
 
-    const getRestaurants = async (geoID) => {
+    const getRestaurants = (geoID) => {
         const options = {
             method: 'GET',
             url: 'http://127.0.0.1:8000/restaurant/tripadvisorRestaurantLocCheck/{locationId}?locId=' + geoID,
@@ -269,8 +270,18 @@ function CustomerItinerary() {
                     url: 'http://127.0.0.1:8000/restaurant/' + geoID,
                 };
                 axios.request(options1).then((response1) => {
-                    setRestaurants(response1['data']);
+                    let restaurantData = response1['data'];
+                    restaurantData = restaurantData.filter(val => {
+                        for(let i =0; i < myRestaurants.length; i++){
+                            if(val['id'] === myRestaurants[i]['restaurant_id']){
+                                return false;
+                            }
+                        }
+                        return true;
+                    })
+                    setRestaurants(restaurantData);
                 });
+
             }
             else {
                 const options2 = {
@@ -300,29 +311,33 @@ function CustomerItinerary() {
                 'Content-Type': 'application/json',
             }
         });
+        await getMyRestaurants();
         forceUpdate();
     }
 
     const addRestaurant = async (restaurant_id, restaurantName) => {
-        const geoID = localStorage.getItem('tripAdvisorGeoID')
         const response = await fetch('http://localhost:8000/restaurant_booking/new_booking', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                geoID: geoID,
+                geoID: tripAdvisorGeoID,
                 restaurant_id: restaurant_id,
                 itinerary_id: itinerary_id,
                 restaurantName: restaurantName
             })
         });
+        console.log(response)
 
         if (response.ok) {
             console.log("Added restaurant")
         } else {
             throw new Error("Restaurant not added");
         }
+        await getMyRestaurants();
+        console.log(myRestaurants)
+        getRestaurants(tripAdvisorGeoID);
         forceUpdate();
     }
 

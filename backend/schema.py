@@ -103,8 +103,6 @@ class ItineraryBase(BaseModel):
     arrivalAirport: str
     departureDate: date
     returnDate: date
-    # travelReason: str
-    # leisureActivites: str
     budget: float
     creator_id: int
     rating: Optional[int] = None
@@ -131,8 +129,6 @@ class ItineraryUpdate(ItineraryModel):
     departure: Optional[str]
     departureDate: Optional[date]
     returnDate: Optional[date]
-    travelReason: Optional[str]
-    leisureActivites: Optional[str]
     budget: Optional[float]
     creator_id: Optional[int]
     member_ids: Optional[List[int]]
@@ -212,29 +208,6 @@ class RestaurantBookingModel(RestaurantBookingBase):
         orm_mode = True
 
 class RestaurantBookingUpdate(RestaurantBookingBase):
-    class Config:
-        orm_mode = True
-
-
-
-# Personal Finance Schema
-
-class FinanceBase(BaseModel):
-    email_address: str
-    yearly_income: float
-    monthly_spending: float
-    estimated_savings: float
-    travel_budget: float
-
-class FinanceCreate(FinanceBase):
-    class Config:
-        orm_mode = True
-
-class FinanceModel(FinanceBase):
-    class Config:
-        orm_mode = True
-
-class FinanceUpdate(FinanceModel):
     class Config:
         orm_mode = True
 
