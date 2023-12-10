@@ -25,3 +25,20 @@
 #ticket:hover {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
+
+.back-button{
+  border-radius: 7px;
+  height: 40px;
+  background-color: #819f87;
+  font-weight: bold;
+  border: 0 none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 10px 20px;
+  margin-left: 25px;
+  margin-top: 15px;
+}
+
+.back-button a {
+  color:white;
+}

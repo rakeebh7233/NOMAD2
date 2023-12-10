@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Result from "./Result";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import '../../styles/Search.css';
 
 function Search() {
   const [btnType, setbtnType] = useState("oneWay");
@@ -142,6 +143,11 @@ function Search() {
 
   return (
     <div id="flightSearch">
+      <button className="back-button">
+        <Link to={`/itineraries/${itinID}`}>
+          Back
+        </Link>
+      </button>
       <div className="row mt-4 ml-5 mr-5">
         <div className="col-md-4">
           <div className="card">

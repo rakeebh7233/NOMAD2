@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../AuthContext';
 import axios from 'axios';
-
 import Stats from './Stats';
 import BarChart from './BarChart';
 import LineChart from './LineChart';
 import UpdateProgress from './UpdateProgress';
-
 
 function Dashboard() {
   const [currentSavings, setCurrentSavings] = useState(0);
@@ -16,13 +14,9 @@ function Dashboard() {
   const [statsData, setStatsData] = useState(undefined);
   const [loading, setLoading] = useState(false);
 
-  const { user } = useContext(AuthContext);
-
-  // const checkUserFinance = async () => {
-
+  const { user } = useContext(AuthContext);  
 
   useEffect(() => {
-    // checkUserFinance();
     if (user && user.email_address) {
       const email = user.email_address;
       // console.log(email);

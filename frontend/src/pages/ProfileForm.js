@@ -16,7 +16,7 @@ function Form() {
                 email_address: user.email_address,
                 travel_budget: "",
                 goal: "",
-                period: "",
+                period: "weekly",
                 goal_per_period: 0,
                 progress_per_period: 0,
                 start_date: "",
@@ -45,7 +45,7 @@ function Form() {
             console.log(data.detail);
         } else {
             console.log('Form submitted successfully');
-            navigate("/");
+            navigate("/financedashboard");
         }
     };
 

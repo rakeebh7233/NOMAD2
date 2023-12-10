@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import HotelResult from "./HotelResult";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import '../../styles/Search.css';
+import { useParams, Link } from "react-router-dom";
 
 function HotelSearch() {
   const { city, startDate, endDate, itinID } = useParams();
@@ -24,61 +25,66 @@ function HotelSearch() {
 
   const handleFilter = async () => {
     try {
-        const response = await axios.get(`http://localhost:8000/hotel/location_internal/${location}`);
-        console.log("Location DB Response: " + response.data)
-        let locationId 
-        if (response.data.isInDB) {
-            locationId = response.data.geoId
-            console.log(locationId)
-        } else {
-            const getlocId = await axios.get(`http://localhost:8000/hotel/location_external/${location}`);
-            locationId = getlocId.data.geoId
-            console.log(locationId)
-        }
+      const response = await axios.get(`http://localhost:8000/hotel/location_internal/${location}`);
+      console.log("Location DB Response: " + response.data)
+      let locationId
+      if (response.data.isInDB) {
+        locationId = response.data.geoId
         console.log(locationId)
-        const hotel_search = await axios.get(`http://localhost:8000/hotel/hotel_internal/${locationId}/${checkInDate}/${checkOutDate}/${guests}/${rooms}`).then((response) => {
+      } else {
+        const getlocId = await axios.get(`http://localhost:8000/hotel/location_external/${location}`);
+        locationId = getlocId.data.geoId
+        console.log(locationId)
+      }
+      console.log(locationId)
+      const hotel_search = await axios.get(`http://localhost:8000/hotel/hotel_internal/${locationId}/${checkInDate}/${checkOutDate}/${guests}/${rooms}`).then((response) => {
+        if (response.data.length !== 0) {
+          setFilteredData(response.data);
+          console.log(response.data)
+        } else {
+          const external_search = axios.get(`http://localhost:8000/hotel/hotel_external/${locationId}/${checkInDate}/${checkOutDate}/${guests}/${rooms}`).then((response) => {
             if (response.data.length !== 0) {
-                setFilteredData(response.data);
-                console.log(response.data)
+              setFilteredData(response.data);
+              console.log(response.data)
             } else {
-                const external_search = axios.get(`http://localhost:8000/hotel/hotel_external/${locationId}/${checkInDate}/${checkOutDate}/${guests}/${rooms}`).then((response) => {
-                    if (response.data.length !== 0) {
-                        setFilteredData(response.data);
-                        console.log(response.data)
-                    } else {
-                        console.log("No hotels found")
-                    }
-                });
+              console.log("No hotels found")
             }
-        });
+          });
+        }
+      });
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
   };
-    
+
 
 
   const handleSearch = async () => {
     if (!location) {
-        alert("You must specify a Location (City)!");
+      alert("You must specify a Location (City)!");
     } else if (!checkInDate) {
-        alert("You must specify a Check-In Date!");
+      alert("You must specify a Check-In Date!");
     } else if (!checkOutDate) {
-        alert("You must specify a Check-Out Date!");
+      alert("You must specify a Check-Out Date!");
     } else if (!guests) {
-        alert("You must specify the number of Guests!");
+      alert("You must specify the number of Guests!");
     }
     else if (!rooms) {
-        alert("You must specify the number of Rooms!");
+      alert("You must specify the number of Rooms!");
     }
     if (location && checkInDate && checkOutDate && guests && rooms) {
-        setIsSearchClicked(true);
-        await handleFilter();
+      setIsSearchClicked(true);
+      await handleFilter();
     }
   };
 
   return (
     <div id="hotelSearch">
+      <button className="back-button">
+        <Link to={`/itineraries/${itinID}`}>
+          Back
+        </Link>
+      </button>
       <div className="row mt-4 ml-5 mr-5">
         <div className="col-md-4">
           <div className="card">
@@ -86,7 +92,7 @@ function HotelSearch() {
               <div className="card">
                 <div className="card-body">
                   <div className="btn-group d-flex justify-content-center">
-                    Hotel Booking 
+                    Hotel Booking
                   </div>
                   <input
                     type="text"

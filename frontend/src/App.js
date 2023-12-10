@@ -9,10 +9,10 @@ import BeginItinerary from './pages/Itinerary/BeginItinerary';
 import CustomerItinerary from './pages/CustomerItinerary';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import FlightSearch from './pages/FlightSearch';
+import FlightSearch from './pages/Flight/Search';
 import HotelSearch from './pages/Hotel/HotelSearch';
 import FinanceDashboard from './pages/FinanceDashboard';
-import { AuthProvider } from './AuthContext';
+import Dashboard from './pages/Finance/Dashboard';
 
 function App() {
   const [isLoginVisible, setIsLoginVisible] = useState(false);
@@ -41,6 +41,8 @@ function App() {
           <Route path='/flightsearch/:departureAirport/:arrivalAirport/:depDate/:arrDate/:itinID' exact element={<FlightSearch />} />
           <Route path='/hotelsearch/:city/:startDate/:endDate/:itinID' exact element={<HotelSearch />} />
           <Route path='/financedashboard' exact element={<FinanceDashboard />} />
+          <Route path='/dashboard' exact element={<Dashboard />} />
+
         </Routes>
       </Router>
 

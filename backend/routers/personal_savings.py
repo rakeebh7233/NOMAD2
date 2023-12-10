@@ -17,6 +17,13 @@ get_db = database.get_db
 def all(db: Session = Depends(get_db)):
     return db.query(FinanceModel.Savings).all()
 
+@router.get('/{email}', response_model=schema.SavingsModel)
+def get(email, db: Session = Depends(get_db)):
+    response = FinanceModel.Savings.get_savings_user(db, email)
+    if response == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Savings with email {email} not found")
+    return response
+
 @router.post('/new_savings', status_code=status.HTTP_201_CREATED)
 def create(request: schema.SavingsCreate, db: Session = Depends(get_db)):
     new_savings = FinanceModel.Savings.create_savings(db, request)
