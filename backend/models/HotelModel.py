@@ -137,7 +137,7 @@ class HotelBooking(Base):
     hotel = relationship('Hotel', backref='hotel_booking')
 
     def __repr__(self):
-        return f'<HotelBooking {self.hotel_id} {self.itinerary_id_id}>'
+        return f'<HotelBooking {self.hotel_id} {self.itinerary_id}>'
 
     @classmethod
     def create_hotel_booking(cls, hotel_booking: schema.HotelBookingCreate, db_session):

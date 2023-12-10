@@ -20,6 +20,7 @@ def all(db: Session = Depends(get_db)):
 @router.post('/new_transaction', status_code=status.HTTP_201_CREATED)
 def create(request: schema.TransactionCreate, db: Session = Depends(get_db)):
     new_transaction = FinanceModel.Transaction.create_transaction(db, request)
+    print("New Transaction: ", new_transaction)
     db.add(new_transaction)
     db.commit()
     db.refresh(new_transaction)
