@@ -6,6 +6,8 @@ import Stats from './Stats';
 import BarChart from './BarChart';
 import LineChart from './LineChart';
 import UpdateProgress from './UpdateProgress';
+import RemoveProgress from './RemoveProgress';
+import '../../styles/Dashboard.css';
 
 
 function Dashboard() {
@@ -67,17 +69,24 @@ function Dashboard() {
 
   return (
     <>
-      <div className="grid lg:grid-cols-4 mt-2 md:grid-cols-2 grid-cols-1 gap-6">
-        {statsData !== undefined && statsData.map((stat) => (
-          <Stats title={stat.title} value={stat.value} color={stat.color} />
-        ))}
-      </div>
-      <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
-        <BarChart />
-        <LineChart />
-      </div>
-      <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
-        <UpdateProgress />
+      <div className="dashboard-grid">
+        <div className="grid lg:grid-cols-4 mt-2 md:grid-cols-2 grid-cols-1 gap-6 stats-container">
+          {statsData !== undefined && statsData.map((stat) => (
+          <Stats title={stat.title} value={stat.value} color={stat.color} className="stats-item" />
+          ))}
+        </div>
+        <div>
+          <BarChart className="chart-container"/>
+        </div>
+        <div>
+          <LineChart className="chart-container"/>
+        </div>
+        <div className="update-progress-container">
+          <UpdateProgress />
+        </div>
+        <div className="update-progress-container">
+          <RemoveProgress />
+        </div>
       </div>
       {/* <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
       <BarChart />

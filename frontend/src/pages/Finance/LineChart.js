@@ -57,8 +57,10 @@ function LineChart() {
                     labels: daily_response.data.map(item => item.transaction_date),
                     datasets: [
                         {
-                            label: 'Savings Added',
+                            label: 'Transactions Over Time',
                             data: daily_response.data.map(item => item.transaction_amount),
+                            backgroundColor: 'rgba(255, 69, 0, 0.2)', 
+                            borderColor: 'rgba(255, 69, 0, 1)', 
                         },
                     ],
                 };

@@ -141,6 +141,7 @@ class Savings(Base):
         savings_obj.goal = max(savings_obj.goal, total_itinerary_price)
 
         progress = float(progress)
+        print("Progress: " + str(progress))
         savings_obj.progress_per_period = savings_obj.progress_per_period + progress
         savings_obj.current_budget = savings_obj.current_budget + progress
         savings_obj.goal_per_period = cls.update_goal_per_period(savings_obj.goal, savings_obj.current_budget, savings_obj.period, savings_obj.travel_date)

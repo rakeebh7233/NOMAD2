@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../AuthContext';
+import '../../styles/BarChart.css';
 
 import {
     Chart as ChartJS,
@@ -65,8 +66,11 @@ function BarChart(){
                     labels: data_response.data.map(item => item.transaction_date),
                     datasets: [
                         {
-                            label: 'Added Savings',
+                            label: 'Savings Breakdown by Period',
                             data: data_response.data.map(item => item.transaction_amount),
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)', // change this line
+                            borderColor: 'rgba(75, 192, 192, 1)', // and this line
+                            borderWidth: 1,
                         },
                     ],
                 };
@@ -91,8 +95,8 @@ function BarChart(){
     }
       
     return(
-        <TitleCard title={"Goal Tracker"}>
-          {data && <Bar options={options} data={data} />}
+        <TitleCard title={"Goal Tracker"} topMargin="mt-2">
+          {data && <Bar className="bar-chart" options={options} data={data} />}
         </TitleCard>
       )
 

@@ -4,7 +4,7 @@ import { AuthContext } from "../../AuthContext"
 import TitleCard from "../../components/cards/TitleCard"
 import axios from "axios"
 
-function UpdateProgress(){
+function RemoveProgress(){
 
     // const navigate = useNavigate()
 
@@ -24,11 +24,12 @@ function UpdateProgress(){
     
     
 
-    const updateSavings = () => {
+    const removeSavings = () => {
 
         const email = user.email_address;
         console.log(email);
-        axios.get(`http://localhost:8000/savings/update_progress/${email}/${addToSavings}`)
+        const toRemove = addToSavings * -1
+        axios.get(`http://localhost:8000/savings/update_progress/${email}/${toRemove}`)
           .then(response => {
             console.log("Current Savings: " + response.data.current_savings);
             console.log("Progress per period: " + response.data.progress_per_period);
@@ -43,7 +44,7 @@ function UpdateProgress(){
           axios.post(`http://localhost:8000/transactions/new_transaction`,{
             email_address: email,
             transaction_date: currentDate,
-            transaction_amount: addToSavings
+            transaction_amount: toRemove
           }).then(response => {
             console.log("Transaction ID: " + response.data.transaction_id);
             console.log("Email Address: " + response.data.email_address);
@@ -56,23 +57,23 @@ function UpdateProgress(){
     }
 
     const onClick = () => {
-        updateSavings()
+        removeSavings()
         window.location.reload()
     }
     
     return(
         <>
-            <TitleCard title="Update Progress" topMargin="mt-2">
+            <TitleCard title="Remove Savings" topMargin="mt-2">
 
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                 <div className={`form-control w-full`}>
                     <label className="label">
-                        <span className={"label-text text-base-content "}>Added Savings ($)</span>
+                        <span className={"label-text text-base-content "}>Removed Savings ($)</span>
                     </label>
                     <input type="number" value={addToSavings} placeholder={0} onChange={(e) => updateInputValue(e.target.value)}className="input  input-bordered w-full " />
                 </div>
             </div>
-            <div className="mt-16"><button className="btn btn-primary float-center" onClick={onClick}>Update</button></div>
+            <div className="mt-16"><button className="btn btn-primary float-right" onClick={onClick}>Update</button></div>
 
             </TitleCard>
         </>
@@ -81,4 +82,4 @@ function UpdateProgress(){
 
 }
 
-export default UpdateProgress
+export default RemoveProgress
