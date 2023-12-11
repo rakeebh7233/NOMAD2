@@ -42,7 +42,7 @@ function CustomerItinerary() {
             setStartDate(data[0].departureDate);
             setEndDate(data[0].returnDate);
 
-            getLocations(data[0].destination);
+            await getLocations(data[0].destination);
             getMyRestaurants();
             getMyFlights();
             getMyHotels();
@@ -55,7 +55,7 @@ function CustomerItinerary() {
         return <Navigate to="/register" />;
     }
 
-    const getLocations = (dest) => {
+    const getLocations = async (dest) => {
         const options = {
             method: 'GET',
             url: 'http://127.0.0.1:8000/restaurant/tripadvisorCityCheck/' + dest,
@@ -76,8 +76,10 @@ function CustomerItinerary() {
 
                     try {
                         axios.request(options1).then((response1) => {
-                            setTripAdvisorID(response1['data']['geoId']);
-                            getRestaurants(response['data']['geoID']);
+                            if (response1['data'] !== null) {
+                                setTripAdvisorID(response1['data']['geoId']);
+                                getRestaurants(response1['data']['geoId']);
+                            }
                         })
                     }
                     catch (error) {
@@ -109,7 +111,10 @@ function CustomerItinerary() {
 
                     try {
                         axios.request(options4).then((response3) => {
-                            setBookingGeoID(response3['data']['geoId']);
+                            console.log(response3);
+                            if (response3['data'] !== null) {
+                                setBookingGeoID(response3['data']['geoId']);
+                            }
                         });
                     }
                     catch (error) {
@@ -289,7 +294,23 @@ function CustomerItinerary() {
                     url: 'http://127.0.0.1:8000/restaurant/tripadvisorSearch/' + geoID,
                 };
                 axios.request(options2).then((response1) => {
-                    setRestaurants(response1['data']);
+                    //setRestaurants(response1['data']);
+                    const options1 = {
+                        method: 'GET',
+                        url: 'http://127.0.0.1:8000/restaurant/' + geoID,
+                    };
+                    axios.request(options1).then((response1) => {
+                        let restaurantData = response1['data'];
+                        restaurantData = restaurantData.filter(val => {
+                            for(let i =0; i < myRestaurants.length; i++){
+                                if(val['id'] === myRestaurants[i]['restaurant_id']){
+                                    return false;
+                                }
+                            }
+                            return true;
+                        })
+                        setRestaurants(restaurantData);
+                    });
                 })
             }
         })
@@ -481,8 +502,8 @@ function CustomerItinerary() {
                                 </div>
                                 <div className="card-description">Price Tag: {rest.priceTag}</div>
                                 <div className="card-description">Avg Rating: {rest.averageRating}</div>
-                                <a className="primary-btn" onClick={() => addRestaurant(rest.id, rest.name)}>Add to Itinerary</a>
-                                <a href={rest.menuURL} className="card-btn">Menu</a>
+                                <a className="primary-btn" onClick={() => {console.log(rest); addRestaurant(rest.id, rest.name)}}>Add to Itinerary</a>
+                                <a href={rest.menuURL} target="_blank" className="card-btn">Menu</a>
                             </div>
                         ))}
 

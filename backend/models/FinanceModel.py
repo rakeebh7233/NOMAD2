@@ -257,7 +257,6 @@ class Transaction(Base):
         return transactions_per_day
 
     @classmethod
-    
     def get_transactions_per_week(cls, db_session, email_address, start_date):
         """Return a list of transactions as JSON objects with the keys 'transaction_date' and 'transaction_amount'."""
         transactions = cls.get_transaction_user(db_session, email_address)

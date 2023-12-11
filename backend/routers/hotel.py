@@ -73,7 +73,7 @@ def search_locations_internal(location: str, db: Session = Depends(get_db)):
     else:
         return {'isInDB': False}
 
-@router.get('/location_external/{location}', status_code=status.HTTP_200_OK, response_model=schema.LocationModel)
+@router.get('/location_external/{location}', status_code=status.HTTP_200_OK)
 # Will put back in after testing API Call: current_user: schema.UserModel = Depends(oauth2.get_current_user)
 def search_locations_external(location: str, db: Session = Depends(get_db)):
     url = "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchDestination"
@@ -83,19 +83,20 @@ def search_locations_external(location: str, db: Session = Depends(get_db)):
         "X-RapidAPI-Host": "booking-com15.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers, params=querystring)
-    if response.status_code != 200:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with location {location} not found")
+    # if response.status_code != 200:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Hotel with location {location} not found")
     
-    locations = response.json()['data'][0]
-    location = schema.LocationModel(
-        name=locations['city_name'],
-        geoId=locations['dest_id'],
-        type="BookingAPI"
-    )
-    # Cache locations in database
-    cache_locations(location, db) 
+    if response.status_code == 200:
+        locations = response.json()['data'][0]
+        location = schema.LocationModel(
+            name=locations['city_name'],
+            geoId=locations['dest_id'],
+            type="BookingAPI"
+        )
+        # Cache locations in database
+        cache_locations(location, db) 
 
-    return location 
+        return location 
 
 @router.get('/hotel_internal/{locationID}/{checkInDate}/{checkOutDate}/{guests}/{rooms}', status_code=status.HTTP_200_OK)
 # Will put back in after testing API Call: current_user: schema.UserModel = Depends(oauth2.get_current_user)

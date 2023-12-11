@@ -42,9 +42,15 @@ function HotelSearch() {
           setFilteredData(response.data);
           console.log(response.data)
         } else {
-          const external_search = axios.get(`http://localhost:8000/hotel/hotel_external/${locationId}/${checkInDate}/${checkOutDate}/${guests}/${rooms}`).then((response) => {
+          const external_search = axios.get(`http://localhost:8000/hotel/hotel_external/${locationId}/${checkInDate}/${checkOutDate}/${guests}/${rooms}`).then(async (response) => {
             if (response.data.length !== 0) {
-              setFilteredData(response.data);
+              //setFilteredData(response.data);
+              await axios.get(`http://localhost:8000/hotel/hotel_internal/${locationId}/${checkInDate}/${checkOutDate}/${guests}/${rooms}`).then((response) => {
+                if (response.data.length !== 0) {
+                  setFilteredData(response.data);
+                  console.log(response.data)
+                }
+              })
               console.log(response.data)
             } else {
               console.log("No hotels found")

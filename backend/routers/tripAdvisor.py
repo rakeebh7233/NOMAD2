@@ -74,20 +74,21 @@ def newlocationSearchExternal(city: str, db: Session = Depends(get_db)):
     }
 
     response = requests.request("GET", url, headers=headers, params=querystring)
-    if response.status_code != 200:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{city} not found!")
+    # if response.status_code != 200:
+        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{city} not found!")
     
-    theResponse = response.json()
+    if response.status_code == 200:
+        theResponse = response.json()
 
-    restSchema = schema.LocationBase(
-            name = city,
-            geoId = theResponse['data'][0]['geoId'],
-            type = 'TripAdvisorAPI'
-    )
-    
-    HotelModel.Location.create_location(restSchema, db)
+        restSchema = schema.LocationBase(
+                name = city,
+                geoId = theResponse['data'][0]['geoId'],
+                type = 'TripAdvisorAPI'
+        )
+        
+        HotelModel.Location.create_location(restSchema, db)
 
-    return {"geoId" :theResponse['data'][0]['geoId']}
+        return {"geoId" :theResponse['data'][0]['geoId']}
 
 @router.get('/tripadvisorCityCheck/{city}', status_code=status.HTTP_200_OK)
 def checkLocExists(city: str, db: Session = Depends(get_db)):
