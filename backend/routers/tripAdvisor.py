@@ -76,8 +76,10 @@ def newlocationSearchExternal(city: str, db: Session = Depends(get_db)):
     response = requests.request("GET", url, headers=headers, params=querystring)
     # if response.status_code != 200:
         # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{city} not found!")
+
+    response1 = HotelModel.Location.get_location_by_name(db, city, "TripAdvisorAPI")
     
-    if response.status_code == 200:
+    if response.status_code == 200 and response1 == None:
         theResponse = response.json()
 
         restSchema = schema.LocationBase(
