@@ -368,23 +368,25 @@ function CustomerItinerary() {
                 <div className="planned-container col-sm-6">
                     <h1>Planned</h1>
                     <h2>Hotel</h2>
-                    {myHotels.length === 0 ? (
-                        <p style={{ fontStyle: 'italic' }}>Add a Hotel to your itinerary</p>
-                    ) : (
-                        myHotels.map((hotel) => (
-                            <div className="card-container" key={hotel.hotel_id}>
-                                <img
-                                    src="https://img.freepik.com/free-photo/beautiful-luxury-outdoor-swimming-pool-hotel-resort_74190-7433.jpg"
-                                    alt="Card"
-                                    className="card-img"
-                                />
-                                <h3 className="card-title">{hotel.hotel.name}</h3>
-                                <div className="card-description">Room Cost: {hotel.hotel.totalPrice}</div>
-                                <a className="btn btn-danger card-danger-btn" onClick={() => removeMyHotel(hotel.hotel_id)}>Remove</a>
-                                <a href="this should go to hotel booking link" className="card-btn">Booking</a>
-                            </div>
-                        ))
-                    )}
+                    <div className="cards d-flex">
+                        {myHotels.length === 0 ? (
+                            <p style={{ fontStyle: 'italic' }}>Add a Hotel to your itinerary</p>
+                        ) : (
+                            myHotels.map((hotel) => (
+                                <div className="card-container" key={hotel.hotel_id}>
+                                    <img
+                                        src="https://img.freepik.com/free-photo/beautiful-luxury-outdoor-swimming-pool-hotel-resort_74190-7433.jpg"
+                                        alt="Card"
+                                        className="card-img"
+                                    />
+                                    <h3 className="card-title">{hotel.hotel.name}</h3>
+                                    <div className="card-description">Room Cost: {hotel.hotel.totalPrice}</div>
+                                    <a className="btn btn-danger card-danger-btn" onClick={() => removeMyHotel(hotel.hotel_id)}>Remove</a>
+                                    <a href="this should go to hotel booking link" className="card-btn">Booking</a>
+                                </div>
+                            ))
+                        )}
+                    </div>
 
                     <h2>Flight</h2>
                     <div className="cards d-flex">
@@ -411,7 +413,7 @@ function CustomerItinerary() {
                     </div>
 
                     <h2>Restaurants</h2>
-                    <div className="d-flex flex-wrap">
+                    <div className="cards d-flex">
                         {myRestaurants.length === 0 ? (
                             <p style={{ fontStyle: 'italic' }}>Add a Restaurant to your itinerary</p>
                         ) : (
