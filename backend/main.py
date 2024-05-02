@@ -6,6 +6,8 @@ from routers import user, flight, hotel, flight_booking, hotel_booking, tripAdvi
 from database import Base
 
 
+# Random Change 
+
 def create_tables():         
 	Base.metadata.create_all(bind=engine)
       
