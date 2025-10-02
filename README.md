@@ -129,6 +129,6 @@ npm start
 * API keys (TripAdvisor, Booking.com)
 ---
 ### ✍️ Authors
-**Rakeeb Hossain** | **Sunan Tajwar**| **Nihal Rahman**
+**Rakeeb Hossain** | **Sunan Tajwar** | **Nihal Rahman**
 
   
